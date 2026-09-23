@@ -1,6 +1,5 @@
 """FA3 workload adapter used by the OverlapPlan tuner."""
 
-from functools import partial
 from itertools import product
 
 import tilelang
@@ -9,6 +8,7 @@ import torch
 import torch.nn.functional as F
 
 from .workloads import OperatorSpec, Options, SearchWorkload, TileConfig
+from .example_loader import NativeKernelReference
 
 
 def add_arguments(parser) -> None:
@@ -204,7 +204,11 @@ def build(options: Options, config: TileConfig) -> SearchWorkload:
         prim_func=prim_func,
         out_idx=(3,),
         total_flops=total_flops,
-        reference_program=partial(ref_program, is_causal=causal),
+        reference_program=NativeKernelReference(
+            prim_func,
+            (3,),
+            {tilelang.PassConfigKey.TL_ENABLE_FAST_MATH: True},
+        ),
         pass_configs={tilelang.PassConfigKey.TL_ENABLE_FAST_MATH: True},
     )
 

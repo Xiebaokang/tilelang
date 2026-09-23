@@ -10,13 +10,13 @@ from .workloads import OperatorSpec, Options, SearchWorkload, TileConfig
 
 def add_arguments(parser) -> None:
     group = parser.add_argument_group("convolution")
-    group.add_argument("--conv-block-m", type=int, nargs="+", default=[64, 128])
-    group.add_argument("--conv-block-n", type=int, nargs="+", default=[64, 128])
+    group.add_argument("--conv-block-m", type=int, nargs="+", default=[64, 128, 256])
+    group.add_argument("--conv-block-n", type=int, nargs="+", default=[64, 128, 256])
     group.add_argument("--conv-block-k", type=int, nargs="+", default=[32, 64])
-    group.add_argument("--conv-batch", type=int, default=8)
+    group.add_argument("--conv-batch", type=int, default=16)
     group.add_argument("--conv-channels", type=int, default=64)
-    group.add_argument("--conv-height", type=int, default=32)
-    group.add_argument("--conv-width", type=int, default=32)
+    group.add_argument("--conv-height", type=int, default=56)
+    group.add_argument("--conv-width", type=int, default=56)
     group.add_argument("--conv-filters", type=int, default=128)
     group.add_argument("--conv-kernel", type=int, default=3)
     group.add_argument("--conv-stride", type=int, default=1)
@@ -32,6 +32,7 @@ def configurations(options: Options) -> list[TileConfig]:
             options["conv_block_n"],
             options["conv_block_k"],
         )
+        if not (block_m == 256 and block_n == 256)
     ]
 
 

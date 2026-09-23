@@ -1,0 +1,111 @@
+"""Structural coverage for example-derived research operators."""
+
+from __future__ import annotations
+
+import argparse
+
+import pytest
+
+from OverlapPlaner.contract import enumerate_overlap_plans
+from OverlapPlaner.structure import SearchBudget
+from OverlapPlaner.tune.operators import get_operator
+from OverlapPlaner.tune.run import SEARCH_OPERATORS
+
+
+NAMES = (
+    "dequant_gemm_fp4",
+    "gdn_chunk_o_bwd",
+    "gdn_chunk_delta_bwd",
+    "kda_wy_fast_bwd",
+    "kda_chunk_bwd_intra",
+    "block_causal_bwd",
+    "flash_decode",
+    "fused_moe",
+)
+
+
+@pytest.mark.parametrize("name", NAMES)
+def test_research_operator_builds_and_enumerates(name: str) -> None:
+    operator = get_operator(name)
+    parser = argparse.ArgumentParser(add_help=False)
+    operator.add_arguments(parser)
+    options = vars(parser.parse_args([]))
+    tile = operator.configurations(options)[0]
+    workload = operator.build(options, tile)
+    assert int(workload.prim_func.attrs["tl.auto_overlap"]) == 1
+    plan = next(
+        enumerate_overlap_plans(
+            workload.prim_func,
+            budget=SearchBudget(
+                max_groups=1,
+                max_stages=2,
+                max_structures=1,
+            ),
+        )
+    )
+    assert plan.operations
+
+
+def test_research_operators_are_selectable_in_run() -> None:
+    selected = {operator.name for operator in SEARCH_OPERATORS}
+    assert set(NAMES) <= selected
+
+
+def test_default_workloads_are_production_scale() -> None:
+    expected = {
+        "fa3": {"fa3_seq_q": 8192, "fa3_seq_kv": 8192},
+        "mla": {"mla_seq": 8192},
+        "gqa": {"gqa_seq": 8192},
+        "gqa_bwd": {"gqa_bwd_seq": 8192},
+        "mha_bwd": {"mha_bwd_seq": 8192},
+        "block_causal_bwd": {"block_causal_bwd_seq": 8192},
+        "flash_decode": {"flash_decode_kv_seq": 8192},
+        "linear_attn_fwd": {"linear_attn_seq": 8192},
+        "mamba_chunk_scan": {"mamba_scan_seq": 8192},
+        "mamba_chunk_state": {"mamba_state_seq": 8192},
+        "gdn_chunk_o_bwd": {"gdn_o_bwd_seq": 8192},
+        "gdn_chunk_delta_bwd": {"gdn_delta_bwd_seq": 8192},
+        "kda_wy_fast_bwd": {"kda_wy_bwd_seq": 8192},
+        "kda_chunk_bwd_intra": {"kda_intra_seq": 8192},
+        "fused_moe": {"fused_moe_tokens": 8192},
+        "gemm": {"gemm_m": 4096, "gemm_n": 4096, "gemm_k": 4096},
+        "gemm_fp8": {
+            "gemm_fp8_m": 4096,
+            "gemm_fp8_n": 4096,
+            "gemm_fp8_k": 4096,
+        },
+        "dequant_gemm_fp4": {
+            "dequant_fp4_m": 4096,
+            "dequant_fp4_n": 4096,
+            "dequant_fp4_k": 4096,
+        },
+    }
+    for name, values in expected.items():
+        operator = get_operator(name)
+        parser = argparse.ArgumentParser(add_help=False)
+        operator.add_arguments(parser)
+        options = vars(parser.parse_args([]))
+        assert {key: options[key] for key in values} == values
+
+
+@pytest.mark.parametrize(
+    "name,tile",
+    (
+        ("fa3", {"block_m": 128, "block_n": 128}),
+        ("mla", {"block_h": 64, "block_n": 64}),
+        ("gemm", {"block_m": 128, "block_n": 256, "block_k": 64}),
+        ("gemm_fp8", {"block_m": 128, "block_n": 128, "block_k": 128}),
+        ("dequant_gemm_fp4", {"block_m": 128, "block_n": 128, "block_k": 256}),
+        ("flash_decode", {"block_m": 128, "block_n": 64}),
+        ("convolution", {"block_m": 128, "block_n": 256, "block_k": 64}),
+        ("mamba_chunk_scan", {"block_m": 64, "block_n": 64, "block_k": 64, "block_dstate": 128}),
+        ("mamba_chunk_state", {"block_m": 64, "block_n": 128, "block_k": 64}),
+        ("kda_wy_fast_bwd", {"block_dk": 32, "block_dv": 32}),
+    ),
+)
+def test_default_tiles_cover_example_best_known_shapes(name, tile) -> None:
+    operator = get_operator(name)
+    parser = argparse.ArgumentParser(add_help=False)
+    operator.add_arguments(parser)
+    options = vars(parser.parse_args([]))
+    assert tile in operator.configurations(options)

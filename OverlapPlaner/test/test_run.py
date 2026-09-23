@@ -11,6 +11,7 @@ from OverlapPlaner.tune.operators.workloads import OperatorSpec
 from OverlapPlaner.tune.run import (
     _evaluation_fingerprint,
     _supervise_config,
+    _workload_fingerprint,
     generate_plans,
     run,
 )
@@ -47,6 +48,21 @@ def test_generate_plans_writes_replay_manifest(tmp_path: Path) -> None:
     assert len(feature_rows) == manifest["schedule_count"]
     assert len(feature_rows[0]["fingerprint"]) == 64
     assert len(feature_rows[0]["features"]) > 16
+
+
+def test_workload_fingerprint_includes_problem_size() -> None:
+    tile = {"block_m": 128, "block_n": 128, "block_k": 64}
+    small = _workload_fingerprint(
+        GEMM,
+        tile,
+        {"gemm_m": 1024, "gemm_n": 1024, "gemm_k": 1024},
+    )
+    large = _workload_fingerprint(
+        GEMM,
+        tile,
+        {"gemm_m": 4096, "gemm_n": 4096, "gemm_k": 4096},
+    )
+    assert small != large
 
 
 def test_run_writes_results_layout(tmp_path: Path, monkeypatch) -> None:
@@ -198,8 +214,10 @@ def test_supervisor_resumes_and_records_worker_exit(
         (candidates / f"schedule_{index:05d}.json").write_text(
             "{}", encoding="utf-8"
         )
+    tile = {"block_m": 128, "block_n": 128, "block_k": 64}
+    workload_fingerprint = _workload_fingerprint(GEMM, tile, {})
     first_fingerprint = _evaluation_fingerprint(
-        candidates / "schedule_00000.json"
+        candidates / "schedule_00000.json", workload_fingerprint
     )
     (config_dir / "results.jsonl").write_text(
         json.dumps(
@@ -241,7 +259,7 @@ def test_supervisor_resumes_and_records_worker_exit(
     )
     payload = _supervise_config(
         GEMM,
-        {"block_m": 128, "block_n": 128, "block_k": 64},
+        tile,
         {},
         config_dir,
         warmup=3,

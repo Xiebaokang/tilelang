@@ -4,13 +4,13 @@ Adapted from the BSHD implementation in
 ``examples/flash_attention/example_mha_bwd_bshd.py``.
 """
 
-from functools import partial
 from itertools import product
 
 import tilelang
 import tilelang.language as T
 import torch
 
+from .example_loader import NativeKernelReference
 from .workloads import OperatorSpec, Options, SearchWorkload, TileConfig
 
 
@@ -19,9 +19,9 @@ def add_arguments(parser) -> None:
     group.add_argument("--mha-bwd-block-m", type=int, nargs="+", default=[128])
     group.add_argument("--mha-bwd-block-n", type=int, nargs="+", default=[32])
     group.add_argument("--mha-bwd-batch", type=int, default=1)
-    group.add_argument("--mha-bwd-heads", type=int, default=16)
-    group.add_argument("--mha-bwd-seq", type=int, default=1024)
-    group.add_argument("--mha-bwd-dim", type=int, default=64)
+    group.add_argument("--mha-bwd-heads", type=int, default=32)
+    group.add_argument("--mha-bwd-seq", type=int, default=8192)
+    group.add_argument("--mha-bwd-dim", type=int, default=128)
     group.add_argument("--mha-bwd-causal", action="store_true")
 
 
@@ -241,7 +241,10 @@ def build(options: Options, config: TileConfig) -> SearchWorkload:
         prim_func=prim_func,
         out_idx=(7, 8),
         total_flops=total_flops,
-        reference_program=partial(ref_program, is_causal=causal),
+        reference_program=NativeKernelReference(
+            prim_func, (7, 8),
+            {tilelang.PassConfigKey.TL_ENABLE_FAST_MATH: True},
+        ),
         pass_configs={tilelang.PassConfigKey.TL_ENABLE_FAST_MATH: True},
     )
 

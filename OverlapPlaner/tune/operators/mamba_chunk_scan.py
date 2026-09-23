@@ -11,14 +11,14 @@ from .workloads import OperatorSpec, Options, SearchWorkload, TileConfig
 
 def add_arguments(parser) -> None:
     group = parser.add_argument_group("Mamba chunk scan")
-    group.add_argument("--mamba-scan-block-m", type=int, nargs="+", default=[64, 128])
+    group.add_argument("--mamba-scan-block-m", type=int, nargs="+", default=[64, 128, 256])
     group.add_argument("--mamba-scan-block-n", type=int, nargs="+", default=[32, 64])
-    group.add_argument("--mamba-scan-block-k", type=int, nargs="+", default=[64, 128])
+    group.add_argument("--mamba-scan-block-k", type=int, nargs="+", default=[64, 128, 256])
     group.add_argument("--mamba-scan-block-dstate", type=int, nargs="+", default=[128])
-    group.add_argument("--mamba-scan-batch", type=int, default=8)
+    group.add_argument("--mamba-scan-batch", type=int, default=4)
     group.add_argument("--mamba-scan-heads", type=int, default=80)
     group.add_argument("--mamba-scan-groups", type=int, default=1)
-    group.add_argument("--mamba-scan-seq", type=int, default=4096)
+    group.add_argument("--mamba-scan-seq", type=int, default=8192)
     group.add_argument("--mamba-scan-chunk", type=int, default=256)
     group.add_argument("--mamba-scan-dim", type=int, default=64)
     group.add_argument("--mamba-scan-dstate", type=int, default=128)
@@ -45,6 +45,12 @@ def configurations(options: Options) -> list[TileConfig]:
         and dim % block_n == 0
         and chunk % block_k == 0
         and block_dstate == dstate
+        # The remaining 256-row combinations exceed Hopper's shared-memory
+        # or register budget even before schedule expansion.
+        and (
+            block_m < 256
+            or (block_n == 32 and block_k < 256)
+        )
     ]
 
 

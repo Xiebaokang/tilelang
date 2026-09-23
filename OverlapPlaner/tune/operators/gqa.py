@@ -1,6 +1,5 @@
 """OverlapPlan search kernel adapted from examples/flash_attention/example_gqa_fwd_bshd.py."""
 
-from functools import partial
 from itertools import product
 
 import tilelang
@@ -9,6 +8,7 @@ import torch
 import torch.nn.functional as F
 
 from .workloads import OperatorSpec, Options, SearchWorkload, TileConfig
+from .example_loader import NativeKernelReference
 
 
 def add_arguments(parser) -> None:
@@ -16,9 +16,9 @@ def add_arguments(parser) -> None:
     group.add_argument("--gqa-block-m", type=int, nargs="+", default=[64, 128])
     group.add_argument("--gqa-block-n", type=int, nargs="+", default=[64, 128])
     group.add_argument("--gqa-batch", type=int, default=1)
-    group.add_argument("--gqa-heads", type=int, default=16)
+    group.add_argument("--gqa-heads", type=int, default=32)
     group.add_argument("--gqa-groups", type=int, default=8)
-    group.add_argument("--gqa-seq", type=int, default=4096)
+    group.add_argument("--gqa-seq", type=int, default=8192)
     group.add_argument("--gqa-dim", type=int, default=128)
     group.add_argument("--gqa-causal", action="store_true")
 
@@ -213,7 +213,11 @@ def build(options: Options, config: TileConfig) -> SearchWorkload:
         prim_func=prim_func,
         out_idx=(3,),
         total_flops=total_flops,
-        reference_program=partial(ref_program, is_causal=causal, groups=groups),
+        reference_program=NativeKernelReference(
+            prim_func,
+            (3,),
+            {tilelang.PassConfigKey.TL_ENABLE_FAST_MATH: True},
+        ),
         pass_configs={tilelang.PassConfigKey.TL_ENABLE_FAST_MATH: True},
     )
 

@@ -58,12 +58,20 @@ from OverlapPlaner.tune.dynamic import (
 )
 from OverlapPlaner.tune.copy_search import classified_for_plan
 from OverlapPlaner.tune.operators import OPERATOR_NAMES, get_operator
+from OverlapPlaner.tune.operators.block_causal_bwd import OPERATOR as BLOCK_CAUSAL_BWD
 from OverlapPlaner.tune.operators.convolution import OPERATOR as CONVOLUTION
+from OverlapPlaner.tune.operators.dequant_gemm_fp4 import OPERATOR as DEQUANT_GEMM_FP4
 from OverlapPlaner.tune.operators.fa3 import OPERATOR as FA3
+from OverlapPlaner.tune.operators.flash_decode import OPERATOR as FLASH_DECODE
+from OverlapPlaner.tune.operators.fused_moe import OPERATOR as FUSED_MOE
 from OverlapPlaner.tune.operators.gemm import OPERATOR as GEMM
 from OverlapPlaner.tune.operators.gemm_fp8 import OPERATOR as GEMM_FP8
 from OverlapPlaner.tune.operators.gqa import OPERATOR as GQA
 from OverlapPlaner.tune.operators.gqa_bwd import OPERATOR as GQA_BWD
+from OverlapPlaner.tune.operators.gdn_chunk_delta_bwd import OPERATOR as GDN_CHUNK_DELTA_BWD
+from OverlapPlaner.tune.operators.gdn_chunk_o_bwd import OPERATOR as GDN_CHUNK_O_BWD
+from OverlapPlaner.tune.operators.kda_chunk_bwd_intra import OPERATOR as KDA_CHUNK_BWD_INTRA
+from OverlapPlaner.tune.operators.kda_wy_fast_bwd import OPERATOR as KDA_WY_FAST_BWD
 from OverlapPlaner.tune.operators.linear_attn_fwd import (
     OPERATOR as LINEAR_ATTN_FWD,
 )
@@ -87,30 +95,53 @@ from OverlapPlaner.tune.search import (
 
 
 SEARCH_OPERATORS: list[OperatorSpec] = [
-    # FA3,
+    FA3,
     MLA,
-    # GQA_BWD,
-    # MHA_BWD,
-    # LINEAR_ATTN_FWD,
-    # MAMBA_CHUNK_SCAN,
-    # MAMBA_CHUNK_STATE,
-    # GEMM,
-    # GQA,
-    # CONVOLUTION,
-    # GEMM_FP8,
+    BLOCK_CAUSAL_BWD,
+    DEQUANT_GEMM_FP4,
+    GDN_CHUNK_O_BWD,
+    GDN_CHUNK_DELTA_BWD,
+    KDA_WY_FAST_BWD,
+    KDA_CHUNK_BWD_INTRA,
+    FLASH_DECODE,
+    FUSED_MOE,
+    GQA_BWD,
+    MHA_BWD,
+    LINEAR_ATTN_FWD,
+    MAMBA_CHUNK_SCAN,
+    MAMBA_CHUNK_STATE,
+    GEMM,
+    GQA,
+    CONVOLUTION,
+    GEMM_FP8,
 ]
 
 # Bump whenever generated-code semantics or correctness validation changes.
 # Results are measurements of a plan *and* its implementation, so a plan-only
 # fingerprint must not reuse rows produced by an older lowering.
-_EVALUATION_CACHE_VERSION = "overlap-plan-lowering-v3-thread-base"
+_EVALUATION_CACHE_VERSION = "overlap-plan-lowering-v4-production-workloads"
 
 
-def _evaluation_fingerprint(path: Path) -> str:
+def _workload_fingerprint(
+    operator: OperatorSpec,
+    tile: Mapping[str, int],
+    options: Mapping[str, Any],
+) -> str:
+    return plan_fingerprint(
+        {
+            "evaluation": _EVALUATION_CACHE_VERSION,
+            "operator": operator.name,
+            "tile": dict(tile),
+            "options": dict(options),
+        }
+    )
+
+
+def _evaluation_fingerprint(path: Path, workload_fingerprint: str) -> str:
     return plan_fingerprint(
         {
             "plan": file_fingerprint(path),
-            "evaluation": _EVALUATION_CACHE_VERSION,
+            "workload": workload_fingerprint,
         }
     )
 
@@ -678,8 +709,9 @@ def _supervise_config(
     }
     if len(indexed_plans) != len(plan_files):
         raise ValueError("candidate schedule indices must be unique")
+    workload_fingerprint = _workload_fingerprint(operator, tile, options)
     candidate_fingerprints = {
-        index: _evaluation_fingerprint(path)
+        index: _evaluation_fingerprint(path, workload_fingerprint)
         for index, path in indexed_plans.items()
     }
 
@@ -1169,9 +1201,10 @@ def _supervise_dynamic_config(
     workload = operator.build(options, dict(tile))
     reduced = layout_reduced_prim_func(workload.prim_func)
     classified = HOPPER.classify(extract_fact_graph(reduced))
+    workload_fingerprint = _workload_fingerprint(operator, tile, options)
     candidates = load_candidates(
         plan_dir,
-        fingerprint_salt=_EVALUATION_CACHE_VERSION,
+        fingerprint_salt=workload_fingerprint,
         classified=classified,
     )
     policy = DynamicSearchPolicy(candidates)
@@ -1231,7 +1264,7 @@ def _supervise_dynamic_config(
             if fresh:
                 candidates = load_candidates(
                     plan_dir,
-                    fingerprint_salt=_EVALUATION_CACHE_VERSION,
+                    fingerprint_salt=workload_fingerprint,
                     classified=classified,
                 )
                 policy = DynamicSearchPolicy(candidates)

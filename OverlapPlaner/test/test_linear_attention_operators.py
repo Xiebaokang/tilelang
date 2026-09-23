@@ -111,7 +111,7 @@ def test_mamba_scan_default_tiles_are_overlap_plan_feasible() -> None:
     options = vars(parser.parse_args([]))
     configurations = MAMBA_CHUNK_SCAN.configurations(options)
 
-    assert len(configurations) == 8
+    assert len(configurations) == 14
     assert all("num_stages" not in tile for tile in configurations)
     for tile in configurations:
         workload = MAMBA_CHUNK_SCAN.build(options, tile)

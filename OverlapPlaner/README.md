@@ -115,6 +115,7 @@ shared memory 规划计算版本化 buffer、跨组 fragment handoff、mbarrier�
 ```bash
 python -m OverlapPlaner.tune.run --output results --search-mode dynamic
 python -m OverlapPlaner.tune.run --output results_bwd --operators gqa_bwd mha_bwd --search-mode dynamic
+python -m OverlapPlaner.tune.run --output results_research --operators dequant_gemm_fp4 gdn_chunk_o_bwd gdn_chunk_delta_bwd kda_wy_fast_bwd kda_chunk_bwd_intra block_causal_bwd flash_decode fused_moe --search-mode dynamic
 ```
 
 `--candidate-pool` 控制初始候选池规模，`--evaluation-budget` 控制最多尝试多少次 GPU 评测；`--search-mode exhaustive` 则评测生成的全部候选，不使用动态选择器。结果位于 `<output>/<operator>/<tile>/`，算子排名见 `top30.json`。已有计划可用 `python -m OverlapPlaner.tune.replay <schedule.json>` 重新编译测试。
