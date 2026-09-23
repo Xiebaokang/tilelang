@@ -1,0 +1,450 @@
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+
+=== operator=mla tile={'block_h': 64, 'block_n': 64} ===
+evaluating TileLang native baseline
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+2026-09-23 10:50:10  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:50:17  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+native latency=0.3415 ms tflops=6.682
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[1/807] compiling schedule_00000.json
+2026-09-23 10:51:44  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:51:50  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[1/807] latency=0.4973 ms tflops=4.588
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[2/807] compiling schedule_00001.json
+2026-09-23 10:51:53  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:51:59  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[2/807] latency=0.4863 ms tflops=4.692
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[3/807] compiling schedule_00002.json
+2026-09-23 10:52:01  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:52:09  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[3/807] latency=0.4829 ms tflops=4.725
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[4/807] compiling schedule_00003.json
+2026-09-23 10:52:12  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:52:20  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[4/807] latency=0.5167 ms tflops=4.416
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[5/807] compiling schedule_00004.json
+2026-09-23 10:52:22  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:52:29  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[5/807] latency=0.5054 ms tflops=4.515
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[6/807] compiling schedule_00005.json
+2026-09-23 10:52:31  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:52:37  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[6/807] latency=0.4959 ms tflops=4.601
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[7/807] compiling schedule_00006.json
+2026-09-23 10:52:40  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:52:48  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[7/807] latency=0.4983 ms tflops=4.579
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[10/807] compiling schedule_00009.json
+2026-09-23 10:52:51  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:53:04  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[10/807] latency=0.6274 ms tflops=3.637
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[11/807] compiling schedule_00010.json
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[12/807] compiling schedule_00011.json
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[18/807] compiling schedule_00017.json
+2026-09-23 10:53:52  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:54:06  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[18/807] latency=0.6672 ms tflops=3.420
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[20/807] compiling schedule_00019.json
+2026-09-23 10:54:09  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:54:22  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[20/807] latency=0.6678 ms tflops=3.417
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[43/807] compiling schedule_00042.json
+2026-09-23 10:54:24  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:54:41  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[43/807] latency=0.5730 ms tflops=3.982
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[44/807] compiling schedule_00043.json
+2026-09-23 10:54:43  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:55:00  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[44/807] latency=0.5598 ms tflops=4.076
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[48/807] compiling schedule_00047.json
+2026-09-23 10:55:02  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:55:19  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[48/807] latency=0.5618 ms tflops=4.061
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[60/807] compiling schedule_00059.json
+2026-09-23 10:55:21  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:55:37  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[60/807] latency=0.5932 ms tflops=3.846
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[61/807] compiling schedule_00060.json
+2026-09-23 10:55:40  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:55:46  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[61/807] latency=0.5067 ms tflops=4.503
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[62/807] compiling schedule_00061.json
+2026-09-23 10:55:49  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:55:56  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[62/807] latency=0.5050 ms tflops=4.518
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[63/807] compiling schedule_00062.json
+2026-09-23 10:55:58  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:56:05  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[63/807] latency=0.4816 ms tflops=4.738
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[64/807] compiling schedule_00063.json
+2026-09-23 10:56:07  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:56:14  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[64/807] latency=0.4829 ms tflops=4.725
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[129/807] compiling schedule_00128.json
+2026-09-23 10:56:16  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:56:23  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[129/807] latency=0.3629 ms tflops=6.287
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[130/807] compiling schedule_00129.json
+2026-09-23 10:56:25  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:56:32  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[130/807] latency=0.3487 ms tflops=6.543
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[131/807] compiling schedule_00130.json
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[132/807] compiling schedule_00131.json
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[163/807] compiling schedule_00162.json
+2026-09-23 10:57:21  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:57:30  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[163/807] latency=0.5003 ms tflops=4.561
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[187/807] compiling schedule_00186.json
+2026-09-23 10:57:32  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:57:46  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[187/807] latency=0.7133 ms tflops=3.199
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[196/807] compiling schedule_00195.json
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[577/807] compiling schedule_00576.json
+2026-09-23 10:58:19  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:58:27  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[577/807] latency=0.4120 ms tflops=5.538
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[594/807] compiling schedule_00593.json
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[621/807] compiling schedule_00620.json
+2026-09-23 10:58:54  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:59:08  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[621/807] latency=0.6633 ms tflops=3.440
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[632/807] compiling schedule_00631.json
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=807
+[763/807] compiling schedule_00762.json
+2026-09-23 10:59:40  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 10:59:53  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[763/807] latency=0.5314 ms tflops=4.294
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=809
+[570/809] compiling schedule_00569.json
+2026-09-23 10:59:58  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 11:00:04  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[570/809] latency=0.3634 ms tflops=6.279
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=809
+[572/809] compiling schedule_00571.json
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=809
+[808/809] compiling schedule_00807.json
+2026-09-23 11:00:30  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 11:00:36  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[808/809] latency=0.4785 ms tflops=4.768
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=809
+[809/809] compiling schedule_00808.json
+2026-09-23 11:00:39  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 11:00:45  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[809/809] latency=0.4922 ms tflops=4.635
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=811
+[530/811] compiling schedule_00529.json
+2026-09-23 11:00:50  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 11:00:56  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[530/811] latency=0.4849 ms tflops=4.705
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=811
+[532/811] compiling schedule_00531.json
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=811
+[810/811] compiling schedule_00809.json
+2026-09-23 11:01:22  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 11:01:29  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[810/811] latency=0.4455 ms tflops=5.121
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=811
+[811/811] compiling schedule_00810.json
+2026-09-23 11:01:31  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 11:01:39  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[811/811] latency=0.4136 ms tflops=5.517
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=813
+[684/813] compiling schedule_00683.json
+2026-09-23 11:01:44  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 11:01:57  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[684/813] latency=0.6493 ms tflops=3.514
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=813
+[689/813] compiling schedule_00688.json
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=813
+[812/813] compiling schedule_00811.json
+2026-09-23 11:02:30  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 11:02:38  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[812/813] latency=0.5372 ms tflops=4.247
+Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
+operator=mla
+tile={'block_h': 64, 'block_n': 64}
+plan_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/candidates
+source_dir=/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/mla/block_h64_n64/sources
+plans=813
+[813/813] compiling schedule_00812.json
+2026-09-23 11:02:40  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[4]`
+2026-09-23 11:02:49  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+[813/813] latency=0.5356 ms tflops=4.260
+
+=== mla Top-30 ===
+#01 tile={'block_h': 64, 'block_n': 64} schedule=129 latency=0.3487 ms tflops=6.54
+#02 tile={'block_h': 64, 'block_n': 64} schedule=128 latency=0.3629 ms tflops=6.29
+#03 tile={'block_h': 64, 'block_n': 64} schedule=569 latency=0.3634 ms tflops=6.28
+#04 tile={'block_h': 64, 'block_n': 64} schedule=576 latency=0.4120 ms tflops=5.54
+#05 tile={'block_h': 64, 'block_n': 64} schedule=810 latency=0.4136 ms tflops=5.52
+#06 tile={'block_h': 64, 'block_n': 64} schedule=809 latency=0.4455 ms tflops=5.12
+#07 tile={'block_h': 64, 'block_n': 64} schedule=807 latency=0.4785 ms tflops=4.77
+#08 tile={'block_h': 64, 'block_n': 64} schedule=62 latency=0.4816 ms tflops=4.74
+#09 tile={'block_h': 64, 'block_n': 64} schedule=2 latency=0.4829 ms tflops=4.73
+#10 tile={'block_h': 64, 'block_n': 64} schedule=63 latency=0.4829 ms tflops=4.73
+#11 tile={'block_h': 64, 'block_n': 64} schedule=529 latency=0.4849 ms tflops=4.71
+#12 tile={'block_h': 64, 'block_n': 64} schedule=1 latency=0.4863 ms tflops=4.69
+#13 tile={'block_h': 64, 'block_n': 64} schedule=808 latency=0.4922 ms tflops=4.64
+#14 tile={'block_h': 64, 'block_n': 64} schedule=5 latency=0.4959 ms tflops=4.60
+#15 tile={'block_h': 64, 'block_n': 64} schedule=0 latency=0.4973 ms tflops=4.59
+#16 tile={'block_h': 64, 'block_n': 64} schedule=6 latency=0.4983 ms tflops=4.58
+#17 tile={'block_h': 64, 'block_n': 64} schedule=162 latency=0.5003 ms tflops=4.56
+#18 tile={'block_h': 64, 'block_n': 64} schedule=61 latency=0.5050 ms tflops=4.52
+#19 tile={'block_h': 64, 'block_n': 64} schedule=4 latency=0.5054 ms tflops=4.51
+#20 tile={'block_h': 64, 'block_n': 64} schedule=60 latency=0.5067 ms tflops=4.50
+#21 tile={'block_h': 64, 'block_n': 64} schedule=3 latency=0.5167 ms tflops=4.42
+#22 tile={'block_h': 64, 'block_n': 64} schedule=762 latency=0.5314 ms tflops=4.29
+#23 tile={'block_h': 64, 'block_n': 64} schedule=812 latency=0.5356 ms tflops=4.26
+#24 tile={'block_h': 64, 'block_n': 64} schedule=811 latency=0.5372 ms tflops=4.25
+#25 tile={'block_h': 64, 'block_n': 64} schedule=43 latency=0.5598 ms tflops=4.08
+#26 tile={'block_h': 64, 'block_n': 64} schedule=47 latency=0.5618 ms tflops=4.06
+#27 tile={'block_h': 64, 'block_n': 64} schedule=42 latency=0.5730 ms tflops=3.98
+#28 tile={'block_h': 64, 'block_n': 64} schedule=59 latency=0.5932 ms tflops=3.85
+#29 tile={'block_h': 64, 'block_n': 64} schedule=9 latency=0.6274 ms tflops=3.64
+#30 tile={'block_h': 64, 'block_n': 64} schedule=683 latency=0.6493 ms tflops=3.51

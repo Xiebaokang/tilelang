@@ -1,0 +1,209 @@
+{
+  "enumerated_schedules": 1262,
+  "examined_schedules": 30,
+  "failed_schedules": 0,
+  "output_directory": "/home/xiebaokang/projects/rewrite/tilelang/unionwsp/test/fa3_tile_search/m128_n96/segments/run_1788414972400373288/start_01232",
+  "successful_schedules": 30,
+  "top_results": [
+    {
+      "effective_threads": 512,
+      "latency_ms": 4.61220121383667,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1232,
+      "tflops": 119.19597354918616
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 4.629184246063232,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1233,
+      "tflops": 118.75868072339642
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 4.873293876647949,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1247,
+      "tflops": 112.80990389730908
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 4.964553356170654,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1237,
+      "tflops": 110.73620816355718
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 5.090251922607422,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1236,
+      "tflops": 108.00169073093618
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 5.236274242401123,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1249,
+      "tflops": 104.98988182022843
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 5.384274005889893,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1234,
+      "tflops": 102.10398157423239
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 5.387218475341797,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1235,
+      "tflops": 102.04817502841674
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 5.653855800628662,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1241,
+      "tflops": 97.23555627769491
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 5.655533313751221,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1245,
+      "tflops": 97.20671480287969
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 5.656534671783447,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1240,
+      "tflops": 97.18950661265332
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.144895553588867,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1243,
+      "tflops": 89.46544478968734
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.147583484649658,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1242,
+      "tflops": 89.42632747659707
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.268251419067383,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1246,
+      "tflops": 87.70481225684388
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.365030765533447,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1238,
+      "tflops": 86.37127362603181
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.496678352355957,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1244,
+      "tflops": 84.62106080542473
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.618361473083496,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1239,
+      "tflops": 83.06524449047185
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.687136173248291,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1248,
+      "tflops": 82.21094944758018
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.849555015563965,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1261,
+      "tflops": 80.26153708362254
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 7.905541896820068,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 1250,
+      "tflops": 69.54056041485711
+    }
+  ]
+}

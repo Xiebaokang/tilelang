@@ -1,0 +1,3520 @@
+[
+  {
+    "configurations": [
+      {
+        "batches": [
+          [
+            1,
+            0,
+            47,
+            2,
+            65,
+            4,
+            631,
+            627,
+            52,
+            50,
+            7,
+            6,
+            2048,
+            234,
+            70,
+            115,
+            8,
+            2051,
+            348,
+            74,
+            187,
+            10,
+            14,
+            12,
+            143,
+            142,
+            124,
+            16,
+            734,
+            430,
+            192,
+            20
+          ],
+          [
+            2297,
+            2298,
+            432,
+            533
+          ],
+          [
+            2299,
+            2300,
+            667,
+            690
+          ],
+          [
+            2301,
+            2302,
+            995,
+            1017
+          ]
+        ],
+        "candidate_pool": 2303,
+        "enumerated_schedules": 2303,
+        "evaluation_budget": 128,
+        "examined_schedules": 44,
+        "failed_schedules": 0,
+        "native": {
+          "backend": "native",
+          "latency_ms": 1.9366480112075806,
+          "result_file": "m64_n64/native/result.json",
+          "source_file": "m64_n64/native/source.cu",
+          "tflops": 283.86976399764274,
+          "tile": {
+            "block_m": 64,
+            "block_n": 64
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 44,
+        "tile": {
+          "block_m": 64,
+          "block_n": 64
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            35,
+            2,
+            53,
+            4,
+            333,
+            329,
+            40,
+            38,
+            7,
+            6,
+            2048,
+            150,
+            58,
+            95,
+            8,
+            2051,
+            213,
+            62,
+            134,
+            10,
+            910,
+            906,
+            14,
+            12,
+            365,
+            363,
+            16,
+            51,
+            3,
+            5
+          ],
+          [
+            2168,
+            2169,
+            2167,
+            2164
+          ],
+          [
+            2170,
+            2171,
+            971,
+            979
+          ],
+          [
+            2172,
+            2173,
+            1352,
+            1359
+          ]
+        ],
+        "candidate_pool": 2174,
+        "enumerated_schedules": 2174,
+        "evaluation_budget": 128,
+        "examined_schedules": 44,
+        "failed_schedules": 1,
+        "native": {
+          "backend": "native",
+          "latency_ms": 1.7055470943450928,
+          "result_file": "m64_n128/native/result.json",
+          "source_file": "m64_n128/native/source.cu",
+          "tflops": 322.33399811167277,
+          "tile": {
+            "block_m": 64,
+            "block_n": 128
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 43,
+        "tile": {
+          "block_m": 64,
+          "block_n": 128
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            35,
+            2,
+            53,
+            4,
+            406,
+            402,
+            40,
+            38,
+            7,
+            6,
+            2048,
+            166,
+            58,
+            97,
+            8,
+            2051,
+            244,
+            62,
+            141,
+            10,
+            863,
+            859,
+            14,
+            12,
+            16,
+            51,
+            3,
+            123,
+            5,
+            407
+          ],
+          [
+            2182,
+            2183,
+            2181,
+            2114
+          ],
+          [
+            2184,
+            2185,
+            2041,
+            2047
+          ],
+          [
+            2186,
+            2187,
+            2177,
+            2175
+          ],
+          [
+            2188,
+            2189,
+            1615,
+            1623
+          ]
+        ],
+        "candidate_pool": 2190,
+        "enumerated_schedules": 2190,
+        "evaluation_budget": 128,
+        "examined_schedules": 48,
+        "failed_schedules": 0,
+        "native": {
+          "backend": "native",
+          "latency_ms": 1.451963186264038,
+          "result_file": "m128_n64/native/result.json",
+          "source_file": "m128_n64/native/source.cu",
+          "tflops": 378.62930623092774,
+          "tile": {
+            "block_m": 128,
+            "block_n": 64
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 48,
+        "tile": {
+          "block_m": 128,
+          "block_n": 64
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            17,
+            2,
+            28,
+            4,
+            150,
+            146,
+            22,
+            20,
+            7,
+            6,
+            516,
+            284,
+            320,
+            33,
+            283,
+            8,
+            26,
+            3,
+            5,
+            151,
+            147,
+            23,
+            21,
+            14,
+            13,
+            517,
+            285,
+            321,
+            34,
+            299
+          ],
+          [
+            615,
+            616,
+            608,
+            612
+          ],
+          [
+            617,
+            618,
+            489,
+            503
+          ],
+          [
+            619,
+            620,
+            380,
+            397
+          ]
+        ],
+        "candidate_pool": 621,
+        "enumerated_schedules": 621,
+        "evaluation_budget": 128,
+        "examined_schedules": 44,
+        "failed_schedules": 6,
+        "native": {
+          "backend": "native",
+          "latency_ms": 1.2929264307022095,
+          "result_file": "m128_n128/native/result.json",
+          "source_file": "m128_n128/native/source.cu",
+          "tflops": 425.2027035980838,
+          "tile": {
+            "block_m": 128,
+            "block_n": 128
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 38,
+        "tile": {
+          "block_m": 128,
+          "block_n": 128
+        }
+      }
+    ],
+    "operator": "fa3",
+    "top30_file": "fa3/top30.json"
+  },
+  {
+    "configurations": [
+      {
+        "batches": [
+          [
+            1,
+            0,
+            7,
+            2,
+            33,
+            28,
+            87,
+            86,
+            46,
+            44,
+            5,
+            4,
+            317,
+            296,
+            105,
+            96,
+            49,
+            48,
+            384,
+            13,
+            3,
+            43,
+            29,
+            89,
+            88,
+            47,
+            45,
+            9,
+            8,
+            321,
+            301,
+            107
+          ],
+          [
+            396,
+            397,
+            273,
+            275
+          ],
+          [
+            398,
+            399,
+            153,
+            155
+          ],
+          [
+            400,
+            401,
+            221,
+            223
+          ]
+        ],
+        "candidate_pool": 402,
+        "enumerated_schedules": 402,
+        "evaluation_budget": 128,
+        "examined_schedules": 44,
+        "failed_schedules": 10,
+        "native": {
+          "backend": "native",
+          "latency_ms": 0.3452896177768707,
+          "result_file": "block_h64_n64/native/result.json",
+          "source_file": "block_h64_n64/native/source.cu",
+          "tflops": 6.60807987998775,
+          "tile": {
+            "block_h": 64,
+            "block_n": 64
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 34,
+        "tile": {
+          "block_h": 64,
+          "block_n": 64
+        }
+      }
+    ],
+    "operator": "mla",
+    "top30_file": "mla/top30.json"
+  },
+  {
+    "configurations": [
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            5,
+            4,
+            2048,
+            18,
+            6,
+            2049,
+            707,
+            698,
+            2081,
+            38,
+            30,
+            91,
+            46,
+            181,
+            136,
+            227,
+            226,
+            917,
+            228,
+            19,
+            7,
+            2050,
+            708,
+            699,
+            2082,
+            39,
+            31,
+            92
+          ],
+          [
+            2239,
+            2240,
+            1983,
+            1985
+          ],
+          [
+            2241,
+            2242,
+            2208,
+            2077
+          ],
+          [
+            2243,
+            2244,
+            1978,
+            1709
+          ]
+        ],
+        "candidate_pool": 2245,
+        "enumerated_schedules": 2245,
+        "evaluation_budget": 128,
+        "examined_schedules": 44,
+        "failed_schedules": 0,
+        "native": {
+          "backend": "native",
+          "latency_ms": 0.3370751738548279,
+          "result_file": "k64_block_v64/native/result.json",
+          "source_file": "k64_block_v64/native/source.cu",
+          "tflops": 76.4512066590184,
+          "tile": {
+            "block_k": 64,
+            "block_v": 64
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 44,
+        "tile": {
+          "block_k": 64,
+          "block_v": 64
+        }
+      }
+    ],
+    "operator": "linear_attn_fwd",
+    "top30_file": "linear_attn_fwd/top30.json"
+  },
+  {
+    "configurations": [
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            5,
+            4,
+            2048,
+            520,
+            518,
+            7,
+            6,
+            2049,
+            9,
+            8,
+            2110,
+            11,
+            10,
+            13,
+            12,
+            15,
+            14,
+            17,
+            16,
+            19,
+            18,
+            21,
+            20,
+            2802,
+            521,
+            519,
+            23,
+            22
+          ],
+          [
+            3556,
+            3557,
+            37,
+            36
+          ],
+          [
+            3558,
+            3559,
+            53,
+            52
+          ],
+          [
+            3560,
+            3561,
+            69,
+            68
+          ],
+          [
+            3562,
+            3563,
+            85,
+            84
+          ],
+          [
+            3564,
+            3565,
+            101,
+            100
+          ],
+          [
+            3566,
+            3567,
+            117,
+            116
+          ],
+          [
+            3568,
+            3569,
+            133,
+            132
+          ],
+          [
+            3570,
+            3571,
+            27,
+            26
+          ],
+          [
+            3572,
+            3573,
+            43,
+            42
+          ],
+          [
+            3574,
+            3575,
+            59,
+            58
+          ],
+          [
+            3576,
+            3577,
+            75,
+            74
+          ],
+          [
+            3578,
+            3579,
+            91,
+            90
+          ],
+          [
+            3580,
+            3581,
+            107,
+            106
+          ],
+          [
+            3582,
+            3583,
+            123,
+            122
+          ],
+          [
+            3584,
+            3585,
+            139,
+            138
+          ],
+          [
+            3586,
+            3587,
+            155,
+            154
+          ],
+          [
+            3588,
+            3589,
+            171,
+            170
+          ],
+          [
+            3590,
+            3591,
+            187,
+            186
+          ],
+          [
+            3592,
+            3593,
+            203,
+            202
+          ],
+          [
+            3594,
+            3595,
+            219,
+            218
+          ],
+          [
+            3596,
+            3597,
+            237,
+            236
+          ],
+          [
+            3598,
+            3599,
+            255,
+            254
+          ],
+          [
+            3600,
+            3601,
+            273,
+            272
+          ],
+          [
+            3602,
+            3603,
+            291,
+            290
+          ]
+        ],
+        "candidate_pool": 3604,
+        "enumerated_schedules": 3604,
+        "evaluation_budget": 128,
+        "examined_schedules": 128,
+        "failed_schedules": 57,
+        "native": {
+          "backend": "native",
+          "latency_ms": 1.2386287450790405,
+          "result_file": "m64_n32_k64_block_dstate128/native/result.json",
+          "source_file": "m64_n32_k64_block_dstate128/native/source.cu",
+          "tflops": 69.35035720854235,
+          "tile": {
+            "block_dstate": 128,
+            "block_k": 64,
+            "block_m": 64,
+            "block_n": 32
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": false,
+        "successful_schedules": 71,
+        "tile": {
+          "block_dstate": 128,
+          "block_k": 64,
+          "block_m": 64,
+          "block_n": 32
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            5,
+            4,
+            2048,
+            520,
+            518,
+            7,
+            6,
+            2049,
+            9,
+            8,
+            2110,
+            11,
+            10,
+            13,
+            12,
+            15,
+            14,
+            17,
+            16,
+            19,
+            18,
+            21,
+            20,
+            2802,
+            521,
+            519,
+            23,
+            22
+          ],
+          [
+            3556,
+            3557,
+            37,
+            36
+          ],
+          [
+            3558,
+            3559,
+            53,
+            52
+          ],
+          [
+            3560,
+            3561,
+            69,
+            68
+          ],
+          [
+            3562,
+            3563,
+            85,
+            84
+          ],
+          [
+            3564,
+            3565,
+            101,
+            100
+          ],
+          [
+            3566,
+            3567,
+            117,
+            116
+          ],
+          [
+            3568,
+            3569,
+            133,
+            132
+          ],
+          [
+            3570,
+            3571,
+            27,
+            26
+          ],
+          [
+            3572,
+            3573,
+            43,
+            42
+          ],
+          [
+            3574,
+            3575,
+            59,
+            58
+          ],
+          [
+            3576,
+            3577,
+            75,
+            74
+          ],
+          [
+            3578,
+            3579,
+            91,
+            90
+          ],
+          [
+            3580,
+            3581,
+            107,
+            106
+          ],
+          [
+            3582,
+            3583,
+            123,
+            122
+          ],
+          [
+            3584,
+            3585,
+            139,
+            138
+          ],
+          [
+            3586,
+            3587,
+            155,
+            154
+          ],
+          [
+            3588,
+            3589,
+            171,
+            170
+          ],
+          [
+            3590,
+            3591,
+            187,
+            186
+          ],
+          [
+            3592,
+            3593,
+            203,
+            202
+          ],
+          [
+            3594,
+            3595,
+            219,
+            218
+          ],
+          [
+            3596,
+            3597,
+            237,
+            236
+          ],
+          [
+            3598,
+            3599,
+            255,
+            254
+          ],
+          [
+            3600,
+            3601,
+            273,
+            272
+          ],
+          [
+            3602,
+            3603,
+            291,
+            290
+          ]
+        ],
+        "candidate_pool": 3604,
+        "enumerated_schedules": 3604,
+        "evaluation_budget": 128,
+        "examined_schedules": 128,
+        "failed_schedules": 56,
+        "native": {
+          "backend": "native",
+          "latency_ms": 1.553473711013794,
+          "result_file": "m64_n32_k128_block_dstate128/native/result.json",
+          "source_file": "m64_n32_k128_block_dstate128/native/source.cu",
+          "tflops": 55.29501098795052,
+          "tile": {
+            "block_dstate": 128,
+            "block_k": 128,
+            "block_m": 64,
+            "block_n": 32
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": false,
+        "successful_schedules": 72,
+        "tile": {
+          "block_dstate": 128,
+          "block_k": 128,
+          "block_m": 64,
+          "block_n": 32
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            5,
+            4,
+            2048,
+            520,
+            518,
+            7,
+            6,
+            2049,
+            9,
+            8,
+            2110,
+            11,
+            10,
+            13,
+            12,
+            15,
+            14,
+            17,
+            16,
+            19,
+            18,
+            21,
+            20,
+            2802,
+            521,
+            519,
+            23,
+            22
+          ],
+          [
+            3556,
+            3557,
+            37,
+            36
+          ],
+          [
+            3558,
+            3559,
+            53,
+            52
+          ],
+          [
+            3560,
+            3561,
+            69,
+            68
+          ],
+          [
+            3562,
+            3563,
+            85,
+            84
+          ],
+          [
+            3564,
+            3565,
+            101,
+            100
+          ],
+          [
+            3566,
+            3567,
+            117,
+            116
+          ],
+          [
+            3568,
+            3569,
+            133,
+            132
+          ],
+          [
+            3570,
+            3571,
+            27,
+            26
+          ],
+          [
+            3572,
+            3573,
+            43,
+            42
+          ],
+          [
+            3574,
+            3575,
+            59,
+            58
+          ],
+          [
+            3576,
+            3577,
+            75,
+            74
+          ],
+          [
+            3578,
+            3579,
+            91,
+            90
+          ],
+          [
+            3580,
+            3581,
+            107,
+            106
+          ],
+          [
+            3582,
+            3583,
+            123,
+            122
+          ],
+          [
+            3584,
+            3585,
+            139,
+            138
+          ],
+          [
+            3586,
+            3587,
+            155,
+            154
+          ],
+          [
+            3588,
+            3589,
+            171,
+            170
+          ],
+          [
+            3590,
+            3591,
+            187,
+            186
+          ],
+          [
+            3592,
+            3593,
+            203,
+            202
+          ],
+          [
+            3594,
+            3595,
+            219,
+            218
+          ],
+          [
+            3596,
+            3597,
+            237,
+            236
+          ],
+          [
+            3598,
+            3599,
+            255,
+            254
+          ],
+          [
+            3600,
+            3601,
+            273,
+            272
+          ],
+          [
+            3602,
+            3603,
+            291,
+            290
+          ]
+        ],
+        "candidate_pool": 3604,
+        "enumerated_schedules": 3604,
+        "evaluation_budget": 128,
+        "examined_schedules": 128,
+        "failed_schedules": 58,
+        "native": {
+          "backend": "native",
+          "latency_ms": 0.9210400581359863,
+          "result_file": "m64_n64_k64_block_dstate128/native/result.json",
+          "source_file": "m64_n64_k64_block_dstate128/native/source.cu",
+          "tflops": 93.2634201533474,
+          "tile": {
+            "block_dstate": 128,
+            "block_k": 64,
+            "block_m": 64,
+            "block_n": 64
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": false,
+        "successful_schedules": 70,
+        "tile": {
+          "block_dstate": 128,
+          "block_k": 64,
+          "block_m": 64,
+          "block_n": 64
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            5,
+            4,
+            2048,
+            520,
+            518,
+            7,
+            6,
+            2049,
+            9,
+            8,
+            2110,
+            11,
+            10,
+            13,
+            12,
+            15,
+            14,
+            17,
+            16,
+            19,
+            18,
+            21,
+            20,
+            2802,
+            521,
+            519,
+            23,
+            22
+          ],
+          [
+            3556,
+            3557,
+            37,
+            36
+          ],
+          [
+            3558,
+            3559,
+            53,
+            52
+          ],
+          [
+            3560,
+            3561,
+            69,
+            68
+          ],
+          [
+            3562,
+            3563,
+            85,
+            84
+          ],
+          [
+            3564,
+            3565,
+            101,
+            100
+          ],
+          [
+            3566,
+            3567,
+            117,
+            116
+          ],
+          [
+            3568,
+            3569,
+            133,
+            132
+          ],
+          [
+            3570,
+            3571,
+            27,
+            26
+          ],
+          [
+            3572,
+            3573,
+            43,
+            42
+          ],
+          [
+            3574,
+            3575,
+            59,
+            58
+          ],
+          [
+            3576,
+            3577,
+            75,
+            74
+          ],
+          [
+            3578,
+            3579,
+            91,
+            90
+          ],
+          [
+            3580,
+            3581,
+            107,
+            106
+          ],
+          [
+            3582,
+            3583,
+            123,
+            122
+          ],
+          [
+            3584,
+            3585,
+            139,
+            138
+          ],
+          [
+            3586,
+            3587,
+            155,
+            154
+          ],
+          [
+            3588,
+            3589,
+            171,
+            170
+          ],
+          [
+            3590,
+            3591,
+            187,
+            186
+          ],
+          [
+            3592,
+            3593,
+            203,
+            202
+          ],
+          [
+            3594,
+            3595,
+            219,
+            218
+          ],
+          [
+            3596,
+            3597,
+            237,
+            236
+          ],
+          [
+            3598,
+            3599,
+            255,
+            254
+          ],
+          [
+            3600,
+            3601,
+            273,
+            272
+          ],
+          [
+            3602,
+            3603,
+            291,
+            290
+          ]
+        ],
+        "candidate_pool": 3604,
+        "enumerated_schedules": 3604,
+        "evaluation_budget": 128,
+        "examined_schedules": 128,
+        "failed_schedules": 57,
+        "native": {
+          "backend": "native",
+          "latency_ms": 0.9729599952697754,
+          "result_file": "m64_n64_k128_block_dstate128/native/result.json",
+          "source_file": "m64_n64_k128_block_dstate128/native/source.cu",
+          "tflops": 88.28661644632413,
+          "tile": {
+            "block_dstate": 128,
+            "block_k": 128,
+            "block_m": 64,
+            "block_n": 64
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": false,
+        "successful_schedules": 71,
+        "tile": {
+          "block_dstate": 128,
+          "block_k": 128,
+          "block_m": 64,
+          "block_n": 64
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            5,
+            4,
+            2048,
+            520,
+            518,
+            7,
+            6,
+            2049,
+            9,
+            8,
+            2110,
+            11,
+            10,
+            13,
+            12,
+            15,
+            14,
+            17,
+            16,
+            19,
+            18,
+            21,
+            20,
+            2802,
+            521,
+            519,
+            23,
+            22
+          ],
+          [
+            3556,
+            3557,
+            1975,
+            1995
+          ],
+          [
+            3558,
+            3559,
+            3073,
+            2950
+          ],
+          [
+            3560,
+            3561,
+            426,
+            462
+          ]
+        ],
+        "candidate_pool": 3562,
+        "enumerated_schedules": 3562,
+        "evaluation_budget": 128,
+        "examined_schedules": 44,
+        "failed_schedules": 0,
+        "native": {
+          "backend": "native",
+          "latency_ms": 1.2723904848098755,
+          "result_file": "m128_n32_k64_block_dstate128/native/result.json",
+          "source_file": "m128_n32_k64_block_dstate128/native/source.cu",
+          "tflops": 67.51020771177438,
+          "tile": {
+            "block_dstate": 128,
+            "block_k": 64,
+            "block_m": 128,
+            "block_n": 32
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 44,
+        "tile": {
+          "block_dstate": 128,
+          "block_k": 64,
+          "block_m": 128,
+          "block_n": 32
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            5,
+            4,
+            2048,
+            490,
+            488,
+            7,
+            6,
+            2049,
+            9,
+            8,
+            2110,
+            11,
+            10,
+            13,
+            12,
+            15,
+            14,
+            16,
+            18,
+            17,
+            20,
+            19,
+            2802,
+            491,
+            489,
+            22,
+            21,
+            2050
+          ],
+          [
+            3556,
+            3557,
+            35,
+            34
+          ],
+          [
+            3558,
+            3559,
+            50,
+            49
+          ],
+          [
+            3560,
+            3561,
+            65,
+            64
+          ],
+          [
+            3562,
+            3563,
+            80,
+            79
+          ],
+          [
+            3564,
+            3565,
+            95,
+            94
+          ],
+          [
+            3566,
+            3567,
+            110,
+            109
+          ],
+          [
+            3568,
+            3569,
+            125,
+            124
+          ],
+          [
+            3570,
+            3571,
+            26,
+            25
+          ],
+          [
+            3572,
+            3573,
+            41,
+            40
+          ],
+          [
+            3574,
+            3575,
+            56,
+            55
+          ],
+          [
+            3576,
+            3577,
+            71,
+            70
+          ],
+          [
+            3578,
+            3579,
+            86,
+            85
+          ],
+          [
+            3580,
+            3581,
+            101,
+            100
+          ],
+          [
+            3582,
+            3583,
+            116,
+            115
+          ],
+          [
+            3584,
+            3585,
+            131,
+            130
+          ],
+          [
+            3586,
+            3587,
+            146,
+            145
+          ],
+          [
+            3588,
+            3589,
+            161,
+            160
+          ],
+          [
+            3590,
+            3591,
+            176,
+            175
+          ],
+          [
+            3592,
+            3593,
+            191,
+            190
+          ],
+          [
+            3594,
+            3595,
+            206,
+            205
+          ],
+          [
+            3596,
+            3597,
+            223,
+            222
+          ],
+          [
+            3598,
+            3599,
+            240,
+            239
+          ],
+          [
+            3600,
+            3601,
+            257,
+            256
+          ],
+          [
+            3602,
+            3603,
+            274,
+            273
+          ]
+        ],
+        "candidate_pool": 3604,
+        "enumerated_schedules": 3604,
+        "evaluation_budget": 128,
+        "examined_schedules": 128,
+        "failed_schedules": 57,
+        "native": {
+          "backend": "native",
+          "latency_ms": 2.089926242828369,
+          "result_file": "m128_n32_k128_block_dstate128/native/result.json",
+          "source_file": "m128_n32_k128_block_dstate128/native/source.cu",
+          "tflops": 41.10161600906521,
+          "tile": {
+            "block_dstate": 128,
+            "block_k": 128,
+            "block_m": 128,
+            "block_n": 32
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": false,
+        "successful_schedules": 71,
+        "tile": {
+          "block_dstate": 128,
+          "block_k": 128,
+          "block_m": 128,
+          "block_n": 32
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            5,
+            4,
+            2048,
+            520,
+            518,
+            7,
+            6,
+            2049,
+            9,
+            8,
+            2110,
+            11,
+            10,
+            13,
+            12,
+            15,
+            14,
+            17,
+            16,
+            19,
+            18,
+            21,
+            20,
+            2802,
+            521,
+            519,
+            23,
+            22
+          ],
+          [
+            3556,
+            3557,
+            30,
+            46
+          ],
+          [
+            3558,
+            3559,
+            3433,
+            3187
+          ],
+          [
+            3560,
+            3561,
+            586,
+            550
+          ],
+          [
+            3562,
+            3563,
+            483,
+            501
+          ],
+          [
+            3564,
+            3565,
+            786,
+            806
+          ],
+          [
+            3566,
+            3567,
+            879,
+            915
+          ]
+        ],
+        "candidate_pool": 3568,
+        "enumerated_schedules": 3568,
+        "evaluation_budget": 128,
+        "examined_schedules": 56,
+        "failed_schedules": 3,
+        "native": {
+          "backend": "native",
+          "latency_ms": 1.1217920780181885,
+          "result_file": "m128_n64_k64_block_dstate128/native/result.json",
+          "source_file": "m128_n64_k64_block_dstate128/native/source.cu",
+          "tflops": 76.57332192232441,
+          "tile": {
+            "block_dstate": 128,
+            "block_k": 64,
+            "block_m": 128,
+            "block_n": 64
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 53,
+        "tile": {
+          "block_dstate": 128,
+          "block_k": 64,
+          "block_m": 128,
+          "block_n": 64
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            4,
+            1439,
+            1435,
+            329,
+            327,
+            6,
+            5,
+            2049,
+            8,
+            7,
+            2110,
+            9,
+            1350,
+            1348,
+            11,
+            10,
+            12,
+            14,
+            13,
+            15,
+            1440,
+            1436,
+            330,
+            328,
+            17,
+            16,
+            2050,
+            19
+          ],
+          [
+            3556,
+            3557,
+            26,
+            20
+          ],
+          [
+            3558,
+            3559,
+            37,
+            31
+          ],
+          [
+            3560,
+            3561,
+            48,
+            42
+          ],
+          [
+            3562,
+            3563,
+            59,
+            53
+          ],
+          [
+            3564,
+            3565,
+            70,
+            64
+          ],
+          [
+            3566,
+            3567,
+            81,
+            75
+          ],
+          [
+            3568,
+            3569,
+            92,
+            86
+          ],
+          [
+            3570,
+            3571,
+            97,
+            108
+          ],
+          [
+            3572,
+            3573,
+            119,
+            130
+          ],
+          [
+            3574,
+            3575,
+            141,
+            152
+          ],
+          [
+            3576,
+            3577,
+            163,
+            174
+          ],
+          [
+            3578,
+            3579,
+            183,
+            192
+          ],
+          [
+            3580,
+            3581,
+            201,
+            210
+          ],
+          [
+            3582,
+            3583,
+            219,
+            228
+          ],
+          [
+            3584,
+            3585,
+            239,
+            250
+          ],
+          [
+            3586,
+            3587,
+            261,
+            272
+          ],
+          [
+            3588,
+            3589,
+            283,
+            294
+          ],
+          [
+            3590,
+            3591,
+            307,
+            320
+          ],
+          [
+            3592,
+            3593,
+            333,
+            346
+          ],
+          [
+            3594,
+            3595,
+            359,
+            372
+          ],
+          [
+            3596,
+            3597,
+            385,
+            398
+          ],
+          [
+            3598,
+            3599,
+            411,
+            422
+          ],
+          [
+            3600,
+            3601,
+            433,
+            444
+          ],
+          [
+            3602,
+            3603,
+            455,
+            466
+          ]
+        ],
+        "candidate_pool": 3604,
+        "enumerated_schedules": 3604,
+        "evaluation_budget": 128,
+        "examined_schedules": 128,
+        "failed_schedules": 50,
+        "native": {
+          "backend": "native",
+          "latency_ms": 1.2349008321762085,
+          "result_file": "m128_n64_k128_block_dstate128/native/result.json",
+          "source_file": "m128_n64_k128_block_dstate128/native/source.cu",
+          "tflops": 69.55971174513144,
+          "tile": {
+            "block_dstate": 128,
+            "block_k": 128,
+            "block_m": 128,
+            "block_n": 64
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": false,
+        "successful_schedules": 78,
+        "tile": {
+          "block_dstate": 128,
+          "block_k": 128,
+          "block_m": 128,
+          "block_n": 64
+        }
+      }
+    ],
+    "operator": "mamba_chunk_scan",
+    "top30_file": "mamba_chunk_scan/top30.json"
+  },
+  {
+    "configurations": [
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            5,
+            4,
+            950,
+            946,
+            52,
+            50,
+            7,
+            6,
+            2049,
+            76,
+            74,
+            9,
+            8,
+            2110,
+            80,
+            78,
+            11,
+            10,
+            14,
+            12,
+            152,
+            150,
+            18,
+            16,
+            576,
+            574,
+            22,
+            20
+          ],
+          [
+            3556,
+            3557,
+            577,
+            580
+          ],
+          [
+            3558,
+            3559,
+            814,
+            581
+          ],
+          [
+            3560,
+            3561,
+            815,
+            818
+          ],
+          [
+            3562,
+            3563,
+            856,
+            819
+          ],
+          [
+            3564,
+            3565,
+            857,
+            860
+          ],
+          [
+            3566,
+            3567,
+            1016,
+            861
+          ],
+          [
+            3568,
+            3569,
+            1017,
+            1020
+          ],
+          [
+            3570,
+            3571,
+            1052,
+            1021
+          ],
+          [
+            3572,
+            3573,
+            1053,
+            1056
+          ],
+          [
+            3574,
+            3575,
+            1088,
+            1057
+          ],
+          [
+            3576,
+            3577,
+            1089,
+            1092
+          ],
+          [
+            3578,
+            3579,
+            1356,
+            1093
+          ],
+          [
+            3580,
+            3581,
+            1357,
+            1360
+          ],
+          [
+            3582,
+            3583,
+            1396,
+            1361
+          ],
+          [
+            3584,
+            3585,
+            1397,
+            1400
+          ],
+          [
+            3586,
+            3587,
+            1436,
+            1401
+          ],
+          [
+            3588,
+            3589,
+            1437,
+            1440
+          ],
+          [
+            3590,
+            3591,
+            1468,
+            1441
+          ],
+          [
+            3592,
+            3593,
+            1469,
+            1472
+          ],
+          [
+            3594,
+            3595,
+            1676,
+            1473
+          ],
+          [
+            3596,
+            3597,
+            1677,
+            1680
+          ],
+          [
+            3598,
+            3599,
+            1712,
+            1681
+          ],
+          [
+            3600,
+            3601,
+            1713,
+            1716
+          ],
+          [
+            3602,
+            3603,
+            1748,
+            1717
+          ]
+        ],
+        "candidate_pool": 3604,
+        "enumerated_schedules": 3604,
+        "evaluation_budget": 128,
+        "examined_schedules": 128,
+        "failed_schedules": 49,
+        "native": {
+          "backend": "native",
+          "latency_ms": 1.4206817150115967,
+          "result_file": "m64_n32_k32/native/result.json",
+          "source_file": "m64_n32_k32/native/source.cu",
+          "tflops": 30.23173488204528,
+          "tile": {
+            "block_k": 32,
+            "block_m": 64,
+            "block_n": 32
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": false,
+        "successful_schedules": 79,
+        "tile": {
+          "block_k": 32,
+          "block_m": 64,
+          "block_n": 32
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            5,
+            4,
+            950,
+            946,
+            52,
+            50,
+            7,
+            6,
+            2049,
+            76,
+            74,
+            9,
+            8,
+            2110,
+            80,
+            78,
+            11,
+            10,
+            14,
+            12,
+            152,
+            150,
+            18,
+            16,
+            576,
+            574,
+            22,
+            20
+          ],
+          [
+            3556,
+            3557,
+            27,
+            577
+          ],
+          [
+            3558,
+            3559,
+            814,
+            580
+          ],
+          [
+            3560,
+            3561,
+            815,
+            581
+          ],
+          [
+            3562,
+            3563,
+            856,
+            818
+          ],
+          [
+            3564,
+            3565,
+            857,
+            819
+          ],
+          [
+            3566,
+            3567,
+            1016,
+            860
+          ],
+          [
+            3568,
+            3569,
+            1017,
+            861
+          ],
+          [
+            3570,
+            3571,
+            1052,
+            1020
+          ],
+          [
+            3572,
+            3573,
+            1053,
+            1021
+          ],
+          [
+            3574,
+            3575,
+            1088,
+            1056
+          ],
+          [
+            3576,
+            3577,
+            1089,
+            1057
+          ],
+          [
+            3578,
+            3579,
+            1092,
+            578
+          ],
+          [
+            3580,
+            3581,
+            1093,
+            579
+          ],
+          [
+            3582,
+            3583,
+            1360,
+            816
+          ],
+          [
+            3584,
+            3585,
+            1361,
+            817
+          ],
+          [
+            3586,
+            3587,
+            1400,
+            858
+          ],
+          [
+            3588,
+            3589,
+            1401,
+            1440
+          ],
+          [
+            3590,
+            3591,
+            1441,
+            1472
+          ],
+          [
+            3592,
+            3593,
+            1473,
+            1680
+          ],
+          [
+            3594,
+            3595,
+            1681,
+            1716
+          ],
+          [
+            3596,
+            3597,
+            1717,
+            1752
+          ],
+          [
+            3598,
+            3599,
+            1753,
+            1796
+          ],
+          [
+            3600,
+            3601,
+            1797,
+            1832
+          ]
+        ],
+        "candidate_pool": 3602,
+        "enumerated_schedules": 3602,
+        "evaluation_budget": 128,
+        "examined_schedules": 124,
+        "failed_schedules": 44,
+        "native": {
+          "backend": "native",
+          "latency_ms": 1.028699278831482,
+          "result_file": "m64_n32_k64/native/result.json",
+          "source_file": "m64_n32_k64/native/source.cu",
+          "tflops": 41.75143683272269,
+          "tile": {
+            "block_k": 64,
+            "block_m": 64,
+            "block_n": 32
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 80,
+        "tile": {
+          "block_k": 64,
+          "block_m": 64,
+          "block_n": 32
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            5,
+            4,
+            950,
+            946,
+            52,
+            50,
+            7,
+            6,
+            2049,
+            76,
+            74,
+            9,
+            8,
+            2110,
+            80,
+            78,
+            11,
+            10,
+            14,
+            12,
+            152,
+            150,
+            18,
+            16,
+            576,
+            574,
+            22,
+            20
+          ],
+          [
+            3556,
+            3557,
+            577,
+            580
+          ],
+          [
+            3558,
+            3559,
+            814,
+            581
+          ],
+          [
+            3560,
+            3561,
+            815,
+            818
+          ],
+          [
+            3562,
+            3563,
+            856,
+            819
+          ],
+          [
+            3564,
+            3565,
+            857,
+            860
+          ],
+          [
+            3566,
+            3567,
+            1016,
+            861
+          ],
+          [
+            3568,
+            3569,
+            1017,
+            1020
+          ],
+          [
+            3570,
+            3571,
+            1052,
+            1021
+          ],
+          [
+            3572,
+            3573,
+            1053,
+            1056
+          ],
+          [
+            3574,
+            3575,
+            1088,
+            1057
+          ],
+          [
+            3576,
+            3577,
+            1089,
+            1092
+          ],
+          [
+            3578,
+            3579,
+            1356,
+            1093
+          ],
+          [
+            3580,
+            3581,
+            1357,
+            1360
+          ],
+          [
+            3582,
+            3583,
+            1396,
+            1361
+          ],
+          [
+            3584,
+            3585,
+            1397,
+            1400
+          ],
+          [
+            3586,
+            3587,
+            1436,
+            1401
+          ],
+          [
+            3588,
+            3589,
+            1437,
+            1440
+          ],
+          [
+            3590,
+            3591,
+            1468,
+            1441
+          ],
+          [
+            3592,
+            3593,
+            1469,
+            1472
+          ],
+          [
+            3594,
+            3595,
+            1676,
+            1473
+          ],
+          [
+            3596,
+            3597,
+            1677,
+            1680
+          ],
+          [
+            3598,
+            3599,
+            1712,
+            1681
+          ],
+          [
+            3600,
+            3601,
+            1713,
+            1716
+          ],
+          [
+            3602,
+            3603,
+            1748,
+            1717
+          ]
+        ],
+        "candidate_pool": 3604,
+        "enumerated_schedules": 3604,
+        "evaluation_budget": 128,
+        "examined_schedules": 128,
+        "failed_schedules": 49,
+        "native": {
+          "backend": "native",
+          "latency_ms": 0.816313624382019,
+          "result_file": "m64_n64_k32/native/result.json",
+          "source_file": "m64_n64_k32/native/source.cu",
+          "tflops": 52.61418121315146,
+          "tile": {
+            "block_k": 32,
+            "block_m": 64,
+            "block_n": 64
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": false,
+        "successful_schedules": 79,
+        "tile": {
+          "block_k": 32,
+          "block_m": 64,
+          "block_n": 64
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            5,
+            4,
+            950,
+            946,
+            52,
+            50,
+            7,
+            6,
+            2049,
+            76,
+            74,
+            9,
+            8,
+            2110,
+            80,
+            78,
+            11,
+            10,
+            14,
+            12,
+            152,
+            150,
+            18,
+            16,
+            576,
+            574,
+            22,
+            20
+          ],
+          [
+            3556,
+            3557,
+            27,
+            577
+          ],
+          [
+            3558,
+            3559,
+            814,
+            580
+          ],
+          [
+            3560,
+            3561,
+            815,
+            581
+          ],
+          [
+            3562,
+            3563,
+            856,
+            818
+          ],
+          [
+            3564,
+            3565,
+            857,
+            819
+          ],
+          [
+            3566,
+            3567,
+            1016,
+            860
+          ],
+          [
+            3568,
+            3569,
+            1017,
+            861
+          ],
+          [
+            3570,
+            3571,
+            1052,
+            1020
+          ],
+          [
+            3572,
+            3573,
+            1053,
+            1021
+          ],
+          [
+            3574,
+            3575,
+            1088,
+            1056
+          ],
+          [
+            3576,
+            3577,
+            1057,
+            578
+          ],
+          [
+            3578,
+            3579,
+            1092,
+            579
+          ],
+          [
+            3580,
+            3581,
+            1093,
+            816
+          ],
+          [
+            3582,
+            3583,
+            1360,
+            817
+          ],
+          [
+            3584,
+            3585,
+            1361,
+            858
+          ],
+          [
+            3586,
+            3587,
+            1400,
+            1401
+          ],
+          [
+            3588,
+            3589,
+            1440,
+            1441
+          ],
+          [
+            3590,
+            3591,
+            1472,
+            1473
+          ],
+          [
+            3592,
+            3593,
+            1680,
+            1681
+          ],
+          [
+            3594,
+            3595,
+            1716,
+            1717
+          ],
+          [
+            3596,
+            3597,
+            1752,
+            1753
+          ],
+          [
+            3598,
+            3599,
+            1796,
+            1797
+          ],
+          [
+            3600,
+            3601,
+            1832,
+            1833
+          ]
+        ],
+        "candidate_pool": 3602,
+        "enumerated_schedules": 3602,
+        "evaluation_budget": 128,
+        "examined_schedules": 124,
+        "failed_schedules": 43,
+        "native": {
+          "backend": "native",
+          "latency_ms": 0.621067225933075,
+          "result_file": "m64_n64_k64/native/result.json",
+          "source_file": "m64_n64_k64/native/source.cu",
+          "tflops": 69.15462798004444,
+          "tile": {
+            "block_k": 64,
+            "block_m": 64,
+            "block_n": 64
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 81,
+        "tile": {
+          "block_k": 64,
+          "block_m": 64,
+          "block_n": 64
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            5,
+            4,
+            950,
+            946,
+            52,
+            50,
+            7,
+            6,
+            2049,
+            76,
+            74,
+            9,
+            8,
+            2110,
+            80,
+            78,
+            11,
+            10,
+            14,
+            12,
+            152,
+            150,
+            18,
+            16,
+            576,
+            574,
+            22,
+            20
+          ],
+          [
+            3556,
+            3557,
+            577,
+            580
+          ],
+          [
+            3558,
+            3559,
+            814,
+            581
+          ],
+          [
+            3560,
+            3561,
+            815,
+            818
+          ],
+          [
+            3562,
+            3563,
+            856,
+            819
+          ],
+          [
+            3564,
+            3565,
+            857,
+            860
+          ],
+          [
+            3566,
+            3567,
+            1016,
+            861
+          ],
+          [
+            3568,
+            3569,
+            1017,
+            1020
+          ],
+          [
+            3570,
+            3571,
+            1052,
+            1021
+          ],
+          [
+            3572,
+            3573,
+            1053,
+            1056
+          ],
+          [
+            3574,
+            3575,
+            1088,
+            1057
+          ],
+          [
+            3576,
+            3577,
+            1089,
+            1092
+          ],
+          [
+            3578,
+            3579,
+            1356,
+            1093
+          ],
+          [
+            3580,
+            3581,
+            1357,
+            1360
+          ],
+          [
+            3582,
+            3583,
+            1396,
+            1361
+          ],
+          [
+            3584,
+            3585,
+            1397,
+            1400
+          ],
+          [
+            3586,
+            3587,
+            1436,
+            1401
+          ],
+          [
+            3588,
+            3589,
+            1437,
+            1440
+          ],
+          [
+            3590,
+            3591,
+            1468,
+            1441
+          ],
+          [
+            3592,
+            3593,
+            1469,
+            1472
+          ],
+          [
+            3594,
+            3595,
+            1676,
+            1473
+          ],
+          [
+            3596,
+            3597,
+            1677,
+            1680
+          ],
+          [
+            3598,
+            3599,
+            1712,
+            1681
+          ],
+          [
+            3600,
+            3601,
+            1713,
+            1716
+          ],
+          [
+            3602,
+            3603,
+            1748,
+            1717
+          ]
+        ],
+        "candidate_pool": 3604,
+        "enumerated_schedules": 3604,
+        "evaluation_budget": 128,
+        "examined_schedules": 128,
+        "failed_schedules": 49,
+        "native": {
+          "backend": "native",
+          "latency_ms": 0.5653295516967773,
+          "result_file": "m64_n128_k32/native/result.json",
+          "source_file": "m64_n128_k32/native/source.cu",
+          "tflops": 75.97280706641119,
+          "tile": {
+            "block_k": 32,
+            "block_m": 64,
+            "block_n": 128
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": false,
+        "successful_schedules": 79,
+        "tile": {
+          "block_k": 32,
+          "block_m": 64,
+          "block_n": 128
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            3,
+            2,
+            5,
+            4,
+            950,
+            946,
+            52,
+            50,
+            7,
+            6,
+            2049,
+            76,
+            74,
+            9,
+            8,
+            2110,
+            80,
+            78,
+            11,
+            10,
+            14,
+            12,
+            152,
+            150,
+            18,
+            16,
+            576,
+            574,
+            22,
+            20
+          ],
+          [
+            3556,
+            3557,
+            27,
+            577
+          ],
+          [
+            3558,
+            3559,
+            814,
+            580
+          ],
+          [
+            3560,
+            3561,
+            815,
+            581
+          ],
+          [
+            3562,
+            3563,
+            856,
+            818
+          ],
+          [
+            3564,
+            3565,
+            857,
+            819
+          ],
+          [
+            3566,
+            3567,
+            1016,
+            860
+          ],
+          [
+            3568,
+            3569,
+            1017,
+            861
+          ],
+          [
+            3570,
+            3571,
+            1052,
+            1020
+          ],
+          [
+            3572,
+            3573,
+            1053,
+            1021
+          ],
+          [
+            3574,
+            3575,
+            1088,
+            1056
+          ],
+          [
+            3576,
+            3577,
+            1057,
+            578
+          ],
+          [
+            3578,
+            3579,
+            1092,
+            579
+          ],
+          [
+            3580,
+            3581,
+            1093,
+            816
+          ],
+          [
+            3582,
+            3583,
+            1360,
+            817
+          ],
+          [
+            3584,
+            3585,
+            1361,
+            858
+          ],
+          [
+            3586,
+            3587,
+            1400,
+            1401
+          ],
+          [
+            3588,
+            3589,
+            1440,
+            1441
+          ],
+          [
+            3590,
+            3591,
+            1472,
+            1473
+          ],
+          [
+            3592,
+            3593,
+            1680,
+            1681
+          ],
+          [
+            3594,
+            3595,
+            1716,
+            1717
+          ],
+          [
+            3596,
+            3597,
+            1752,
+            1753
+          ],
+          [
+            3598,
+            3599,
+            1796,
+            1797
+          ],
+          [
+            3600,
+            3601,
+            1832,
+            1833
+          ]
+        ],
+        "candidate_pool": 3602,
+        "enumerated_schedules": 3602,
+        "evaluation_budget": 128,
+        "examined_schedules": 124,
+        "failed_schedules": 44,
+        "native": {
+          "backend": "native",
+          "latency_ms": 0.45747360587120056,
+          "result_file": "m64_n128_k64/native/result.json",
+          "source_file": "m64_n128_k64/native/source.cu",
+          "tflops": 93.88448297078864,
+          "tile": {
+            "block_k": 64,
+            "block_m": 64,
+            "block_n": 128
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 80,
+        "tile": {
+          "block_k": 64,
+          "block_m": 64,
+          "block_n": 128
+        }
+      }
+    ],
+    "operator": "mamba_chunk_state",
+    "top30_file": "mamba_chunk_state/top30.json"
+  },
+  {
+    "configurations": [
+      {
+        "batches": [
+          [
+            1,
+            0,
+            47,
+            2,
+            65,
+            4,
+            631,
+            627,
+            52,
+            50,
+            7,
+            6,
+            2048,
+            234,
+            70,
+            115,
+            8,
+            2051,
+            348,
+            74,
+            187,
+            10,
+            14,
+            12,
+            143,
+            142,
+            124,
+            16,
+            734,
+            430,
+            192,
+            20
+          ],
+          [
+            2297,
+            2298,
+            432,
+            533
+          ],
+          [
+            2299,
+            2300,
+            667,
+            613
+          ],
+          [
+            2301,
+            2302,
+            994,
+            1016
+          ]
+        ],
+        "candidate_pool": 2303,
+        "enumerated_schedules": 2303,
+        "evaluation_budget": 128,
+        "examined_schedules": 44,
+        "failed_schedules": 0,
+        "native": {
+          "backend": "native",
+          "latency_ms": 0.4854032099246979,
+          "result_file": "m64_n64/native/result.json",
+          "source_file": "m64_n64/native/source.cu",
+          "tflops": 283.1438908146515,
+          "tile": {
+            "block_m": 64,
+            "block_n": 64
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 44,
+        "tile": {
+          "block_m": 64,
+          "block_n": 64
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            35,
+            2,
+            53,
+            4,
+            333,
+            329,
+            40,
+            38,
+            7,
+            6,
+            2048,
+            150,
+            58,
+            95,
+            8,
+            2051,
+            213,
+            62,
+            134,
+            10,
+            910,
+            906,
+            14,
+            12,
+            365,
+            363,
+            16,
+            51,
+            3,
+            5
+          ],
+          [
+            2168,
+            2169,
+            2167,
+            2164
+          ],
+          [
+            2170,
+            2171,
+            321,
+            322
+          ],
+          [
+            2172,
+            2173,
+            1352,
+            1359
+          ]
+        ],
+        "candidate_pool": 2174,
+        "enumerated_schedules": 2174,
+        "evaluation_budget": 128,
+        "examined_schedules": 44,
+        "failed_schedules": 0,
+        "native": {
+          "backend": "native",
+          "latency_ms": 0.42396003007888794,
+          "result_file": "m64_n128/native/result.json",
+          "source_file": "m64_n128/native/source.cu",
+          "tflops": 324.17903510013946,
+          "tile": {
+            "block_m": 64,
+            "block_n": 128
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 44,
+        "tile": {
+          "block_m": 64,
+          "block_n": 128
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            35,
+            2,
+            53,
+            4,
+            406,
+            402,
+            40,
+            38,
+            7,
+            6,
+            2048,
+            166,
+            58,
+            97,
+            8,
+            2051,
+            244,
+            62,
+            141,
+            10,
+            863,
+            859,
+            14,
+            12,
+            16,
+            51,
+            3,
+            123,
+            5,
+            407
+          ],
+          [
+            2182,
+            2183,
+            2040,
+            2046
+          ],
+          [
+            2184,
+            2185,
+            2114,
+            2111
+          ],
+          [
+            2186,
+            2187,
+            1228,
+            1353
+          ]
+        ],
+        "candidate_pool": 2188,
+        "enumerated_schedules": 2188,
+        "evaluation_budget": 128,
+        "examined_schedules": 44,
+        "failed_schedules": 3,
+        "native": {
+          "backend": "native",
+          "latency_ms": 0.3929247558116913,
+          "result_file": "m128_n64/native/result.json",
+          "source_file": "m128_n64/native/source.cu",
+          "tflops": 349.78440894639755,
+          "tile": {
+            "block_m": 128,
+            "block_n": 64
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 41,
+        "tile": {
+          "block_m": 128,
+          "block_n": 64
+        }
+      },
+      {
+        "batches": [
+          [
+            1,
+            0,
+            17,
+            2,
+            28,
+            4,
+            150,
+            146,
+            22,
+            20,
+            7,
+            6,
+            516,
+            284,
+            320,
+            33,
+            283,
+            8,
+            26,
+            3,
+            5,
+            151,
+            147,
+            23,
+            21,
+            14,
+            13,
+            517,
+            285,
+            321,
+            34,
+            299
+          ],
+          [
+            615,
+            616,
+            608,
+            612
+          ],
+          [
+            617,
+            618,
+            489,
+            503
+          ],
+          [
+            619,
+            620,
+            218,
+            222
+          ]
+        ],
+        "candidate_pool": 621,
+        "enumerated_schedules": 621,
+        "evaluation_budget": 128,
+        "examined_schedules": 44,
+        "failed_schedules": 5,
+        "native": {
+          "backend": "native",
+          "latency_ms": 0.3506239652633667,
+          "result_file": "m128_n128/native/result.json",
+          "source_file": "m128_n128/native/source.cu",
+          "tflops": 391.9839117921232,
+          "tile": {
+            "block_m": 128,
+            "block_n": 128
+          }
+        },
+        "native_failure": null,
+        "search_policy": "dynamic",
+        "stopped_early": true,
+        "successful_schedules": 39,
+        "tile": {
+          "block_m": 128,
+          "block_n": 128
+        }
+      }
+    ],
+    "operator": "gqa",
+    "top30_file": "gqa/top30.json"
+  }
+]

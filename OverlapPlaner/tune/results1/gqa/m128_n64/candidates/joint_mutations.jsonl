@@ -1,0 +1,10 @@
+{"fingerprint": "7521f91350b89310d757ddb9424030b9aea46a9dc8a47459a1ea33314ceacfa2", "move": ["stage", 1, 16, 1, 1], "parent_fingerprint": "6ae3a88f08a64b9d28a86d491ca3583c6c13912dc4efd14f5ebfa6bb8fac6c80"}
+{"fingerprint": "8601fc3f659055f69b82ef66796c338110e16e64215eeb5ffe74edea0f60d358", "move": ["group", 5, 1, 0, 0], "parent_fingerprint": "6ae3a88f08a64b9d28a86d491ca3583c6c13912dc4efd14f5ebfa6bb8fac6c80"}
+{"fingerprint": "c41ab02236b91faacc2a61930c33210201bf5d5f4cdc7bbd2447c1668b3de762", "move": ["order", 0, 0, 0, 1], "parent_fingerprint": "31b61fff656b8ea1f3e430c4f0a5da3de97fd8929e48c75c60ddb32d7f16f291"}
+{"fingerprint": "5a2aa863f74fb04bb013e2cc82c73f4d22e614ec4d91214c250f6837a9f9108e", "move": ["version", 6, 3, 0, 0], "parent_fingerprint": "7521f91350b89310d757ddb9424030b9aea46a9dc8a47459a1ea33314ceacfa2"}
+{"fingerprint": "63d93e12005db441155e5da4239689f80bc6fad9ab3fddbb28d5f728a381e828", "move": ["stage", 1, 18, 2, 1], "parent_fingerprint": "7521f91350b89310d757ddb9424030b9aea46a9dc8a47459a1ea33314ceacfa2"}
+{"fingerprint": "42e55d47fbba9631811c04b42053ec10289ddfc886c50218edbe121f9358e862", "move": ["group", 0, 2, 0, 0], "parent_fingerprint": "6ae3a88f08a64b9d28a86d491ca3583c6c13912dc4efd14f5ebfa6bb8fac6c80"}
+{"fingerprint": "aa1ed3e77c6cf07bff9a039ff9f8d87178f2500960b7ff8562e6dbbed5034da6", "move": ["group", 4, 0, 0, 0], "parent_fingerprint": "42e55d47fbba9631811c04b42053ec10289ddfc886c50218edbe121f9358e862"}
+{"fingerprint": "bc5d14332e0a745e77b4b939a8630f7ad52a3956909d53b66d288f8e8c04a2d5", "move": ["order", 1, 0, 6, 7], "parent_fingerprint": "7521f91350b89310d757ddb9424030b9aea46a9dc8a47459a1ea33314ceacfa2"}
+{"fingerprint": "950d77e7751f8b6ca6f453485b6adb98d6ab363cef7ba4a9b96690e60c97df34", "move": ["version", 6, 3, 0, 0], "parent_fingerprint": "42e55d47fbba9631811c04b42053ec10289ddfc886c50218edbe121f9358e862"}
+{"fingerprint": "a9f30a25170bcee2443c67ea13e259c4f0a8448defc1b84d20c61be144cccca7", "move": ["stage", 1, 16, 1, 0], "parent_fingerprint": "42e55d47fbba9631811c04b42053ec10289ddfc886c50218edbe121f9358e862"}

@@ -1,0 +1,421 @@
+{
+  "detail_file": "failures/schedule_00471.json",
+  "enumerated_schedule_count": 906,
+  "error": "Initialization failed: Failed to set the allowed dynamic shared memory size to 262144 with error: invalid argument\n#if defined(_MSC_VER) && !defined(__clang__) && _MSC_VER < 1940\n#define _tl_orig_alignas alignas\n#define alignas(N) _tl_orig_alignas((N) <= 64 ? (N) : 64)\n#include <cuda.h>\n#undef alignas\n#define alignas _tl_orig_alignas\n#endif\n#include <tl_templates/cuda/instruction/wgmma.h>\n#include <tl_templates/cuda/intrin.h>\n#include <tl_templates/cuda/barrier.h>\n#include <tl_templates/cuda/copy_sm90.h>\n#include <math_constants.h>\n#include <tl_templates/cuda/reduce.h>\n#include <tl_templates/cuda/scan.h>\n#include <tl_templates/cuda/ldsm.h>\n#include <tl_templates/cuda/threadblock_swizzle.h>\n#include <tl_templates/cuda/debug.h>\n#ifdef ENABLE_BF16\n#include <tl_templates/cuda/cuda_bf16_fallbacks.cuh>\n#endif\n\nextern \"C\" __global__ void main_kernel(const half_t* __restrict__ K, half_t* __restrict__ Output, const half_t* __restrict__ Q, const half_t* __restrict__ V);\nextern \"C\" __global__ void __launch_bounds__(384, 1) main_kernel(const half_t* __restrict__ K, half_t* __restrict__ Output, const half_t* __restrict__ Q, const half_t* __restrict__ V) {\n  extern __shared__ __align__(1024) uchar buf_dyn_shmem[];\n  void* K_shared = ((void*)((char*)buf_dyn_shmem + 0));\n  void* V_shared = ((void*)((char*)buf_dyn_shmem + 98304));\n  void* Q_shared = ((void*)((char*)buf_dyn_shmem + 196608));\n  void* O_shared = ((void*)((char*)buf_dyn_shmem + 229376));\n  __shared__ __align__(16) uint64_t program_schedule_mbar_mem[10];\n  auto program_schedule_mbar = reinterpret_cast<Barrier*>(program_schedule_mbar_mem);\n  float acc_o[64];\n  float logsum[2];\n  float scores_max[2];\n  float acc_s[96];\n  float scores_max_prev[2];\n  float scores_max_clear[2];\n  float scores_scale[2];\n  float scores_sum[2];\n  half_t acc_s_cast[96];\n  if (tl::tl_shuffle_elect<0>()) {\n    program_schedule_mbar[0].init(128);\n    program_schedule_mbar[1].init(128);\n    program_schedule_mbar[2].init(128);\n    program_schedule_mbar[3].init(128);\n    program_schedule_mbar[4].init(128);\n    program_schedule_mbar[5].init(256);\n    program_schedule_mbar[6].init(256);\n    program_schedule_mbar[7].init(256);\n    program_schedule_mbar[8].init(256);\n    program_schedule_mbar[9].init(256);\n  }\n  tl::fence_barrier_init();\n  __syncthreads();\n  if (((int)threadIdx.x) < 256) {\n    tl::warpgroup_reg_alloc<240>();\n    #pragma unroll\n    for (int i = 0; i < 16; ++i) {\n      float broadcast_var = 0x0p+0f/*0.000000e+00*/;\n      *(float4*)(acc_o + (i * 4)) = make_float4(broadcast_var, broadcast_var, broadcast_var, broadcast_var);\n    }\n    float broadcast_var_1 = 0x0p+0f/*0.000000e+00*/;\n    *(float2*)(logsum + 0) = make_float2(broadcast_var_1, broadcast_var_1);\n    float broadcast_var_2 = -CUDART_INF_F;\n    *(float2*)(scores_max + 0) = make_float2(broadcast_var_2, broadcast_var_2);\n    for (int k = 0; k < 43; ++k) {\n      #pragma unroll\n      for (int i_1 = 0; i_1 < 96; ++i_1) {\n        float condval;\n        if ((((k * 3) + (i_1 >> 5)) == 128)) {\n          condval = -CUDART_INF_F;\n        } else {\n          condval = 0x0p+0f/*0.000000e+00*/;\n        }\n        acc_s[i_1] = condval;\n      }\n      if (k == 0) {\n        program_schedule_mbar[0].wait(0);\n      }\n      program_schedule_mbar[((k & 1) + 1)].wait(((k & 3) >> 1));\n      {\n        tl::GmmaDescriptor desc_a;\n        tl::GmmaDescriptor desc_b;\n        tl::initialize_wgmma_descriptor<1, 1, 64>(desc_a, (&(((half_t*)Q_shared)[0])));\n        tl::initialize_wgmma_descriptor<1, 1, 64>(desc_b, (&(((half_t*)K_shared)[0])));\n        tl::increase_descriptor_offset<int>(desc_b, ((k & 1) * 49152));\n        tl::warpgroup_fence_operand(reinterpret_cast<float*>(acc_s + 0), 192);\n        tl::warpgroup_arrive();\n        #pragma unroll\n        for (int warp_j = 0; warp_j < 3; ++warp_j) {\n          #pragma unroll\n          for (int ki = 0; ki < 8; ++ki) {\n            tl::wgmma_ss<tl::DataType::kFloat16, tl::DataType::kFloat16, tl::DataType::kFloat32, 64, 64, 16, false, false, 1, 1>(uint64_t(desc_a + (((((ki >> 2) * 16384) + ((((int)threadIdx.x) >> 7) * 8192)) + ((ki & 3) * 32)) >> 4)), uint64_t(desc_b + (((((ki >> 2) * 24576) + (warp_j * 8192)) + ((ki & 3) * 32)) >> 4)), ((uint32_t*)(acc_s + (warp_j * 32))), 1);\n          }\n        }\n        tl::warpgroup_commit_batch();\n        tl::warpgroup_wait<0>();\n        tl::warpgroup_fence_operand(reinterpret_cast<float*>(acc_s + 0), 192);\n      }\n      program_schedule_mbar[((k & 1) + 6)].arrive();\n      *(float2*)(scores_max_prev + 0) = *(float2*)(scores_max + 0);\n      float broadcast_var_3 = -CUDART_INF_F;\n      *(float2*)(scores_max + 0) = make_float2(broadcast_var_3, broadcast_var_3);\n      #pragma unroll\n      for (int i_2 = 0; i_2 < 2; ++i_2) {\n        scores_max_clear[i_2] = -CUDART_INF_F;\n        #pragma unroll\n        for (int rv = 0; rv < 48; ++rv) {\n          scores_max_clear[i_2] = max(scores_max_clear[i_2], acc_s[((((rv % 24) * 4) + (i_2 * 2)) + (rv / 24))]);\n        }\n        scores_max_clear[i_2] = tl::AllReduce<tl::MaxOp, 4, 1, 0, tl::NamedBarrier<256>>::run(scores_max_clear[i_2]);\n        scores_max[i_2] = max(scores_max[i_2], scores_max_clear[i_2]);\n      }\n      #pragma unroll\n      for (int i_3 = 0; i_3 < 2; ++i_3) {\n        scores_max[i_3] = max(scores_max[i_3], scores_max_prev[i_3]);\n      }\n      #pragma unroll\n      for (int i_4 = 0; i_4 < 2; ++i_4) {\n        scores_scale[i_4] = exp2f(((scores_max_prev[i_4] * 0x1.0527dbd5cafffp-3f/*1.275174e-01*/) - (scores_max[i_4] * 0x1.0527dbd5cafffp-3f/*1.275174e-01*/)));\n      }\n      #pragma unroll\n      for (int i_5 = 0; i_5 < 96; ++i_5) {\n        acc_s[i_5] = exp2f(((acc_s[i_5] * 0x1.0527dbd5cafffp-3f/*1.275174e-01*/) - (scores_max[((i_5 & 3) >> 1)] * 0x1.0527dbd5cafffp-3f/*1.275174e-01*/)));\n      }\n      #pragma unroll\n      for (int i_6 = 0; i_6 < 2; ++i_6) {\n        scores_sum[i_6] = 0x0p+0f/*0.000000e+00*/;\n        #pragma unroll\n        for (int rv_1 = 0; rv_1 < 48; ++rv_1) {\n          scores_sum[i_6] = (scores_sum[i_6] + acc_s[((((rv_1 % 24) * 4) + (i_6 * 2)) + (rv_1 / 24))]);\n        }\n        scores_sum[i_6] = tl::AllReduce<tl::SumOp, 4, 1, 0, tl::NamedBarrier<256>>::run(scores_sum[i_6]);\n      }\n      #pragma unroll\n      for (int i_7 = 0; i_7 < 2; ++i_7) {\n        logsum[i_7] = ((logsum[i_7] * scores_scale[i_7]) + scores_sum[i_7]);\n      }\n      #pragma unroll\n      for (int i_8 = 0; i_8 < 24; ++i_8) {\n        uint2 __1;\n        float4 v_ = *(float4*)(acc_s + (i_8 * 4));\n        ((half2*)(&__1))[0] = __float22half2_rn(((float2*)(&v_))[0]);\n        ((half2*)(&__1))[1] = __float22half2_rn(((float2*)(&v_))[1]);\n        *(uint2*)(acc_s_cast + (i_8 * 4)) = __1;\n      }\n      #pragma unroll\n      for (int i_9 = 0; i_9 < 64; ++i_9) {\n        acc_o[i_9] = (acc_o[i_9] * scores_scale[((i_9 & 3) >> 1)]);\n      }\n      program_schedule_mbar[((k & 1) + 3)].wait(((k & 3) >> 1));\n      {\n        tl::GmmaDescriptor desc_b_1;\n        tl::initialize_wgmma_descriptor<1, 1536, 64>(desc_b_1, (&(((half_t*)V_shared)[0])));\n        tl::increase_descriptor_offset<int>(desc_b_1, ((k & 1) * 49152));\n        tl::warpgroup_fence_operand(reinterpret_cast<uint32_t*>(acc_s_cast + 0), 48);\n        tl::warpgroup_fence_operand(reinterpret_cast<float*>(acc_o + 0), 128);\n        tl::warpgroup_arrive();\n        #pragma unroll\n        for (int ki_1 = 0; ki_1 < 12; ++ki_1) {\n          tl::wgmma_rs<tl::DataType::kFloat16, tl::DataType::kFloat16, tl::DataType::kFloat32, 64, 128, 16, false, true, 1, 1>(reinterpret_cast<const uint32_t*>(acc_s_cast + (ki_1 * 8)), uint64_t(desc_b_1 + ((ki_1 * 2048) >> 4)), reinterpret_cast<uint32_t*>(acc_o + 0), 1);\n        }\n        tl::warpgroup_commit_batch();\n        tl::warpgroup_wait<0>();\n        tl::warpgroup_fence_operand(reinterpret_cast<float*>(acc_o + 0), 128);\n        tl::warpgroup_fence_operand(reinterpret_cast<uint32_t*>(acc_s_cast + 0), 48);\n      }\n      program_schedule_mbar[((k & 1) + 8)].arrive();\n    }\n    #pragma unroll\n    for (int i_10 = 0; i_10 < 64; ++i_10) {\n      acc_o[i_10] = (acc_o[i_10] / logsum[((i_10 & 3) >> 1)]);\n    }\n    #pragma unroll\n    for (int i_11 = 0; i_11 < 8; ++i_11) {\n      tl::ptx_stmatrix_m8n8_x4((&(((half_t*)O_shared)[(((((((int)threadIdx.x) >> 5) * 2048) + ((((int)threadIdx.x) & 15) * 128)) + (i_11 * 16)) + (((((int)threadIdx.x) & 31) >> 4) * 8))])), __pack_half2(((half_t)acc_o[(i_11 * 8)]), ((half_t)acc_o[((i_11 * 8) + 1)])), __pack_half2(((half_t)acc_o[((i_11 * 8) + 2)]), ((half_t)acc_o[((i_11 * 8) + 3)])), __pack_half2(((half_t)acc_o[((i_11 * 8) + 4)]), ((half_t)acc_o[((i_11 * 8) + 5)])), __pack_half2(((half_t)acc_o[((i_11 * 8) + 6)]), ((half_t)acc_o[((i_11 * 8) + 7)])));\n    }\n    tl::fence_proxy_async();\n    program_schedule_mbar[5].arrive();\n  } else {\n    tl::warpgroup_reg_dealloc<24>();\n    #pragma unroll\n    for (int i_12 = 0; i_12 < 16; ++i_12) {\n      *(uint4*)(((half_t*)Q_shared) + ((((((((((int)threadIdx.x) & 15) >> 3) * 8192) + (i_12 * 512)) + (((((int)threadIdx.x) & 127) >> 4) * 64)) + (((((((int)threadIdx.x) & 127) >> 6) + ((((int)threadIdx.x) & 7) >> 2)) & 1) * 32)) + (((((((int)threadIdx.x) & 63) >> 5) + ((((int)threadIdx.x) & 3) >> 1)) & 1) * 16)) + (((((((int)threadIdx.x) & 31) >> 4) + (((int)threadIdx.x) & 1)) & 1) * 8))) = *(uint4*)(Q + (((((((int)blockIdx.y) * 1048576) + (((int)blockIdx.x) * 16384)) + (i_12 * 1024)) + (((int)threadIdx.x) * 8)) - 2048));\n    }\n    tl::fence_proxy_async();\n    program_schedule_mbar[0].arrive();\n    #pragma unroll\n    for (int i_13 = 0; i_13 < 24; ++i_13) {\n      *(uint4*)(((half_t*)K_shared) + ((((((((((int)threadIdx.x) & 15) >> 3) * 12288) + (i_13 * 512)) + (((((int)threadIdx.x) & 127) >> 4) * 64)) + (((((((int)threadIdx.x) & 127) >> 6) + ((((int)threadIdx.x) & 7) >> 2)) & 1) * 32)) + (((((((int)threadIdx.x) & 63) >> 5) + ((((int)threadIdx.x) & 3) >> 1)) & 1) * 16)) + (((((((int)threadIdx.x) & 31) >> 4) + (((int)threadIdx.x) & 1)) & 1) * 8))) = *(uint4*)(K + ((((((int)blockIdx.y) * 1048576) + (i_13 * 1024)) + (((int)threadIdx.x) * 8)) - 2048));\n    }\n    tl::fence_proxy_async();\n    program_schedule_mbar[1].arrive();\n    tl::__sync_thread_partial(3, 128);\n    for (int k_1 = 0; k_1 < 42; ++k_1) {\n      if (1 <= k_1) {\n        program_schedule_mbar[(((k_1 + 1) & 1) + 6)].wait((((k_1 + 3) & 3) >> 1));\n      }\n      #pragma unroll\n      for (int i_14 = 0; i_14 < 24; ++i_14) {\n        half_t broadcast_var_4 = half_t(0x0p+0f/*0.000000e+00*/);\n        uint4 condval_1;\n        if ((((k_1 * 4) + ((i_14 + 2) / 6)) < 167)) {\n          condval_1 = *(uint4*)(K + (((((((int)blockIdx.y) * 1048576) + (k_1 * 24576)) + (i_14 * 1024)) + (((int)threadIdx.x) * 8)) + 22528));\n        } else {\n          condval_1 = make_uint4(__pack_half2(broadcast_var_4, broadcast_var_4), __pack_half2(broadcast_var_4, broadcast_var_4), __pack_half2(broadcast_var_4, broadcast_var_4), __pack_half2(broadcast_var_4, broadcast_var_4));\n        }\n        *(uint4*)(((half_t*)K_shared) + (((((((((k_1 + 1) & 1) * 24576) + (((((int)threadIdx.x) & 15) >> 3) * 12288)) + (i_14 * 512)) + (((((int)threadIdx.x) & 127) >> 4) * 64)) + (((((((int)threadIdx.x) & 127) >> 6) + ((((int)threadIdx.x) & 7) >> 2)) & 1) * 32)) + (((((((int)threadIdx.x) & 63) >> 5) + ((((int)threadIdx.x) & 3) >> 1)) & 1) * 16)) + (((((((int)threadIdx.x) & 31) >> 4) + (((int)threadIdx.x) & 1)) & 1) * 8))) = condval_1;\n      }\n      tl::fence_proxy_async();\n      program_schedule_mbar[(((k_1 + 1) & 1) + 1)].arrive();\n      if (2 <= k_1) {\n        program_schedule_mbar[((k_1 & 1) + 8)].wait((((k_1 >> 1) + 1) & 1));\n      }\n      #pragma unroll\n      for (int i_15 = 0; i_15 < 24; ++i_15) {\n        *(uint4*)(((half_t*)V_shared) + ((((((((k_1 & 1) * 24576) + (((((int)threadIdx.x) & 15) >> 3) * 12288)) + (i_15 * 512)) + (((((int)threadIdx.x) & 127) >> 4) * 64)) + (((((((int)threadIdx.x) & 127) >> 6) + ((((int)threadIdx.x) & 7) >> 2)) & 1) * 32)) + (((((((int)threadIdx.x) & 63) >> 5) + ((((int)threadIdx.x) & 3) >> 1)) & 1) * 16)) + (((((((int)threadIdx.x) & 31) >> 4) + (((int)threadIdx.x) & 1)) & 1) * 8))) = *(uint4*)(V + (((((((int)blockIdx.y) * 1048576) + (k_1 * 24576)) + (i_15 * 1024)) + (((int)threadIdx.x) * 8)) - 2048));\n      }\n      tl::fence_proxy_async();\n      program_schedule_mbar[((k_1 & 1) + 3)].arrive();\n    }\n    program_schedule_mbar[8].wait(0);\n    tl::__sync_thread_partial(3, 128);\n    #pragma unroll\n    for (int i_16 = 0; i_16 < 24; ++i_16) {\n      half_t broadcast_var_5 = half_t(0x0p+0f/*0.000000e+00*/);\n      uint4 condval_2;\n      if ((i_16 < 16)) {\n        condval_2 = *(uint4*)(V + ((((((int)blockIdx.y) * 1048576) + (i_16 * 1024)) + (((int)threadIdx.x) * 8)) + 1030144));\n      } else {\n        condval_2 = make_uint4(__pack_half2(broadcast_var_5, broadcast_var_5), __pack_half2(broadcast_var_5, broadcast_var_5), __pack_half2(broadcast_var_5, broadcast_var_5), __pack_half2(broadcast_var_5, broadcast_var_5));\n      }\n      *(uint4*)(((half_t*)V_shared) + ((((((((((int)threadIdx.x) & 15) >> 3) * 12288) + (i_16 * 512)) + (((((int)threadIdx.x) & 127) >> 4) * 64)) + (((((((int)threadIdx.x) & 127) >> 6) + ((((int)threadIdx.x) & 7) >> 2)) & 1) * 32)) + (((((((int)threadIdx.x) & 63) >> 5) + ((((int)threadIdx.x) & 3) >> 1)) & 1) * 16)) + (((((((int)threadIdx.x) & 31) >> 4) + (((int)threadIdx.x) & 1)) & 1) * 8))) = condval_2;\n    }\n    tl::fence_proxy_async();\n    program_schedule_mbar[3].arrive();\n    program_schedule_mbar[5].wait(0);\n    tl::__sync_thread_partial(3, 128);\n    if (tl::tl_shuffle_elect<128>()) {\n      tl::tma_store((&(Output[((((int)blockIdx.y) * 1048576) + (((int)blockIdx.x) * 16384))])), (&(((half_t*)O_shared)[0])), 32768);\n      tl::tma_store_arrive();\n      tl::tma_store_wait<0, true>();\n    }\n  }\n}\n\n#include <cutlass/cuda_host_adapter.hpp>\n\n#ifdef _WIN32\n#define TL_EXPORT __declspec(dllexport)\n#else\n#define TL_EXPORT\n#endif\n\n#define ERROR_BUF_SIZE 1024\nstatic char error_buf[ERROR_BUF_SIZE];\n\nextern \"C\" TL_EXPORT const char* get_last_error() {\n    return error_buf;\n}\n\nextern \"C\" TL_EXPORT int init() {\n    error_buf[0] = '\\0';\n    \n    cudaError_t result_main_kernel = cudaFuncSetAttribute(main_kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, 262144);\n    if (result_main_kernel != cudaSuccess) {\n        snprintf(error_buf, ERROR_BUF_SIZE, \"Failed to set the allowed dynamic shared memory size to %d with error: %s\", 262144, cudaGetErrorString(result_main_kernel));\n        return -1;\n    }\n\n    return 0;\n}\n\nextern \"C\" TL_EXPORT int call(half_t* __restrict__ Q, half_t* __restrict__ K, half_t* __restrict__ V, half_t* __restrict__ Output, cudaStream_t stream=cudaStreamDefault) {\n\n\t{\n\t\tcudaLaunchConfig_t config;\n\t\tcudaLaunchAttribute attribute[1];\n\t\tattribute[0].id = cudaLaunchAttributeProgrammaticStreamSerialization;\n\t\tattribute[0].val.programmaticStreamSerializationAllowed = 1;\n\t\tconfig.attrs = attribute;\n\t\tconfig.numAttrs = 1;\n\t\tconfig.stream = stream;\n\t\tconfig.gridDim = dim3(64, 16, 1);\n\t\tconfig.blockDim = dim3(384, 1, 1);\n\t\tconfig.dynamicSmemBytes = 262144;\n\t\tcudaLaunchKernelEx(&config, main_kernel, K, Output, Q, V);\n\t}\n\tTILELANG_CHECK_LAST_ERROR(\"main_kernel\");\n\n\treturn 0;\n}\n",
+  "error_type": "RuntimeError",
+  "generated_source_available": false,
+  "input_tensors": [
+    {
+      "device": "cuda:0",
+      "dtype": "torch.float16",
+      "index": 0,
+      "shape": [
+        "1",
+        "16",
+        "8192",
+        "128"
+      ],
+      "type": "Tensor"
+    },
+    {
+      "device": "cuda:0",
+      "dtype": "torch.float16",
+      "index": 1,
+      "shape": [
+        "1",
+        "16",
+        "8192",
+        "128"
+      ],
+      "type": "Tensor"
+    },
+    {
+      "device": "cuda:0",
+      "dtype": "torch.float16",
+      "index": 2,
+      "shape": [
+        "1",
+        "16",
+        "8192",
+        "128"
+      ],
+      "type": "Tensor"
+    }
+  ],
+  "phase": "compilation",
+  "schedule": {
+    "buffer_versions": {
+      "K": 1,
+      "K_shared": 2,
+      "O_shared": 1,
+      "Output": 1,
+      "Q": 1,
+      "Q_shared": 1,
+      "V": 1,
+      "V_shared": 2,
+      "acc_o": 1,
+      "acc_s": 1,
+      "acc_s_cast": 1,
+      "logsum": 1,
+      "scores_max": 1,
+      "scores_max_prev": 1,
+      "scores_scale": 1,
+      "scores_sum": 1
+    },
+    "groups": {
+      "0": 1,
+      "1": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0,
+      "13": 0,
+      "14": 0,
+      "15": 0,
+      "16": 0,
+      "17": 1,
+      "18": 0,
+      "19": 0,
+      "2": 0,
+      "20": 0,
+      "21": 1,
+      "3": 0,
+      "4": 1,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0
+    },
+    "operations": [
+      {
+        "instruction_kind": "tma",
+        "name": "copy_Q_to_Q_shared",
+        "node_id": 0,
+        "region_id": 0
+      },
+      {
+        "instruction_kind": "generic",
+        "name": "fill_acc_o",
+        "node_id": 1,
+        "region_id": 0
+      },
+      {
+        "instruction_kind": "generic",
+        "name": "fill_logsum",
+        "node_id": 2,
+        "region_id": 0
+      },
+      {
+        "instruction_kind": "generic",
+        "name": "fill_scores_max",
+        "node_id": 3,
+        "region_id": 0
+      },
+      {
+        "instruction_kind": "tma",
+        "name": "copy_K_to_K_shared",
+        "node_id": 4,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "generic",
+        "name": "parallel_acc_s",
+        "node_id": 5,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "wgmma",
+        "name": "gemm_acc_s",
+        "node_id": 6,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "rrcp",
+        "name": "copy_scores_max_to_scores_max_prev",
+        "node_id": 7,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "generic",
+        "name": "fill_scores_max_2",
+        "node_id": 8,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "generic",
+        "name": "reduce_scores_max",
+        "node_id": 9,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "generic",
+        "name": "parallel_scores_max",
+        "node_id": 10,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "function",
+        "name": "parallel_scores_scale",
+        "node_id": 11,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "function",
+        "name": "parallel_acc_s_2",
+        "node_id": 12,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "generic",
+        "name": "reduce_scores_sum",
+        "node_id": 13,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "generic",
+        "name": "parallel_logsum",
+        "node_id": 14,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "rrcp",
+        "name": "copy_acc_s_to_acc_s_cast",
+        "node_id": 15,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "generic",
+        "name": "parallel_acc_o",
+        "node_id": 16,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "tma",
+        "name": "copy_V_to_V_shared",
+        "node_id": 17,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "wgmma",
+        "name": "gemm_acc_o",
+        "node_id": 18,
+        "region_id": 1
+      },
+      {
+        "instruction_kind": "generic",
+        "name": "parallel_acc_o_2",
+        "node_id": 19,
+        "region_id": 2
+      },
+      {
+        "instruction_kind": "rscp",
+        "name": "copy_acc_o_to_O_shared",
+        "node_id": 20,
+        "region_id": 2
+      },
+      {
+        "instruction_kind": "tma",
+        "name": "copy_O_shared_to_Output",
+        "node_id": 21,
+        "region_id": 2
+      }
+    ],
+    "orders": {
+      "0": {
+        "0": {
+          "1": 0,
+          "2": 1,
+          "3": 2
+        },
+        "1": {
+          "0": 0
+        }
+      },
+      "1": {
+        "0": {
+          "10": 5,
+          "11": 6,
+          "12": 7,
+          "13": 9,
+          "14": 10,
+          "15": 8,
+          "16": 11,
+          "18": 12,
+          "5": 1,
+          "6": 2,
+          "7": 0,
+          "8": 3,
+          "9": 4
+        },
+        "1": {
+          "17": 1,
+          "4": 0
+        }
+      },
+      "2": {
+        "0": {
+          "19": 0,
+          "20": 1
+        },
+        "1": {
+          "21": 0
+        }
+      }
+    },
+    "shared_memory": {
+      "merged_shared_bytes": 229456,
+      "shared_buffer_bytes": 229376,
+      "synchronization_bytes": 80
+    },
+    "stages_by_region": {
+      "1": {
+        "10": 2,
+        "11": 2,
+        "12": 2,
+        "13": 2,
+        "14": 2,
+        "15": 2,
+        "16": 2,
+        "17": 1,
+        "18": 2,
+        "4": 0,
+        "5": 2,
+        "6": 2,
+        "7": 2,
+        "8": 2,
+        "9": 2
+      }
+    },
+    "synchronization": [
+      {
+        "buffer": "Q_shared",
+        "consumer_group": 0,
+        "consumer_id": 6,
+        "dependency_kinds": [
+          "RAW"
+        ],
+        "effective_stage_distance": null,
+        "iteration_distance": 0,
+        "kind": "forward_dependency",
+        "producer_group": 1,
+        "producer_id": 0,
+        "scope": "region_boundary",
+        "slot_count": 1
+      },
+      {
+        "buffer": "K_shared",
+        "consumer_group": 0,
+        "consumer_id": 6,
+        "dependency_kinds": [
+          "RAW"
+        ],
+        "effective_stage_distance": 2,
+        "iteration_distance": 0,
+        "kind": "forward_dependency",
+        "producer_group": 1,
+        "producer_id": 4,
+        "scope": "per_iteration",
+        "slot_count": 2
+      },
+      {
+        "buffer": "V_shared",
+        "consumer_group": 0,
+        "consumer_id": 18,
+        "dependency_kinds": [
+          "RAW"
+        ],
+        "effective_stage_distance": 1,
+        "iteration_distance": 0,
+        "kind": "forward_dependency",
+        "producer_group": 1,
+        "producer_id": 17,
+        "scope": "per_iteration",
+        "slot_count": 2
+      },
+      {
+        "buffer": "O_shared",
+        "consumer_group": 1,
+        "consumer_id": 21,
+        "dependency_kinds": [
+          "RAW"
+        ],
+        "effective_stage_distance": null,
+        "iteration_distance": 0,
+        "kind": "forward_dependency",
+        "producer_group": 0,
+        "producer_id": 20,
+        "scope": "once",
+        "slot_count": 1
+      },
+      {
+        "buffer": "K_shared",
+        "consumer_group": 1,
+        "consumer_id": 4,
+        "dependency_kinds": [],
+        "effective_stage_distance": 0,
+        "iteration_distance": 2,
+        "kind": "buffer_reuse",
+        "producer_group": 0,
+        "producer_id": 6,
+        "scope": "per_iteration",
+        "slot_count": 2
+      },
+      {
+        "buffer": "V_shared",
+        "consumer_group": 1,
+        "consumer_id": 17,
+        "dependency_kinds": [],
+        "effective_stage_distance": 1,
+        "iteration_distance": 2,
+        "kind": "buffer_reuse",
+        "producer_group": 0,
+        "producer_id": 18,
+        "scope": "per_iteration",
+        "slot_count": 2
+      }
+    ],
+    "warp_allocation": {
+      "effective_threads": 384,
+      "groups": [
+        {
+          "first_warp": 0,
+          "group_id": 0,
+          "warp_count": 8
+        },
+        {
+          "first_warp": 8,
+          "group_id": 1,
+          "warp_count": 4
+        }
+      ],
+      "register_counts": [
+        240,
+        24
+      ],
+      "register_is_increase": [
+        true,
+        false
+      ]
+    }
+  },
+  "schedule_index": 471,
+  "search_configuration": {
+    "execution_backend": "cython",
+    "num_groups": null,
+    "num_stages": null,
+    "original_threads": null,
+    "out_idx": [
+      3
+    ],
+    "pass_configs": {
+      "tl.enable_fast_math": true
+    },
+    "rep": 40,
+    "target": "{\"kind\":\"cuda\",\"tag\":\"\",\"keys\":[\"cuda\",\"gpu\"],\"max_num_threads\":1024,\"thread_warp_size\":32,\"max_shared_memory_per_block\":232448,\"max_threads_per_block\":1024,\"arch\":\"sm_90a\"}",
+    "total_flops": 549755813888.0,
+    "validate_each_schedule": true,
+    "warmup": 15
+  },
+  "source_file": null,
+  "traceback": "Traceback (most recent call last):\n  File \"/home/xiebaokang/projects/rewrite/tilelang/unionwsp/search.py\", line 618, in search_wsp_schedules\n    compiled = tilelang.compile(\n  File \"/home/xiebaokang/projects/rewrite/tilelang/tilelang/jit/__init__.py\", line 161, in compile\n    return cached(\n  File \"/home/xiebaokang/projects/rewrite/tilelang/tilelang/cache/__init__.py\", line 82, in cached\n    return cache.cached(\n  File \"/home/xiebaokang/projects/rewrite/tilelang/tilelang/cache/kernel_cache.py\", line 329, in cached\n    return JITKernel(\n  File \"/home/xiebaokang/projects/rewrite/tilelang/tilelang/jit/kernel.py\", line 134, in __init__\n    adapter = self._compile_and_create_adapter(func, out_idx)\n  File \"/home/xiebaokang/projects/rewrite/tilelang/tilelang/jit/kernel.py\", line 311, in _compile_and_create_adapter\n    adapter = create_adapter(\n  File \"/home/xiebaokang/projects/rewrite/tilelang/tilelang/jit/kernel.py\", line 289, in create_adapter\n    return adapter_cls(**kwargs)\n  File \"/home/xiebaokang/projects/rewrite/tilelang/tilelang/jit/adapter/cython/adapter.py\", line 140, in __init__\n    raise RuntimeError(f\"Initialization failed: {error_msg}\")\nRuntimeError: Initialization failed: Failed to set the allowed dynamic shared memory size to 262144 with error: invalid argument\n#if defined(_MSC_VER) && !defined(__clang__) && _MSC_VER < 1940\n#define _tl_orig_alignas alignas\n#define alignas(N) _tl_orig_alignas((N) <= 64 ? (N) : 64)\n#include <cuda.h>\n#undef alignas\n#define alignas _tl_orig_alignas\n#endif\n#include <tl_templates/cuda/instruction/wgmma.h>\n#include <tl_templates/cuda/intrin.h>\n#include <tl_templates/cuda/barrier.h>\n#include <tl_templates/cuda/copy_sm90.h>\n#include <math_constants.h>\n#include <tl_templates/cuda/reduce.h>\n#include <tl_templates/cuda/scan.h>\n#include <tl_templates/cuda/ldsm.h>\n#include <tl_templates/cuda/threadblock_swizzle.h>\n#include <tl_templates/cuda/debug.h>\n#ifdef ENABLE_BF16\n#include <tl_templates/cuda/cuda_bf16_fallbacks.cuh>\n#endif\n\nextern \"C\" __global__ void main_kernel(const half_t* __restrict__ K, half_t* __restrict__ Output, const half_t* __restrict__ Q, const half_t* __restrict__ V);\nextern \"C\" __global__ void __launch_bounds__(384, 1) main_kernel(const half_t* __restrict__ K, half_t* __restrict__ Output, const half_t* __restrict__ Q, const half_t* __restrict__ V) {\n  extern __shared__ __align__(1024) uchar buf_dyn_shmem[];\n  void* K_shared = ((void*)((char*)buf_dyn_shmem + 0));\n  void* V_shared = ((void*)((char*)buf_dyn_shmem + 98304));\n  void* Q_shared = ((void*)((char*)buf_dyn_shmem + 196608));\n  void* O_shared = ((void*)((char*)buf_dyn_shmem + 229376));\n  __shared__ __align__(16) uint64_t program_schedule_mbar_mem[10];\n  auto program_schedule_mbar = reinterpret_cast<Barrier*>(program_schedule_mbar_mem);\n  float acc_o[64];\n  float logsum[2];\n  float scores_max[2];\n  float acc_s[96];\n  float scores_max_prev[2];\n  float scores_max_clear[2];\n  float scores_scale[2];\n  float scores_sum[2];\n  half_t acc_s_cast[96];\n  if (tl::tl_shuffle_elect<0>()) {\n    program_schedule_mbar[0].init(128);\n    program_schedule_mbar[1].init(128);\n    program_schedule_mbar[2].init(128);\n    program_schedule_mbar[3].init(128);\n    program_schedule_mbar[4].init(128);\n    program_schedule_mbar[5].init(256);\n    program_schedule_mbar[6].init(256);\n    program_schedule_mbar[7].init(256);\n    program_schedule_mbar[8].init(256);\n    program_schedule_mbar[9].init(256);\n  }\n  tl::fence_barrier_init();\n  __syncthreads();\n  if (((int)threadIdx.x) < 256) {\n    tl::warpgroup_reg_alloc<240>();\n    #pragma unroll\n    for (int i = 0; i < 16; ++i) {\n      float broadcast_var = 0x0p+0f/*0.000000e+00*/;\n      *(float4*)(acc_o + (i * 4)) = make_float4(broadcast_var, broadcast_var, broadcast_var, broadcast_var);\n    }\n    float broadcast_var_1 = 0x0p+0f/*0.000000e+00*/;\n    *(float2*)(logsum + 0) = make_float2(broadcast_var_1, broadcast_var_1);\n    float broadcast_var_2 = -CUDART_INF_F;\n    *(float2*)(scores_max + 0) = make_float2(broadcast_var_2, broadcast_var_2);\n    for (int k = 0; k < 43; ++k) {\n      #pragma unroll\n      for (int i_1 = 0; i_1 < 96; ++i_1) {\n        float condval;\n        if ((((k * 3) + (i_1 >> 5)) == 128)) {\n          condval = -CUDART_INF_F;\n        } else {\n          condval = 0x0p+0f/*0.000000e+00*/;\n        }\n        acc_s[i_1] = condval;\n      }\n      if (k == 0) {\n        program_schedule_mbar[0].wait(0);\n      }\n      program_schedule_mbar[((k & 1) + 1)].wait(((k & 3) >> 1));\n      {\n        tl::GmmaDescriptor desc_a;\n        tl::GmmaDescriptor desc_b;\n        tl::initialize_wgmma_descriptor<1, 1, 64>(desc_a, (&(((half_t*)Q_shared)[0])));\n        tl::initialize_wgmma_descriptor<1, 1, 64>(desc_b, (&(((half_t*)K_shared)[0])));\n        tl::increase_descriptor_offset<int>(desc_b, ((k & 1) * 49152));\n        tl::warpgroup_fence_operand(reinterpret_cast<float*>(acc_s + 0), 192);\n        tl::warpgroup_arrive();\n        #pragma unroll\n        for (int warp_j = 0; warp_j < 3; ++warp_j) {\n          #pragma unroll\n          for (int ki = 0; ki < 8; ++ki) {\n            tl::wgmma_ss<tl::DataType::kFloat16, tl::DataType::kFloat16, tl::DataType::kFloat32, 64, 64, 16, false, false, 1, 1>(uint64_t(desc_a + (((((ki >> 2) * 16384) + ((((int)threadIdx.x) >> 7) * 8192)) + ((ki & 3) * 32)) >> 4)), uint64_t(desc_b + (((((ki >> 2) * 24576) + (warp_j * 8192)) + ((ki & 3) * 32)) >> 4)), ((uint32_t*)(acc_s + (warp_j * 32))), 1);\n          }\n        }\n        tl::warpgroup_commit_batch();\n        tl::warpgroup_wait<0>();\n        tl::warpgroup_fence_operand(reinterpret_cast<float*>(acc_s + 0), 192);\n      }\n      program_schedule_mbar[((k & 1) + 6)].arrive();\n      *(float2*)(scores_max_prev + 0) = *(float2*)(scores_max + 0);\n      float broadcast_var_3 = -CUDART_INF_F;\n      *(float2*)(scores_max + 0) = make_float2(broadcast_var_3, broadcast_var_3);\n      #pragma unroll\n      for (int i_2 = 0; i_2 < 2; ++i_2) {\n        scores_max_clear[i_2] = -CUDART_INF_F;\n        #pragma unroll\n        for (int rv = 0; rv < 48; ++rv) {\n          scores_max_clear[i_2] = max(scores_max_clear[i_2], acc_s[((((rv % 24) * 4) + (i_2 * 2)) + (rv / 24))]);\n        }\n        scores_max_clear[i_2] = tl::AllReduce<tl::MaxOp, 4, 1, 0, tl::NamedBarrier<256>>::run(scores_max_clear[i_2]);\n        scores_max[i_2] = max(scores_max[i_2], scores_max_clear[i_2]);\n      }\n      #pragma unroll\n      for (int i_3 = 0; i_3 < 2; ++i_3) {\n        scores_max[i_3] = max(scores_max[i_3], scores_max_prev[i_3]);\n      }\n      #pragma unroll\n      for (int i_4 = 0; i_4 < 2; ++i_4) {\n        scores_scale[i_4] = exp2f(((scores_max_prev[i_4] * 0x1.0527dbd5cafffp-3f/*1.275174e-01*/) - (scores_max[i_4] * 0x1.0527dbd5cafffp-3f/*1.275174e-01*/)));\n      }\n      #pragma unroll\n      for (int i_5 = 0; i_5 < 96; ++i_5) {\n        acc_s[i_5] = exp2f(((acc_s[i_5] * 0x1.0527dbd5cafffp-3f/*1.275174e-01*/) - (scores_max[((i_5 & 3) >> 1)] * 0x1.0527dbd5cafffp-3f/*1.275174e-01*/)));\n      }\n      #pragma unroll\n      for (int i_6 = 0; i_6 < 2; ++i_6) {\n        scores_sum[i_6] = 0x0p+0f/*0.000000e+00*/;\n        #pragma unroll\n        for (int rv_1 = 0; rv_1 < 48; ++rv_1) {\n          scores_sum[i_6] = (scores_sum[i_6] + acc_s[((((rv_1 % 24) * 4) + (i_6 * 2)) + (rv_1 / 24))]);\n        }\n        scores_sum[i_6] = tl::AllReduce<tl::SumOp, 4, 1, 0, tl::NamedBarrier<256>>::run(scores_sum[i_6]);\n      }\n      #pragma unroll\n      for (int i_7 = 0; i_7 < 2; ++i_7) {\n        logsum[i_7] = ((logsum[i_7] * scores_scale[i_7]) + scores_sum[i_7]);\n      }\n      #pragma unroll\n      for (int i_8 = 0; i_8 < 24; ++i_8) {\n        uint2 __1;\n        float4 v_ = *(float4*)(acc_s + (i_8 * 4));\n        ((half2*)(&__1))[0] = __float22half2_rn(((float2*)(&v_))[0]);\n        ((half2*)(&__1))[1] = __float22half2_rn(((float2*)(&v_))[1]);\n        *(uint2*)(acc_s_cast + (i_8 * 4)) = __1;\n      }\n      #pragma unroll\n      for (int i_9 = 0; i_9 < 64; ++i_9) {\n        acc_o[i_9] = (acc_o[i_9] * scores_scale[((i_9 & 3) >> 1)]);\n      }\n      program_schedule_mbar[((k & 1) + 3)].wait(((k & 3) >> 1));\n      {\n        tl::GmmaDescriptor desc_b_1;\n        tl::initialize_wgmma_descriptor<1, 1536, 64>(desc_b_1, (&(((half_t*)V_shared)[0])));\n        tl::increase_descriptor_offset<int>(desc_b_1, ((k & 1) * 49152));\n        tl::warpgroup_fence_operand(reinterpret_cast<uint32_t*>(acc_s_cast + 0), 48);\n        tl::warpgroup_fence_operand(reinterpret_cast<float*>(acc_o + 0), 128);\n        tl::warpgroup_arrive();\n        #pragma unroll\n        for (int ki_1 = 0; ki_1 < 12; ++ki_1) {\n          tl::wgmma_rs<tl::DataType::kFloat16, tl::DataType::kFloat16, tl::DataType::kFloat32, 64, 128, 16, false, true, 1, 1>(reinterpret_cast<const uint32_t*>(acc_s_cast + (ki_1 * 8)), uint64_t(desc_b_1 + ((ki_1 * 2048) >> 4)), reinterpret_cast<uint32_t*>(acc_o + 0), 1);\n        }\n        tl::warpgroup_commit_batch();\n        tl::warpgroup_wait<0>();\n        tl::warpgroup_fence_operand(reinterpret_cast<float*>(acc_o + 0), 128);\n        tl::warpgroup_fence_operand(reinterpret_cast<uint32_t*>(acc_s_cast + 0), 48);\n      }\n      program_schedule_mbar[((k & 1) + 8)].arrive();\n    }\n    #pragma unroll\n    for (int i_10 = 0; i_10 < 64; ++i_10) {\n      acc_o[i_10] = (acc_o[i_10] / logsum[((i_10 & 3) >> 1)]);\n    }\n    #pragma unroll\n    for (int i_11 = 0; i_11 < 8; ++i_11) {\n      tl::ptx_stmatrix_m8n8_x4((&(((half_t*)O_shared)[(((((((int)threadIdx.x) >> 5) * 2048) + ((((int)threadIdx.x) & 15) * 128)) + (i_11 * 16)) + (((((int)threadIdx.x) & 31) >> 4) * 8))])), __pack_half2(((half_t)acc_o[(i_11 * 8)]), ((half_t)acc_o[((i_11 * 8) + 1)])), __pack_half2(((half_t)acc_o[((i_11 * 8) + 2)]), ((half_t)acc_o[((i_11 * 8) + 3)])), __pack_half2(((half_t)acc_o[((i_11 * 8) + 4)]), ((half_t)acc_o[((i_11 * 8) + 5)])), __pack_half2(((half_t)acc_o[((i_11 * 8) + 6)]), ((half_t)acc_o[((i_11 * 8) + 7)])));\n    }\n    tl::fence_proxy_async();\n    program_schedule_mbar[5].arrive();\n  } else {\n    tl::warpgroup_reg_dealloc<24>();\n    #pragma unroll\n    for (int i_12 = 0; i_12 < 16; ++i_12) {\n      *(uint4*)(((half_t*)Q_shared) + ((((((((((int)threadIdx.x) & 15) >> 3) * 8192) + (i_12 * 512)) + (((((int)threadIdx.x) & 127) >> 4) * 64)) + (((((((int)threadIdx.x) & 127) >> 6) + ((((int)threadIdx.x) & 7) >> 2)) & 1) * 32)) + (((((((int)threadIdx.x) & 63) >> 5) + ((((int)threadIdx.x) & 3) >> 1)) & 1) * 16)) + (((((((int)threadIdx.x) & 31) >> 4) + (((int)threadIdx.x) & 1)) & 1) * 8))) = *(uint4*)(Q + (((((((int)blockIdx.y) * 1048576) + (((int)blockIdx.x) * 16384)) + (i_12 * 1024)) + (((int)threadIdx.x) * 8)) - 2048));\n    }\n    tl::fence_proxy_async();\n    program_schedule_mbar[0].arrive();\n    #pragma unroll\n    for (int i_13 = 0; i_13 < 24; ++i_13) {\n      *(uint4*)(((half_t*)K_shared) + ((((((((((int)threadIdx.x) & 15) >> 3) * 12288) + (i_13 * 512)) + (((((int)threadIdx.x) & 127) >> 4) * 64)) + (((((((int)threadIdx.x) & 127) >> 6) + ((((int)threadIdx.x) & 7) >> 2)) & 1) * 32)) + (((((((int)threadIdx.x) & 63) >> 5) + ((((int)threadIdx.x) & 3) >> 1)) & 1) * 16)) + (((((((int)threadIdx.x) & 31) >> 4) + (((int)threadIdx.x) & 1)) & 1) * 8))) = *(uint4*)(K + ((((((int)blockIdx.y) * 1048576) + (i_13 * 1024)) + (((int)threadIdx.x) * 8)) - 2048));\n    }\n    tl::fence_proxy_async();\n    program_schedule_mbar[1].arrive();\n    tl::__sync_thread_partial(3, 128);\n    for (int k_1 = 0; k_1 < 42; ++k_1) {\n      if (1 <= k_1) {\n        program_schedule_mbar[(((k_1 + 1) & 1) + 6)].wait((((k_1 + 3) & 3) >> 1));\n      }\n      #pragma unroll\n      for (int i_14 = 0; i_14 < 24; ++i_14) {\n        half_t broadcast_var_4 = half_t(0x0p+0f/*0.000000e+00*/);\n        uint4 condval_1;\n        if ((((k_1 * 4) + ((i_14 + 2) / 6)) < 167)) {\n          condval_1 = *(uint4*)(K + (((((((int)blockIdx.y) * 1048576) + (k_1 * 24576)) + (i_14 * 1024)) + (((int)threadIdx.x) * 8)) + 22528));\n        } else {\n          condval_1 = make_uint4(__pack_half2(broadcast_var_4, broadcast_var_4), __pack_half2(broadcast_var_4, broadcast_var_4), __pack_half2(broadcast_var_4, broadcast_var_4), __pack_half2(broadcast_var_4, broadcast_var_4));\n        }\n        *(uint4*)(((half_t*)K_shared) + (((((((((k_1 + 1) & 1) * 24576) + (((((int)threadIdx.x) & 15) >> 3) * 12288)) + (i_14 * 512)) + (((((int)threadIdx.x) & 127) >> 4) * 64)) + (((((((int)threadIdx.x) & 127) >> 6) + ((((int)threadIdx.x) & 7) >> 2)) & 1) * 32)) + (((((((int)threadIdx.x) & 63) >> 5) + ((((int)threadIdx.x) & 3) >> 1)) & 1) * 16)) + (((((((int)threadIdx.x) & 31) >> 4) + (((int)threadIdx.x) & 1)) & 1) * 8))) = condval_1;\n      }\n      tl::fence_proxy_async();\n      program_schedule_mbar[(((k_1 + 1) & 1) + 1)].arrive();\n      if (2 <= k_1) {\n        program_schedule_mbar[((k_1 & 1) + 8)].wait((((k_1 >> 1) + 1) & 1));\n      }\n      #pragma unroll\n      for (int i_15 = 0; i_15 < 24; ++i_15) {\n        *(uint4*)(((half_t*)V_shared) + ((((((((k_1 & 1) * 24576) + (((((int)threadIdx.x) & 15) >> 3) * 12288)) + (i_15 * 512)) + (((((int)threadIdx.x) & 127) >> 4) * 64)) + (((((((int)threadIdx.x) & 127) >> 6) + ((((int)threadIdx.x) & 7) >> 2)) & 1) * 32)) + (((((((int)threadIdx.x) & 63) >> 5) + ((((int)threadIdx.x) & 3) >> 1)) & 1) * 16)) + (((((((int)threadIdx.x) & 31) >> 4) + (((int)threadIdx.x) & 1)) & 1) * 8))) = *(uint4*)(V + (((((((int)blockIdx.y) * 1048576) + (k_1 * 24576)) + (i_15 * 1024)) + (((int)threadIdx.x) * 8)) - 2048));\n      }\n      tl::fence_proxy_async();\n      program_schedule_mbar[((k_1 & 1) + 3)].arrive();\n    }\n    program_schedule_mbar[8].wait(0);\n    tl::__sync_thread_partial(3, 128);\n    #pragma unroll\n    for (int i_16 = 0; i_16 < 24; ++i_16) {\n      half_t broadcast_var_5 = half_t(0x0p+0f/*0.000000e+00*/);\n      uint4 condval_2;\n      if ((i_16 < 16)) {\n        condval_2 = *(uint4*)(V + ((((((int)blockIdx.y) * 1048576) + (i_16 * 1024)) + (((int)threadIdx.x) * 8)) + 1030144));\n      } else {\n        condval_2 = make_uint4(__pack_half2(broadcast_var_5, broadcast_var_5), __pack_half2(broadcast_var_5, broadcast_var_5), __pack_half2(broadcast_var_5, broadcast_var_5), __pack_half2(broadcast_var_5, broadcast_var_5));\n      }\n      *(uint4*)(((half_t*)V_shared) + ((((((((((int)threadIdx.x) & 15) >> 3) * 12288) + (i_16 * 512)) + (((((int)threadIdx.x) & 127) >> 4) * 64)) + (((((((int)threadIdx.x) & 127) >> 6) + ((((int)threadIdx.x) & 7) >> 2)) & 1) * 32)) + (((((((int)threadIdx.x) & 63) >> 5) + ((((int)threadIdx.x) & 3) >> 1)) & 1) * 16)) + (((((((int)threadIdx.x) & 31) >> 4) + (((int)threadIdx.x) & 1)) & 1) * 8))) = condval_2;\n    }\n    tl::fence_proxy_async();\n    program_schedule_mbar[3].arrive();\n    program_schedule_mbar[5].wait(0);\n    tl::__sync_thread_partial(3, 128);\n    if (tl::tl_shuffle_elect<128>()) {\n      tl::tma_store((&(Output[((((int)blockIdx.y) * 1048576) + (((int)blockIdx.x) * 16384))])), (&(((half_t*)O_shared)[0])), 32768);\n      tl::tma_store_arrive();\n      tl::tma_store_wait<0, true>();\n    }\n  }\n}\n\n#include <cutlass/cuda_host_adapter.hpp>\n\n#ifdef _WIN32\n#define TL_EXPORT __declspec(dllexport)\n#else\n#define TL_EXPORT\n#endif\n\n#define ERROR_BUF_SIZE 1024\nstatic char error_buf[ERROR_BUF_SIZE];\n\nextern \"C\" TL_EXPORT const char* get_last_error() {\n    return error_buf;\n}\n\nextern \"C\" TL_EXPORT int init() {\n    error_buf[0] = '\\0';\n    \n    cudaError_t result_main_kernel = cudaFuncSetAttribute(main_kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, 262144);\n    if (result_main_kernel != cudaSuccess) {\n        snprintf(error_buf, ERROR_BUF_SIZE, \"Failed to set the allowed dynamic shared memory size to %d with error: %s\", 262144, cudaGetErrorString(result_main_kernel));\n        return -1;\n    }\n\n    return 0;\n}\n\nextern \"C\" TL_EXPORT int call(half_t* __restrict__ Q, half_t* __restrict__ K, half_t* __restrict__ V, half_t* __restrict__ Output, cudaStream_t stream=cudaStreamDefault) {\n\n\t{\n\t\tcudaLaunchConfig_t config;\n\t\tcudaLaunchAttribute attribute[1];\n\t\tattribute[0].id = cudaLaunchAttributeProgrammaticStreamSerialization;\n\t\tattribute[0].val.programmaticStreamSerializationAllowed = 1;\n\t\tconfig.attrs = attribute;\n\t\tconfig.numAttrs = 1;\n\t\tconfig.stream = stream;\n\t\tconfig.gridDim = dim3(64, 16, 1);\n\t\tconfig.blockDim = dim3(384, 1, 1);\n\t\tconfig.dynamicSmemBytes = 262144;\n\t\tcudaLaunchKernelEx(&config, main_kernel, K, Output, Q, V);\n\t}\n\tTILELANG_CHECK_LAST_ERROR(\"main_kernel\");\n\n\treturn 0;\n}\n\n"
+}

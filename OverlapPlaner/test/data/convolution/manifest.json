@@ -1,0 +1,20 @@
+{
+  "operator": "convolution",
+  "options": {
+    "conv_batch": 1,
+    "conv_channels": 64,
+    "conv_dilation": 1,
+    "conv_filters": 128,
+    "conv_height": 16,
+    "conv_kernel": 3,
+    "conv_padding": 1,
+    "conv_stride": 1,
+    "conv_width": 16
+  },
+  "schedule_count": 1,
+  "tile": {
+    "block_k": 64,
+    "block_m": 128,
+    "block_n": 128
+  }
+}

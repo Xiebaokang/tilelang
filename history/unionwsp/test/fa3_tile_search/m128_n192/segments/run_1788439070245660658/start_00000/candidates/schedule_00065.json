@@ -1,0 +1,339 @@
+{
+  "buffer_versions": {
+    "K": 1,
+    "K_shared": 1,
+    "O_shared": 1,
+    "Output": 1,
+    "Q": 1,
+    "Q_shared": 1,
+    "V": 1,
+    "V_shared": 1,
+    "acc_o": 1,
+    "acc_s": 1,
+    "acc_s_cast": 1,
+    "logsum": 1,
+    "scores_max": 1,
+    "scores_max_prev": 1,
+    "scores_scale": 1,
+    "scores_sum": 1
+  },
+  "groups": {
+    "0": 1,
+    "1": 0,
+    "10": 0,
+    "11": 0,
+    "12": 0,
+    "13": 0,
+    "14": 0,
+    "15": 0,
+    "16": 0,
+    "17": 1,
+    "18": 0,
+    "19": 0,
+    "2": 0,
+    "20": 0,
+    "21": 0,
+    "3": 0,
+    "4": 1,
+    "5": 0,
+    "6": 0,
+    "7": 0,
+    "8": 0,
+    "9": 0
+  },
+  "operations": [
+    {
+      "instruction_kind": "tma",
+      "name": "copy_Q_to_Q_shared",
+      "node_id": 0,
+      "region_id": 0
+    },
+    {
+      "instruction_kind": "generic",
+      "name": "fill_acc_o",
+      "node_id": 1,
+      "region_id": 0
+    },
+    {
+      "instruction_kind": "generic",
+      "name": "fill_logsum",
+      "node_id": 2,
+      "region_id": 0
+    },
+    {
+      "instruction_kind": "generic",
+      "name": "fill_scores_max",
+      "node_id": 3,
+      "region_id": 0
+    },
+    {
+      "instruction_kind": "tma",
+      "name": "copy_K_to_K_shared",
+      "node_id": 4,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "generic",
+      "name": "parallel_acc_s",
+      "node_id": 5,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "wgmma",
+      "name": "gemm_acc_s",
+      "node_id": 6,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "rrcp",
+      "name": "copy_scores_max_to_scores_max_prev",
+      "node_id": 7,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "generic",
+      "name": "fill_scores_max_2",
+      "node_id": 8,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "generic",
+      "name": "reduce_scores_max",
+      "node_id": 9,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "generic",
+      "name": "parallel_scores_max",
+      "node_id": 10,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "function",
+      "name": "parallel_scores_scale",
+      "node_id": 11,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "function",
+      "name": "parallel_acc_s_2",
+      "node_id": 12,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "generic",
+      "name": "reduce_scores_sum",
+      "node_id": 13,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "generic",
+      "name": "parallel_logsum",
+      "node_id": 14,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "rrcp",
+      "name": "copy_acc_s_to_acc_s_cast",
+      "node_id": 15,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "generic",
+      "name": "parallel_acc_o",
+      "node_id": 16,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "tma",
+      "name": "copy_V_to_V_shared",
+      "node_id": 17,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "wgmma",
+      "name": "gemm_acc_o",
+      "node_id": 18,
+      "region_id": 1
+    },
+    {
+      "instruction_kind": "generic",
+      "name": "parallel_acc_o_2",
+      "node_id": 19,
+      "region_id": 2
+    },
+    {
+      "instruction_kind": "rscp",
+      "name": "copy_acc_o_to_O_shared",
+      "node_id": 20,
+      "region_id": 2
+    },
+    {
+      "instruction_kind": "tma",
+      "name": "copy_O_shared_to_Output",
+      "node_id": 21,
+      "region_id": 2
+    }
+  ],
+  "orders": {
+    "0": {
+      "0": {
+        "1": 0,
+        "2": 1,
+        "3": 2
+      },
+      "1": {
+        "0": 0
+      }
+    },
+    "1": {
+      "0": {
+        "10": 6,
+        "11": 7,
+        "12": 8,
+        "13": 10,
+        "14": 11,
+        "15": 9,
+        "16": 12,
+        "18": 0,
+        "5": 2,
+        "6": 3,
+        "7": 1,
+        "8": 4,
+        "9": 5
+      },
+      "1": {
+        "17": 1,
+        "4": 0
+      }
+    },
+    "2": {
+      "0": {
+        "19": 0,
+        "20": 1,
+        "21": 2
+      },
+      "1": {}
+    }
+  },
+  "shared_memory": {
+    "merged_shared_bytes": 131152,
+    "shared_buffer_bytes": 131072,
+    "synchronization_bytes": 40
+  },
+  "stages_by_region": {
+    "1": {
+      "10": 0,
+      "11": 0,
+      "12": 0,
+      "13": 0,
+      "14": 0,
+      "15": 0,
+      "16": 0,
+      "17": 0,
+      "18": 1,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0
+    }
+  },
+  "synchronization": [
+    {
+      "buffer": "Q_shared",
+      "consumer_group": 0,
+      "consumer_id": 6,
+      "dependency_kinds": [
+        "RAW"
+      ],
+      "effective_stage_distance": null,
+      "iteration_distance": 0,
+      "kind": "forward_dependency",
+      "producer_group": 1,
+      "producer_id": 0,
+      "scope": "region_boundary",
+      "slot_count": 1
+    },
+    {
+      "buffer": "K_shared",
+      "consumer_group": 0,
+      "consumer_id": 6,
+      "dependency_kinds": [
+        "RAW"
+      ],
+      "effective_stage_distance": 0,
+      "iteration_distance": 0,
+      "kind": "forward_dependency",
+      "producer_group": 1,
+      "producer_id": 4,
+      "scope": "per_iteration",
+      "slot_count": 1
+    },
+    {
+      "buffer": "V_shared",
+      "consumer_group": 0,
+      "consumer_id": 18,
+      "dependency_kinds": [
+        "RAW"
+      ],
+      "effective_stage_distance": 1,
+      "iteration_distance": 0,
+      "kind": "forward_dependency",
+      "producer_group": 1,
+      "producer_id": 17,
+      "scope": "per_iteration",
+      "slot_count": 1
+    },
+    {
+      "buffer": "K_shared",
+      "consumer_group": 1,
+      "consumer_id": 4,
+      "dependency_kinds": [],
+      "effective_stage_distance": 1,
+      "iteration_distance": 1,
+      "kind": "buffer_reuse",
+      "producer_group": 0,
+      "producer_id": 6,
+      "scope": "per_iteration",
+      "slot_count": 1
+    },
+    {
+      "buffer": "V_shared",
+      "consumer_group": 1,
+      "consumer_id": 17,
+      "dependency_kinds": [],
+      "effective_stage_distance": 0,
+      "iteration_distance": 1,
+      "kind": "buffer_reuse",
+      "producer_group": 0,
+      "producer_id": 18,
+      "scope": "per_iteration",
+      "slot_count": 1
+    }
+  ],
+  "warp_allocation": {
+    "effective_threads": 384,
+    "groups": [
+      {
+        "first_warp": 0,
+        "group_id": 0,
+        "warp_count": 8
+      },
+      {
+        "first_warp": 8,
+        "group_id": 1,
+        "warp_count": 4
+      }
+    ],
+    "register_counts": [
+      240,
+      24
+    ],
+    "register_is_increase": [
+      true,
+      false
+    ]
+  }
+}

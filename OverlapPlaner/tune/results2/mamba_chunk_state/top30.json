@@ -1,0 +1,1688 @@
+{
+  "configurations": [
+    {
+      "batches": [
+        [
+          1,
+          0,
+          3,
+          2,
+          5,
+          4,
+          950,
+          946,
+          52,
+          50,
+          7,
+          6,
+          2049,
+          76,
+          74,
+          9,
+          8,
+          2110,
+          80,
+          78,
+          11,
+          10,
+          14,
+          12,
+          152,
+          150,
+          18,
+          16,
+          576,
+          574,
+          22,
+          20
+        ],
+        [
+          3556,
+          3557,
+          577,
+          580
+        ],
+        [
+          3558,
+          3559,
+          814,
+          581
+        ],
+        [
+          3560,
+          3561,
+          815,
+          818
+        ],
+        [
+          3562,
+          3563,
+          856,
+          819
+        ],
+        [
+          3564,
+          3565,
+          857,
+          860
+        ],
+        [
+          3566,
+          3567,
+          1016,
+          861
+        ],
+        [
+          3568,
+          3569,
+          1017,
+          1020
+        ],
+        [
+          3570,
+          3571,
+          1052,
+          1021
+        ],
+        [
+          3572,
+          3573,
+          1053,
+          1056
+        ],
+        [
+          3574,
+          3575,
+          1088,
+          1057
+        ],
+        [
+          3576,
+          3577,
+          1089,
+          1092
+        ],
+        [
+          3578,
+          3579,
+          1356,
+          1093
+        ],
+        [
+          3580,
+          3581,
+          1357,
+          1360
+        ],
+        [
+          3582,
+          3583,
+          1396,
+          1361
+        ],
+        [
+          3584,
+          3585,
+          1397,
+          1400
+        ],
+        [
+          3586,
+          3587,
+          1436,
+          1401
+        ],
+        [
+          3588,
+          3589,
+          1437,
+          1440
+        ],
+        [
+          3590,
+          3591,
+          1468,
+          1441
+        ],
+        [
+          3592,
+          3593,
+          1469,
+          1472
+        ],
+        [
+          3594,
+          3595,
+          1676,
+          1473
+        ],
+        [
+          3596,
+          3597,
+          1677,
+          1680
+        ],
+        [
+          3598,
+          3599,
+          1712,
+          1681
+        ],
+        [
+          3600,
+          3601,
+          1713,
+          1716
+        ],
+        [
+          3602,
+          3603,
+          1748,
+          1717
+        ]
+      ],
+      "candidate_pool": 3604,
+      "enumerated_schedules": 3604,
+      "evaluation_budget": 128,
+      "examined_schedules": 128,
+      "failed_schedules": 49,
+      "native": {
+        "backend": "native",
+        "latency_ms": 1.4206817150115967,
+        "result_file": "m64_n32_k32/native/result.json",
+        "source_file": "m64_n32_k32/native/source.cu",
+        "tflops": 30.23173488204528,
+        "tile": {
+          "block_k": 32,
+          "block_m": 64,
+          "block_n": 32
+        }
+      },
+      "native_failure": null,
+      "search_policy": "dynamic",
+      "stopped_early": false,
+      "successful_schedules": 79,
+      "tile": {
+        "block_k": 32,
+        "block_m": 64,
+        "block_n": 32
+      }
+    },
+    {
+      "batches": [
+        [
+          1,
+          0,
+          3,
+          2,
+          5,
+          4,
+          950,
+          946,
+          52,
+          50,
+          7,
+          6,
+          2049,
+          76,
+          74,
+          9,
+          8,
+          2110,
+          80,
+          78,
+          11,
+          10,
+          14,
+          12,
+          152,
+          150,
+          18,
+          16,
+          576,
+          574,
+          22,
+          20
+        ],
+        [
+          3556,
+          3557,
+          27,
+          577
+        ],
+        [
+          3558,
+          3559,
+          814,
+          580
+        ],
+        [
+          3560,
+          3561,
+          815,
+          581
+        ],
+        [
+          3562,
+          3563,
+          856,
+          818
+        ],
+        [
+          3564,
+          3565,
+          857,
+          819
+        ],
+        [
+          3566,
+          3567,
+          1016,
+          860
+        ],
+        [
+          3568,
+          3569,
+          1017,
+          861
+        ],
+        [
+          3570,
+          3571,
+          1052,
+          1020
+        ],
+        [
+          3572,
+          3573,
+          1053,
+          1021
+        ],
+        [
+          3574,
+          3575,
+          1088,
+          1056
+        ],
+        [
+          3576,
+          3577,
+          1089,
+          1057
+        ],
+        [
+          3578,
+          3579,
+          1092,
+          578
+        ],
+        [
+          3580,
+          3581,
+          1093,
+          579
+        ],
+        [
+          3582,
+          3583,
+          1360,
+          816
+        ],
+        [
+          3584,
+          3585,
+          1361,
+          817
+        ],
+        [
+          3586,
+          3587,
+          1400,
+          858
+        ],
+        [
+          3588,
+          3589,
+          1401,
+          1440
+        ],
+        [
+          3590,
+          3591,
+          1441,
+          1472
+        ],
+        [
+          3592,
+          3593,
+          1473,
+          1680
+        ],
+        [
+          3594,
+          3595,
+          1681,
+          1716
+        ],
+        [
+          3596,
+          3597,
+          1717,
+          1752
+        ],
+        [
+          3598,
+          3599,
+          1753,
+          1796
+        ],
+        [
+          3600,
+          3601,
+          1797,
+          1832
+        ]
+      ],
+      "candidate_pool": 3602,
+      "enumerated_schedules": 3602,
+      "evaluation_budget": 128,
+      "examined_schedules": 124,
+      "failed_schedules": 44,
+      "native": {
+        "backend": "native",
+        "latency_ms": 1.028699278831482,
+        "result_file": "m64_n32_k64/native/result.json",
+        "source_file": "m64_n32_k64/native/source.cu",
+        "tflops": 41.75143683272269,
+        "tile": {
+          "block_k": 64,
+          "block_m": 64,
+          "block_n": 32
+        }
+      },
+      "native_failure": null,
+      "search_policy": "dynamic",
+      "stopped_early": true,
+      "successful_schedules": 80,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 32
+      }
+    },
+    {
+      "batches": [
+        [
+          1,
+          0,
+          3,
+          2,
+          5,
+          4,
+          950,
+          946,
+          52,
+          50,
+          7,
+          6,
+          2049,
+          76,
+          74,
+          9,
+          8,
+          2110,
+          80,
+          78,
+          11,
+          10,
+          14,
+          12,
+          152,
+          150,
+          18,
+          16,
+          576,
+          574,
+          22,
+          20
+        ],
+        [
+          3556,
+          3557,
+          577,
+          580
+        ],
+        [
+          3558,
+          3559,
+          814,
+          581
+        ],
+        [
+          3560,
+          3561,
+          815,
+          818
+        ],
+        [
+          3562,
+          3563,
+          856,
+          819
+        ],
+        [
+          3564,
+          3565,
+          857,
+          860
+        ],
+        [
+          3566,
+          3567,
+          1016,
+          861
+        ],
+        [
+          3568,
+          3569,
+          1017,
+          1020
+        ],
+        [
+          3570,
+          3571,
+          1052,
+          1021
+        ],
+        [
+          3572,
+          3573,
+          1053,
+          1056
+        ],
+        [
+          3574,
+          3575,
+          1088,
+          1057
+        ],
+        [
+          3576,
+          3577,
+          1089,
+          1092
+        ],
+        [
+          3578,
+          3579,
+          1356,
+          1093
+        ],
+        [
+          3580,
+          3581,
+          1357,
+          1360
+        ],
+        [
+          3582,
+          3583,
+          1396,
+          1361
+        ],
+        [
+          3584,
+          3585,
+          1397,
+          1400
+        ],
+        [
+          3586,
+          3587,
+          1436,
+          1401
+        ],
+        [
+          3588,
+          3589,
+          1437,
+          1440
+        ],
+        [
+          3590,
+          3591,
+          1468,
+          1441
+        ],
+        [
+          3592,
+          3593,
+          1469,
+          1472
+        ],
+        [
+          3594,
+          3595,
+          1676,
+          1473
+        ],
+        [
+          3596,
+          3597,
+          1677,
+          1680
+        ],
+        [
+          3598,
+          3599,
+          1712,
+          1681
+        ],
+        [
+          3600,
+          3601,
+          1713,
+          1716
+        ],
+        [
+          3602,
+          3603,
+          1748,
+          1717
+        ]
+      ],
+      "candidate_pool": 3604,
+      "enumerated_schedules": 3604,
+      "evaluation_budget": 128,
+      "examined_schedules": 128,
+      "failed_schedules": 49,
+      "native": {
+        "backend": "native",
+        "latency_ms": 0.816313624382019,
+        "result_file": "m64_n64_k32/native/result.json",
+        "source_file": "m64_n64_k32/native/source.cu",
+        "tflops": 52.61418121315146,
+        "tile": {
+          "block_k": 32,
+          "block_m": 64,
+          "block_n": 64
+        }
+      },
+      "native_failure": null,
+      "search_policy": "dynamic",
+      "stopped_early": false,
+      "successful_schedules": 79,
+      "tile": {
+        "block_k": 32,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "batches": [
+        [
+          1,
+          0,
+          3,
+          2,
+          5,
+          4,
+          950,
+          946,
+          52,
+          50,
+          7,
+          6,
+          2049,
+          76,
+          74,
+          9,
+          8,
+          2110,
+          80,
+          78,
+          11,
+          10,
+          14,
+          12,
+          152,
+          150,
+          18,
+          16,
+          576,
+          574,
+          22,
+          20
+        ],
+        [
+          3556,
+          3557,
+          27,
+          577
+        ],
+        [
+          3558,
+          3559,
+          814,
+          580
+        ],
+        [
+          3560,
+          3561,
+          815,
+          581
+        ],
+        [
+          3562,
+          3563,
+          856,
+          818
+        ],
+        [
+          3564,
+          3565,
+          857,
+          819
+        ],
+        [
+          3566,
+          3567,
+          1016,
+          860
+        ],
+        [
+          3568,
+          3569,
+          1017,
+          861
+        ],
+        [
+          3570,
+          3571,
+          1052,
+          1020
+        ],
+        [
+          3572,
+          3573,
+          1053,
+          1021
+        ],
+        [
+          3574,
+          3575,
+          1088,
+          1056
+        ],
+        [
+          3576,
+          3577,
+          1057,
+          578
+        ],
+        [
+          3578,
+          3579,
+          1092,
+          579
+        ],
+        [
+          3580,
+          3581,
+          1093,
+          816
+        ],
+        [
+          3582,
+          3583,
+          1360,
+          817
+        ],
+        [
+          3584,
+          3585,
+          1361,
+          858
+        ],
+        [
+          3586,
+          3587,
+          1400,
+          1401
+        ],
+        [
+          3588,
+          3589,
+          1440,
+          1441
+        ],
+        [
+          3590,
+          3591,
+          1472,
+          1473
+        ],
+        [
+          3592,
+          3593,
+          1680,
+          1681
+        ],
+        [
+          3594,
+          3595,
+          1716,
+          1717
+        ],
+        [
+          3596,
+          3597,
+          1752,
+          1753
+        ],
+        [
+          3598,
+          3599,
+          1796,
+          1797
+        ],
+        [
+          3600,
+          3601,
+          1832,
+          1833
+        ]
+      ],
+      "candidate_pool": 3602,
+      "enumerated_schedules": 3602,
+      "evaluation_budget": 128,
+      "examined_schedules": 124,
+      "failed_schedules": 43,
+      "native": {
+        "backend": "native",
+        "latency_ms": 0.621067225933075,
+        "result_file": "m64_n64_k64/native/result.json",
+        "source_file": "m64_n64_k64/native/source.cu",
+        "tflops": 69.15462798004444,
+        "tile": {
+          "block_k": 64,
+          "block_m": 64,
+          "block_n": 64
+        }
+      },
+      "native_failure": null,
+      "search_policy": "dynamic",
+      "stopped_early": true,
+      "successful_schedules": 81,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "batches": [
+        [
+          1,
+          0,
+          3,
+          2,
+          5,
+          4,
+          950,
+          946,
+          52,
+          50,
+          7,
+          6,
+          2049,
+          76,
+          74,
+          9,
+          8,
+          2110,
+          80,
+          78,
+          11,
+          10,
+          14,
+          12,
+          152,
+          150,
+          18,
+          16,
+          576,
+          574,
+          22,
+          20
+        ],
+        [
+          3556,
+          3557,
+          577,
+          580
+        ],
+        [
+          3558,
+          3559,
+          814,
+          581
+        ],
+        [
+          3560,
+          3561,
+          815,
+          818
+        ],
+        [
+          3562,
+          3563,
+          856,
+          819
+        ],
+        [
+          3564,
+          3565,
+          857,
+          860
+        ],
+        [
+          3566,
+          3567,
+          1016,
+          861
+        ],
+        [
+          3568,
+          3569,
+          1017,
+          1020
+        ],
+        [
+          3570,
+          3571,
+          1052,
+          1021
+        ],
+        [
+          3572,
+          3573,
+          1053,
+          1056
+        ],
+        [
+          3574,
+          3575,
+          1088,
+          1057
+        ],
+        [
+          3576,
+          3577,
+          1089,
+          1092
+        ],
+        [
+          3578,
+          3579,
+          1356,
+          1093
+        ],
+        [
+          3580,
+          3581,
+          1357,
+          1360
+        ],
+        [
+          3582,
+          3583,
+          1396,
+          1361
+        ],
+        [
+          3584,
+          3585,
+          1397,
+          1400
+        ],
+        [
+          3586,
+          3587,
+          1436,
+          1401
+        ],
+        [
+          3588,
+          3589,
+          1437,
+          1440
+        ],
+        [
+          3590,
+          3591,
+          1468,
+          1441
+        ],
+        [
+          3592,
+          3593,
+          1469,
+          1472
+        ],
+        [
+          3594,
+          3595,
+          1676,
+          1473
+        ],
+        [
+          3596,
+          3597,
+          1677,
+          1680
+        ],
+        [
+          3598,
+          3599,
+          1712,
+          1681
+        ],
+        [
+          3600,
+          3601,
+          1713,
+          1716
+        ],
+        [
+          3602,
+          3603,
+          1748,
+          1717
+        ]
+      ],
+      "candidate_pool": 3604,
+      "enumerated_schedules": 3604,
+      "evaluation_budget": 128,
+      "examined_schedules": 128,
+      "failed_schedules": 49,
+      "native": {
+        "backend": "native",
+        "latency_ms": 0.5653295516967773,
+        "result_file": "m64_n128_k32/native/result.json",
+        "source_file": "m64_n128_k32/native/source.cu",
+        "tflops": 75.97280706641119,
+        "tile": {
+          "block_k": 32,
+          "block_m": 64,
+          "block_n": 128
+        }
+      },
+      "native_failure": null,
+      "search_policy": "dynamic",
+      "stopped_early": false,
+      "successful_schedules": 79,
+      "tile": {
+        "block_k": 32,
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "batches": [
+        [
+          1,
+          0,
+          3,
+          2,
+          5,
+          4,
+          950,
+          946,
+          52,
+          50,
+          7,
+          6,
+          2049,
+          76,
+          74,
+          9,
+          8,
+          2110,
+          80,
+          78,
+          11,
+          10,
+          14,
+          12,
+          152,
+          150,
+          18,
+          16,
+          576,
+          574,
+          22,
+          20
+        ],
+        [
+          3556,
+          3557,
+          27,
+          577
+        ],
+        [
+          3558,
+          3559,
+          814,
+          580
+        ],
+        [
+          3560,
+          3561,
+          815,
+          581
+        ],
+        [
+          3562,
+          3563,
+          856,
+          818
+        ],
+        [
+          3564,
+          3565,
+          857,
+          819
+        ],
+        [
+          3566,
+          3567,
+          1016,
+          860
+        ],
+        [
+          3568,
+          3569,
+          1017,
+          861
+        ],
+        [
+          3570,
+          3571,
+          1052,
+          1020
+        ],
+        [
+          3572,
+          3573,
+          1053,
+          1021
+        ],
+        [
+          3574,
+          3575,
+          1088,
+          1056
+        ],
+        [
+          3576,
+          3577,
+          1057,
+          578
+        ],
+        [
+          3578,
+          3579,
+          1092,
+          579
+        ],
+        [
+          3580,
+          3581,
+          1093,
+          816
+        ],
+        [
+          3582,
+          3583,
+          1360,
+          817
+        ],
+        [
+          3584,
+          3585,
+          1361,
+          858
+        ],
+        [
+          3586,
+          3587,
+          1400,
+          1401
+        ],
+        [
+          3588,
+          3589,
+          1440,
+          1441
+        ],
+        [
+          3590,
+          3591,
+          1472,
+          1473
+        ],
+        [
+          3592,
+          3593,
+          1680,
+          1681
+        ],
+        [
+          3594,
+          3595,
+          1716,
+          1717
+        ],
+        [
+          3596,
+          3597,
+          1752,
+          1753
+        ],
+        [
+          3598,
+          3599,
+          1796,
+          1797
+        ],
+        [
+          3600,
+          3601,
+          1832,
+          1833
+        ]
+      ],
+      "candidate_pool": 3602,
+      "enumerated_schedules": 3602,
+      "evaluation_budget": 128,
+      "examined_schedules": 124,
+      "failed_schedules": 44,
+      "native": {
+        "backend": "native",
+        "latency_ms": 0.45747360587120056,
+        "result_file": "m64_n128_k64/native/result.json",
+        "source_file": "m64_n128_k64/native/source.cu",
+        "tflops": 93.88448297078864,
+        "tile": {
+          "block_k": 64,
+          "block_m": 64,
+          "block_n": 128
+        }
+      },
+      "native_failure": null,
+      "search_policy": "dynamic",
+      "stopped_early": true,
+      "successful_schedules": 80,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    }
+  ],
+  "description": "Mamba chunk state adapted from examples/linear_attention/example_mamba_chunk_state.py",
+  "operator": "mamba_chunk_state",
+  "top_results": [
+    {
+      "latency_ms": 0.3090943694114685,
+      "native_latency_ms": 0.45747360587120056,
+      "rank": 1,
+      "schedule_file": "m64_n128_k64/candidates/schedule_03593.json",
+      "schedule_index": 3593,
+      "source_file": "m64_n128_k64/sources/schedule_03593.cu",
+      "speedup_vs_native": 1.4800450967199879,
+      "tflops": 138.95326867900692,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3096799850463867,
+      "native_latency_ms": 0.45747360587120056,
+      "rank": 2,
+      "schedule_file": "m64_n128_k64/candidates/schedule_03598.json",
+      "schedule_index": 3598,
+      "source_file": "m64_n128_k64/sources/schedule_03598.cu",
+      "speedup_vs_native": 1.4772462799062587,
+      "tflops": 138.69050320952,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3105247914791107,
+      "native_latency_ms": 0.45747360587120056,
+      "rank": 3,
+      "schedule_file": "m64_n128_k64/candidates/schedule_03558.json",
+      "schedule_index": 3558,
+      "source_file": "m64_n128_k64/sources/schedule_03558.cu",
+      "speedup_vs_native": 1.4732273184763582,
+      "tflops": 138.31318509359426,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.31076639890670776,
+      "native_latency_ms": 0.45747360587120056,
+      "rank": 4,
+      "schedule_file": "m64_n128_k64/candidates/schedule_03588.json",
+      "schedule_index": 3588,
+      "source_file": "m64_n128_k64/sources/schedule_03588.cu",
+      "speedup_vs_native": 1.4720819479860638,
+      "tflops": 138.205652577303,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3107888102531433,
+      "native_latency_ms": 0.45747360587120056,
+      "rank": 5,
+      "schedule_file": "m64_n128_k64/candidates/schedule_03563.json",
+      "schedule_index": 3563,
+      "source_file": "m64_n128_k64/sources/schedule_03563.cu",
+      "speedup_vs_native": 1.4719757944263816,
+      "tflops": 138.1956864052367,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3108016550540924,
+      "native_latency_ms": 0.45747360587120056,
+      "rank": 6,
+      "schedule_file": "m64_n128_k64/candidates/schedule_03578.json",
+      "schedule_index": 3578,
+      "source_file": "m64_n128_k64/sources/schedule_03578.cu",
+      "speedup_vs_native": 1.4719149606574042,
+      "tflops": 138.1899750582891,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3108816146850586,
+      "native_latency_ms": 0.45747360587120056,
+      "rank": 7,
+      "schedule_file": "m64_n128_k64/candidates/schedule_03573.json",
+      "schedule_index": 3573,
+      "source_file": "m64_n128_k64/sources/schedule_03573.cu",
+      "speedup_vs_native": 1.4715363799645993,
+      "tflops": 138.15443220568238,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.31120961904525757,
+      "native_latency_ms": 0.45747360587120056,
+      "rank": 8,
+      "schedule_file": "m64_n128_k64/candidates/schedule_03568.json",
+      "schedule_index": 3568,
+      "source_file": "m64_n128_k64/sources/schedule_03568.cu",
+      "speedup_vs_native": 1.4699854306388667,
+      "tflops": 138.00882213012207,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3128400146961212,
+      "native_latency_ms": 0.45747360587120056,
+      "rank": 9,
+      "schedule_file": "m64_n128_k64/candidates/schedule_03583.json",
+      "schedule_index": 3583,
+      "source_file": "m64_n128_k64/sources/schedule_03583.cu",
+      "speedup_vs_native": 1.4623244610046766,
+      "tflops": 137.28957595696124,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3266800045967102,
+      "native_latency_ms": 0.45747360587120056,
+      "rank": 10,
+      "schedule_file": "m64_n128_k64/candidates/schedule_00000.json",
+      "schedule_index": 0,
+      "source_file": "m64_n128_k64/sources/schedule_00000.cu",
+      "speedup_vs_native": 1.4003722279726192,
+      "tflops": 131.4732225898607,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.336707204580307,
+      "native_latency_ms": 0.45747360587120056,
+      "rank": 11,
+      "schedule_file": "m64_n128_k64/candidates/schedule_03566.json",
+      "schedule_index": 3566,
+      "source_file": "m64_n128_k64/sources/schedule_03566.cu",
+      "speedup_vs_native": 1.3586688958480244,
+      "tflops": 127.55792681518405,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3370479941368103,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 12,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03600.json",
+      "schedule_index": 3600,
+      "source_file": "m64_n64_k64/sources/schedule_03600.cu",
+      "speedup_vs_native": 1.8426670288415339,
+      "tflops": 127.42895287063007,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.3371872007846832,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 13,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03566.json",
+      "schedule_index": 3566,
+      "source_file": "m64_n64_k64/sources/schedule_03566.cu",
+      "speedup_vs_native": 1.8419062897042413,
+      "tflops": 127.37634423860077,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.337276816368103,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 14,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03573.json",
+      "schedule_index": 3573,
+      "source_file": "m64_n64_k64/sources/schedule_03573.cu",
+      "speedup_vs_native": 1.8414168890139304,
+      "tflops": 127.34249991592912,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.3379055857658386,
+      "native_latency_ms": 0.45747360587120056,
+      "rank": 15,
+      "schedule_file": "m64_n128_k64/candidates/schedule_00002.json",
+      "schedule_index": 2,
+      "source_file": "m64_n128_k64/sources/schedule_00002.cu",
+      "speedup_vs_native": 1.3538503805267665,
+      "tflops": 127.10554299556094,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3379088044166565,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 16,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03588.json",
+      "schedule_index": 3588,
+      "source_file": "m64_n64_k64/sources/schedule_03588.cu",
+      "speedup_vs_native": 1.8379729022013631,
+      "tflops": 127.10433228913786,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.33795198798179626,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 17,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03596.json",
+      "schedule_index": 3596,
+      "source_file": "m64_n64_k64/sources/schedule_03596.cu",
+      "speedup_vs_native": 1.8377380456969783,
+      "tflops": 127.08809087494843,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.33807364106178284,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 18,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03590.json",
+      "schedule_index": 3590,
+      "source_file": "m64_n64_k64/sources/schedule_03590.cu",
+      "speedup_vs_native": 1.837076750445549,
+      "tflops": 127.04235924785087,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.33845120668411255,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 19,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03580.json",
+      "schedule_index": 3580,
+      "source_file": "m64_n64_k64/sources/schedule_03580.cu",
+      "speedup_vs_native": 1.83502736485362,
+      "tflops": 126.90063474965336,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.3389888107776642,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 20,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03570.json",
+      "schedule_index": 3570,
+      "source_file": "m64_n64_k64/sources/schedule_03570.cu",
+      "speedup_vs_native": 1.8321171855445701,
+      "tflops": 126.6993823821808,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.33907681703567505,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 21,
+      "schedule_file": "m64_n64_k64/candidates/schedule_00002.json",
+      "schedule_index": 2,
+      "source_file": "m64_n64_k64/sources/schedule_00002.cu",
+      "speedup_vs_native": 1.8316416656339294,
+      "tflops": 126.66649797966332,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.33919841051101685,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 22,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03558.json",
+      "schedule_index": 3558,
+      "source_file": "m64_n64_k64/sources/schedule_03558.cu",
+      "speedup_vs_native": 1.8309850715320592,
+      "tflops": 126.6210914588146,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.3396432101726532,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 23,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03593.json",
+      "schedule_index": 3593,
+      "source_file": "m64_n64_k64/sources/schedule_03593.cu",
+      "speedup_vs_native": 1.8285871977754642,
+      "tflops": 126.45526739123416,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.34016796946525574,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 24,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03568.json",
+      "schedule_index": 3568,
+      "source_file": "m64_n64_k64/sources/schedule_03568.cu",
+      "speedup_vs_native": 1.8257663321722883,
+      "tflops": 126.26019147986483,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.346993625164032,
+      "native_latency_ms": 0.45747360587120056,
+      "rank": 25,
+      "schedule_file": "m64_n128_k64/candidates/schedule_00004.json",
+      "schedule_index": 4,
+      "source_file": "m64_n128_k64/sources/schedule_00004.cu",
+      "speedup_vs_native": 1.3183919608175572,
+      "tflops": 123.77654759420058,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3522447943687439,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 26,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03598.json",
+      "schedule_index": 3598,
+      "source_file": "m64_n64_k64/sources/schedule_03598.cu",
+      "speedup_vs_native": 1.7631693522854932,
+      "tflops": 121.93132062311919,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.35274240374565125,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 27,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03595.json",
+      "schedule_index": 3595,
+      "source_file": "m64_n64_k64/sources/schedule_03595.cu",
+      "speedup_vs_native": 1.7606820709338429,
+      "tflops": 121.7593136065641,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.35280317068099976,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 28,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03576.json",
+      "schedule_index": 3576,
+      "source_file": "m64_n64_k64/sources/schedule_03576.cu",
+      "speedup_vs_native": 1.7603788104689009,
+      "tflops": 121.73834174192999,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.353251188993454,
+      "native_latency_ms": 0.621067225933075,
+      "rank": 29,
+      "schedule_file": "m64_n64_k64/candidates/schedule_03578.json",
+      "schedule_index": 3578,
+      "source_file": "m64_n64_k64/sources/schedule_03578.cu",
+      "speedup_vs_native": 1.758146172707104,
+      "tflops": 121.58394450809871,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.3564367890357971,
+      "native_latency_ms": 0.45747360587120056,
+      "rank": 30,
+      "schedule_file": "m64_n128_k64/candidates/schedule_03575.json",
+      "schedule_index": 3575,
+      "source_file": "m64_n128_k64/sources/schedule_03575.cu",
+      "speedup_vs_native": 1.2834634918261938,
+      "tflops": 120.49730634198522,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      }
+    }
+  ]
+}

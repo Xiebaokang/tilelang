@@ -1,0 +1,27 @@
+{
+  "base_schedule_count": 1125,
+  "candidate_features": "features.jsonl",
+  "operator": "gqa",
+  "options": {
+    "gqa_batch": 1,
+    "gqa_block_m": [
+      64,
+      128
+    ],
+    "gqa_block_n": [
+      64,
+      128
+    ],
+    "gqa_causal": false,
+    "gqa_dim": 128,
+    "gqa_groups": 8,
+    "gqa_heads": 16,
+    "gqa_seq": 4096
+  },
+  "schedule_count": 1135,
+  "stage_beam": 64,
+  "tile": {
+    "block_m": 128,
+    "block_n": 64
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "buffer_versions": [{"buffer_id": 0, "name": "Q", "versions": 1}, {"buffer_id": 1, "name": "Q_shared", "versions": 1}, {"buffer_id": 2, "name": "acc_o", "versions": 1}, {"buffer_id": 3, "name": "logsum", "versions": 1}, {"buffer_id": 4, "name": "scores_max", "versions": 1}, {"buffer_id": 5, "name": "K", "versions": 1}, {"buffer_id": 6, "name": "K_shared", "versions": 3}, {"buffer_id": 7, "name": "acc_s", "versions": 1}, {"buffer_id": 8, "name": "scores_max_prev", "versions": 1}, {"buffer_id": 9, "name": "scores_scale", "versions": 1}, {"buffer_id": 10, "name": "scores_sum", "versions": 1}, {"buffer_id": 11, "name": "acc_s_cast", "versions": 1}, {"buffer_id": 12, "name": "V", "versions": 1}, {"buffer_id": 13, "name": "V_shared", "versions": 2}, {"buffer_id": 14, "name": "O_shared", "versions": 1}, {"buffer_id": 15, "name": "Output", "versions": 1}],
+  "groups": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 0, "15": 0, "16": 0, "17": 1, "18": 0, "19": 0, "20": 0, "21": 0},
+  "orders": {
+    "0": {"0": {"0": 0, "1": 1, "2": 2, "3": 3}, "1": {}},
+    "1": {"0": {"4": 0, "7": 1, "5": 2, "6": 3, "8": 4, "9": 5, "10": 6, "11": 7, "12": 8, "15": 9, "13": 10, "14": 11, "16": 12, "18": 13}, "1": {"17": 0}},
+    "2": {"0": {"19": 0, "20": 1, "21": 2}, "1": {}}
+  },
+  "shared_memory": {
+    "allocations": [{"alignment": 1024, "buffer_id": 1, "byte_offset": 0, "end": 6, "name": "Q_shared", "size_bytes": 16384, "start": 0}, {"alignment": 1024, "buffer_id": 6, "byte_offset": 16384, "end": 6, "name": "K_shared", "size_bytes": 49152, "start": 4}, {"alignment": 1024, "buffer_id": 13, "byte_offset": 65536, "end": 6, "name": "V_shared", "size_bytes": 32768, "start": 4}, {"alignment": 1024, "buffer_id": 14, "byte_offset": 0, "end": 9, "name": "O_shared", "size_bytes": 16384, "start": 7}],
+    "capacity_bytes": 253952,
+    "merged_shared_bytes": 98336,
+    "shared_buffer_bytes": 98304,
+    "synchronization_bytes": 32
+  },
+  "stages_by_region": {"1": {"4": 0, "5": 2, "6": 2, "7": 2, "8": 2, "9": 2, "10": 2, "11": 2, "12": 2, "13": 2, "14": 2, "15": 2, "16": 2, "17": 1, "18": 2}},
+  "synchronizations": [{"buffer": "V_shared", "buffer_id": 13, "consumer_group": 0, "consumer_id": 18, "effective_stage_distance": 1, "iteration_distance": 0, "kind": "forward_dependency", "producer_group": 1, "producer_id": 17, "scope": "per_iteration", "slot_count": 2}, {"buffer": "V_shared", "buffer_id": 13, "consumer_group": 1, "consumer_id": 17, "effective_stage_distance": 1, "iteration_distance": 2, "kind": "buffer_reuse", "producer_group": 0, "producer_id": 18, "scope": "per_iteration", "slot_count": 2}],
+  "warp_allocation": {"effective_threads": 384, "groups": [{"first_warp": 0, "group_id": 0, "warp_count": 8}, {"first_warp": 8, "group_id": 1, "warp_count": 4}], "register_counts": [232, 24], "register_is_increase": [true, false]}
+}

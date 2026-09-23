@@ -1,0 +1,24 @@
+{
+  "base_schedule_count": 1215,
+  "candidate_features": "features.jsonl",
+  "operator": "linear_attn_fwd",
+  "options": {
+    "linear_attn_batch": 8,
+    "linear_attn_block_k": [
+      64
+    ],
+    "linear_attn_block_v": [
+      64
+    ],
+    "linear_attn_heads": 32,
+    "linear_attn_key_dim": 128,
+    "linear_attn_seq": 1024,
+    "linear_attn_value_dim": 128
+  },
+  "schedule_count": 1221,
+  "stage_beam": 64,
+  "tile": {
+    "block_k": 64,
+    "block_v": 64
+  }
+}

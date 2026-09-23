@@ -1,0 +1,744 @@
+{
+  "configurations": [
+    {
+      "batches": [
+        [
+          1,
+          0,
+          47,
+          2,
+          65,
+          4,
+          599,
+          595,
+          52,
+          50,
+          7,
+          6,
+          1024,
+          234,
+          70,
+          115
+        ],
+        [
+          1133,
+          1134,
+          8,
+          1027
+        ],
+        [
+          1135,
+          1136,
+          348,
+          74
+        ],
+        [
+          1137,
+          1138,
+          187,
+          10
+        ],
+        [
+          1139,
+          1140,
+          14,
+          12
+        ],
+        [
+          1141,
+          1142,
+          143,
+          142
+        ],
+        [
+          1143,
+          1144,
+          124,
+          16
+        ],
+        [
+          1145,
+          1146,
+          688,
+          430
+        ],
+        [
+          1147,
+          1148,
+          192,
+          20
+        ]
+      ],
+      "candidate_pool": 1149,
+      "enumerated_schedules": 1149,
+      "evaluation_budget": 48,
+      "examined_schedules": 48,
+      "failed_schedules": 1,
+      "native": {
+        "backend": "native",
+        "latency_ms": 0.48753756284713745,
+        "result_file": "m64_n64/native/result.json",
+        "source_file": "m64_n64/native/source.cu",
+        "tflops": 281.90433711277467,
+        "tile": {
+          "block_m": 64,
+          "block_n": 64
+        }
+      },
+      "native_failure": null,
+      "search_policy": "dynamic",
+      "stopped_early": false,
+      "successful_schedules": 47,
+      "tile": {
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "batches": [
+        [
+          1,
+          0,
+          35,
+          2,
+          53,
+          4,
+          323,
+          319,
+          40,
+          38,
+          7,
+          6,
+          1024,
+          150,
+          58,
+          95
+        ],
+        [
+          1113,
+          1114,
+          8,
+          1027
+        ],
+        [
+          1115,
+          1116,
+          213,
+          62
+        ],
+        [
+          1117,
+          1118,
+          134,
+          10
+        ],
+        [
+          1119,
+          1120,
+          888,
+          884
+        ],
+        [
+          1121,
+          1122,
+          14,
+          12
+        ],
+        [
+          1123,
+          1124,
+          351,
+          349
+        ]
+      ],
+      "candidate_pool": 1125,
+      "enumerated_schedules": 1125,
+      "evaluation_budget": 48,
+      "examined_schedules": 40,
+      "failed_schedules": 0,
+      "native": {
+        "backend": "native",
+        "latency_ms": 0.42774081230163574,
+        "result_file": "m64_n128/native/result.json",
+        "source_file": "m64_n128/native/source.cu",
+        "tflops": 321.313630870183,
+        "tile": {
+          "block_m": 64,
+          "block_n": 128
+        }
+      },
+      "native_failure": null,
+      "search_policy": "dynamic",
+      "stopped_early": true,
+      "successful_schedules": 40,
+      "tile": {
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "batches": [
+        [
+          1,
+          0,
+          35,
+          2,
+          53,
+          4,
+          374,
+          370,
+          40,
+          38,
+          7,
+          6,
+          1024,
+          166,
+          58,
+          97
+        ],
+        [
+          1125,
+          1126,
+          8,
+          1027
+        ],
+        [
+          1127,
+          1128,
+          244,
+          62
+        ],
+        [
+          1129,
+          1130,
+          141,
+          10
+        ],
+        [
+          1131,
+          1132,
+          723,
+          719
+        ],
+        [
+          1133,
+          1134,
+          14,
+          12
+        ]
+      ],
+      "candidate_pool": 1135,
+      "enumerated_schedules": 1135,
+      "evaluation_budget": 48,
+      "examined_schedules": 36,
+      "failed_schedules": 1,
+      "native": {
+        "backend": "native",
+        "latency_ms": 0.3945664167404175,
+        "result_file": "m128_n64/native/result.json",
+        "source_file": "m128_n64/native/source.cu",
+        "tflops": 348.3290712053179,
+        "tile": {
+          "block_m": 128,
+          "block_n": 64
+        }
+      },
+      "native_failure": null,
+      "search_policy": "dynamic",
+      "stopped_early": true,
+      "successful_schedules": 35,
+      "tile": {
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "batches": [
+        [
+          1,
+          0,
+          17,
+          2,
+          28,
+          4,
+          140,
+          136,
+          22,
+          20,
+          7,
+          6,
+          256,
+          33,
+          8,
+          26
+        ],
+        [
+          342,
+          343,
+          341,
+          284
+        ],
+        [
+          344,
+          345,
+          339,
+          337
+        ],
+        [
+          346,
+          347,
+          235,
+          243
+        ]
+      ],
+      "candidate_pool": 348,
+      "enumerated_schedules": 348,
+      "evaluation_budget": 48,
+      "examined_schedules": 28,
+      "failed_schedules": 1,
+      "native": {
+        "backend": "native",
+        "latency_ms": 0.3529279828071594,
+        "result_file": "m128_n128/native/result.json",
+        "source_file": "m128_n128/native/source.cu",
+        "tflops": 389.42492567130034,
+        "tile": {
+          "block_m": 128,
+          "block_n": 128
+        }
+      },
+      "native_failure": null,
+      "search_policy": "dynamic",
+      "stopped_early": true,
+      "successful_schedules": 27,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      }
+    }
+  ],
+  "description": "Grouped-query attention forward adapted from examples/flash_attention/example_gqa_fwd_bshd.py",
+  "operator": "gqa",
+  "top_results": [
+    {
+      "latency_ms": 0.3322511911392212,
+      "native_latency_ms": 0.3529279828071594,
+      "rank": 1,
+      "schedule_file": "m128_n128/candidates/schedule_00343.json",
+      "schedule_index": 343,
+      "source_file": "m128_n128/sources/schedule_00343.cu",
+      "speedup_vs_native": 1.0622324079472574,
+      "tflops": 413.65977651050713,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.33261922001838684,
+      "native_latency_ms": 0.3529279828071594,
+      "rank": 2,
+      "schedule_file": "m128_n128/candidates/schedule_00256.json",
+      "schedule_index": 256,
+      "source_file": "m128_n128/sources/schedule_00256.cu",
+      "speedup_vs_native": 1.0610570934164596,
+      "tflops": 413.20207973671074,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3328080177307129,
+      "native_latency_ms": 0.3529279828071594,
+      "rank": 3,
+      "schedule_file": "m128_n128/candidates/schedule_00345.json",
+      "schedule_index": 345,
+      "source_file": "m128_n128/sources/schedule_00345.cu",
+      "speedup_vs_native": 1.060455169360512,
+      "tflops": 412.9676755059636,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3343232274055481,
+      "native_latency_ms": 0.3529279828071594,
+      "rank": 4,
+      "schedule_file": "m128_n128/candidates/schedule_00337.json",
+      "schedule_index": 337,
+      "source_file": "m128_n128/sources/schedule_00337.cu",
+      "speedup_vs_native": 1.0556490063403312,
+      "tflops": 411.0960358290655,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3345023989677429,
+      "native_latency_ms": 0.3529279828071594,
+      "rank": 5,
+      "schedule_file": "m128_n128/candidates/schedule_00339.json",
+      "schedule_index": 339,
+      "source_file": "m128_n128/sources/schedule_00339.cu",
+      "speedup_vs_native": 1.0550835626180168,
+      "tflops": 410.8758379495319,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.35077759623527527,
+      "native_latency_ms": 0.3529279828071594,
+      "rank": 6,
+      "schedule_file": "m128_n128/candidates/schedule_00346.json",
+      "schedule_index": 346,
+      "source_file": "m128_n128/sources/schedule_00346.cu",
+      "speedup_vs_native": 1.0061303418318708,
+      "tflops": 391.8122335835162,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.35175997018814087,
+      "native_latency_ms": 0.3529279828071594,
+      "rank": 7,
+      "schedule_file": "m128_n128/candidates/schedule_00284.json",
+      "schedule_index": 284,
+      "source_file": "m128_n128/sources/schedule_00284.cu",
+      "speedup_vs_native": 1.0033204819138284,
+      "tflops": 390.71800409378585,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3547007739543915,
+      "native_latency_ms": 0.3529279828071594,
+      "rank": 8,
+      "schedule_file": "m128_n128/candidates/schedule_00347.json",
+      "schedule_index": 347,
+      "source_file": "m128_n128/sources/schedule_00347.cu",
+      "speedup_vs_native": 0.9950020093627988,
+      "tflops": 387.47858353890234,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.35535839200019836,
+      "native_latency_ms": 0.3529279828071594,
+      "rank": 9,
+      "schedule_file": "m128_n128/candidates/schedule_00140.json",
+      "schedule_index": 140,
+      "source_file": "m128_n128/sources/schedule_00140.cu",
+      "speedup_vs_native": 0.993160681588638,
+      "tflops": 386.76152460731333,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3575808107852936,
+      "native_latency_ms": 0.48753756284713745,
+      "rank": 10,
+      "schedule_file": "m64_n64/candidates/schedule_01145.json",
+      "schedule_index": 1145,
+      "source_file": "m64_n64/sources/schedule_01145.cu",
+      "speedup_vs_native": 1.3634332384236225,
+      "tflops": 384.357743275335,
+      "tile": {
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.35784000158309937,
+      "native_latency_ms": 0.48753756284713745,
+      "rank": 11,
+      "schedule_file": "m64_n64/candidates/schedule_00002.json",
+      "schedule_index": 2,
+      "source_file": "m64_n64/sources/schedule_00002.cu",
+      "speedup_vs_native": 1.362445675973202,
+      "tflops": 384.07934513739167,
+      "tile": {
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.3583088219165802,
+      "native_latency_ms": 0.3529279828071594,
+      "rank": 12,
+      "schedule_file": "m128_n128/candidates/schedule_00341.json",
+      "schedule_index": 341,
+      "source_file": "m128_n128/sources/schedule_00341.cu",
+      "speedup_vs_native": 0.9849826775666899,
+      "tflops": 383.57680599892655,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.35854238271713257,
+      "native_latency_ms": 0.48753756284713745,
+      "rank": 13,
+      "schedule_file": "m64_n64/candidates/schedule_01140.json",
+      "schedule_index": 1140,
+      "source_file": "m64_n64/sources/schedule_01140.cu",
+      "speedup_vs_native": 1.3597766577899215,
+      "tflops": 383.3269373356921,
+      "tile": {
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.3607455790042877,
+      "native_latency_ms": 0.3529279828071594,
+      "rank": 14,
+      "schedule_file": "m128_n128/candidates/schedule_00344.json",
+      "schedule_index": 344,
+      "source_file": "m128_n128/sources/schedule_00344.cu",
+      "speedup_vs_native": 0.9783293360969079,
+      "tflops": 380.9858289915909,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.36120158433914185,
+      "native_latency_ms": 0.3529279828071594,
+      "rank": 15,
+      "schedule_file": "m128_n128/candidates/schedule_00235.json",
+      "schedule_index": 235,
+      "source_file": "m128_n128/sources/schedule_00235.cu",
+      "speedup_vs_native": 0.9770942269062305,
+      "tflops": 380.5048466868154,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.36207839846611023,
+      "native_latency_ms": 0.3529279828071594,
+      "rank": 16,
+      "schedule_file": "m128_n128/candidates/schedule_00136.json",
+      "schedule_index": 136,
+      "source_file": "m128_n128/sources/schedule_00136.cu",
+      "speedup_vs_native": 0.9747280818250547,
+      "tflops": 379.583410814451,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3663952052593231,
+      "native_latency_ms": 0.48753756284713745,
+      "rank": 17,
+      "schedule_file": "m64_n64/candidates/schedule_01143.json",
+      "schedule_index": 1143,
+      "source_file": "m64_n64/sources/schedule_01143.cu",
+      "speedup_vs_native": 1.3306330318980937,
+      "tflops": 375.11122279759365,
+      "tile": {
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.3760448098182678,
+      "native_latency_ms": 0.3945664167404175,
+      "rank": 18,
+      "schedule_file": "m128_n64/candidates/schedule_01133.json",
+      "schedule_index": 1133,
+      "source_file": "m128_n64/sources/schedule_01133.cu",
+      "speedup_vs_native": 1.0492537230632186,
+      "tflops": 365.48557481333273,
+      "tile": {
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.37718719244003296,
+      "native_latency_ms": 0.42774081230163574,
+      "rank": 19,
+      "schedule_file": "m64_n128/candidates/schedule_01120.json",
+      "schedule_index": 1120,
+      "source_file": "m64_n128/sources/schedule_01120.cu",
+      "speedup_vs_native": 1.1340279332778247,
+      "tflops": 364.3786327497075,
+      "tile": {
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.3777855932712555,
+      "native_latency_ms": 0.42774081230163574,
+      "rank": 20,
+      "schedule_file": "m64_n128/candidates/schedule_00002.json",
+      "schedule_index": 2,
+      "source_file": "m64_n128/sources/schedule_00002.cu",
+      "speedup_vs_native": 1.1322316676975865,
+      "tflops": 363.801468134114,
+      "tile": {
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.378110408782959,
+      "native_latency_ms": 0.42774081230163574,
+      "rank": 21,
+      "schedule_file": "m64_n128/candidates/schedule_01115.json",
+      "schedule_index": 1115,
+      "source_file": "m64_n128/sources/schedule_01115.cu",
+      "speedup_vs_native": 1.1312590247870309,
+      "tflops": 363.4889447089832,
+      "tile": {
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.37880000472068787,
+      "native_latency_ms": 0.3945664167404175,
+      "rank": 22,
+      "schedule_file": "m128_n64/candidates/schedule_01024.json",
+      "schedule_index": 1024,
+      "source_file": "m128_n64/sources/schedule_01024.cu",
+      "speedup_vs_native": 1.0416219953095174,
+      "tflops": 362.8272221731942,
+      "tile": {
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.3805839717388153,
+      "native_latency_ms": 0.3945664167404175,
+      "rank": 23,
+      "schedule_file": "m128_n64/candidates/schedule_01130.json",
+      "schedule_index": 1130,
+      "source_file": "m128_n64/sources/schedule_01130.cu",
+      "speedup_vs_native": 1.0367394479008643,
+      "tflops": 361.12648896922207,
+      "tile": {
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.3811487853527069,
+      "native_latency_ms": 0.48753756284713745,
+      "rank": 24,
+      "schedule_file": "m64_n64/candidates/schedule_00047.json",
+      "schedule_index": 47,
+      "source_file": "m64_n64/sources/schedule_00047.cu",
+      "speedup_vs_native": 1.2791266339625893,
+      "tflops": 360.5913458305185,
+      "tile": {
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.38218560814857483,
+      "native_latency_ms": 0.3945664167404175,
+      "rank": 25,
+      "schedule_file": "m128_n64/candidates/schedule_01132.json",
+      "schedule_index": 1132,
+      "source_file": "m128_n64/sources/schedule_01132.cu",
+      "speedup_vs_native": 1.0323947535644242,
+      "tflops": 359.6131056263389,
+      "tile": {
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.3823919892311096,
+      "native_latency_ms": 0.42774081230163574,
+      "rank": 26,
+      "schedule_file": "m64_n128/candidates/schedule_01117.json",
+      "schedule_index": 1117,
+      "source_file": "m64_n128/sources/schedule_01117.cu",
+      "speedup_vs_native": 1.1185925028442953,
+      "tflops": 359.419018553066,
+      "tile": {
+        "block_m": 64,
+        "block_n": 128
+      }
+    },
+    {
+      "latency_ms": 0.38250401616096497,
+      "native_latency_ms": 0.3945664167404175,
+      "rank": 27,
+      "schedule_file": "m128_n64/candidates/schedule_01125.json",
+      "schedule_index": 1125,
+      "source_file": "m128_n64/sources/schedule_01125.cu",
+      "speedup_vs_native": 1.0315353566755139,
+      "tflops": 359.313752706228,
+      "tile": {
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.38253116607666016,
+      "native_latency_ms": 0.3945664167404175,
+      "rank": 28,
+      "schedule_file": "m128_n64/candidates/schedule_01128.json",
+      "schedule_index": 1128,
+      "source_file": "m128_n64/sources/schedule_01128.cu",
+      "speedup_vs_native": 1.031462144084086,
+      "tflops": 359.2882506322554,
+      "tile": {
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.38355520367622375,
+      "native_latency_ms": 0.3945664167404175,
+      "rank": 29,
+      "schedule_file": "m128_n64/candidates/schedule_00370.json",
+      "schedule_index": 370,
+      "source_file": "m128_n64/sources/schedule_00370.cu",
+      "speedup_vs_native": 1.0287082875128681,
+      "tflops": 358.32900233057046,
+      "tile": {
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.3840368390083313,
+      "native_latency_ms": 0.48753756284713745,
+      "rank": 30,
+      "schedule_file": "m64_n64/candidates/schedule_01135.json",
+      "schedule_index": 1135,
+      "source_file": "m64_n64/sources/schedule_01135.cu",
+      "speedup_vs_native": 1.269507279838226,
+      "tflops": 357.87960818263684,
+      "tile": {
+        "block_m": 64,
+        "block_n": 64
+      }
+    }
+  ]
+}

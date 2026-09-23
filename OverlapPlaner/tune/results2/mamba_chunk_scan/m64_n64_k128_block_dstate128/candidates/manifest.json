@@ -1,0 +1,37 @@
+{
+  "base_schedule_count": 3556,
+  "candidate_features": "features.jsonl",
+  "operator": "mamba_chunk_scan",
+  "options": {
+    "mamba_scan_batch": 8,
+    "mamba_scan_block_dstate": [
+      128
+    ],
+    "mamba_scan_block_k": [
+      64,
+      128
+    ],
+    "mamba_scan_block_m": [
+      64,
+      128
+    ],
+    "mamba_scan_block_n": [
+      32,
+      64
+    ],
+    "mamba_scan_chunk": 256,
+    "mamba_scan_dim": 64,
+    "mamba_scan_dstate": 128,
+    "mamba_scan_groups": 1,
+    "mamba_scan_heads": 80,
+    "mamba_scan_seq": 4096
+  },
+  "schedule_count": 3604,
+  "stage_beam": 256,
+  "tile": {
+    "block_dstate": 128,
+    "block_k": 128,
+    "block_m": 64,
+    "block_n": 64
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "base_schedule_count": 615,
+  "candidate_features": "features.jsonl",
+  "operator": "fa3",
+  "options": {
+    "fa3_batch": 1,
+    "fa3_block_m": [
+      64,
+      128
+    ],
+    "fa3_block_n": [
+      64,
+      128
+    ],
+    "fa3_causal": false,
+    "fa3_dim": 128,
+    "fa3_heads": 16,
+    "fa3_seq_kv": 8192,
+    "fa3_seq_q": 8192
+  },
+  "schedule_count": 621,
+  "stage_beam": 256,
+  "tile": {
+    "block_m": 128,
+    "block_n": 128
+  }
+}

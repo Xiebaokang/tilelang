@@ -1,0 +1,34 @@
+{
+  "base_schedule_count": 2048,
+  "candidate_features": "features.jsonl",
+  "operator": "mamba_chunk_state",
+  "options": {
+    "mamba_state_batch": 8,
+    "mamba_state_block_k": [
+      32,
+      64
+    ],
+    "mamba_state_block_m": [
+      64,
+      128
+    ],
+    "mamba_state_block_n": [
+      32,
+      64,
+      128
+    ],
+    "mamba_state_chunk": 256,
+    "mamba_state_dim": 64,
+    "mamba_state_dstate": 128,
+    "mamba_state_groups": 1,
+    "mamba_state_heads": 80,
+    "mamba_state_seq": 4096
+  },
+  "schedule_count": 2064,
+  "stage_beam": 64,
+  "tile": {
+    "block_k": 64,
+    "block_m": 64,
+    "block_n": 32
+  }
+}

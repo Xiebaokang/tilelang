@@ -1,0 +1,14 @@
+{
+  "operator": "gemm",
+  "options": {
+    "gemm_k": 256,
+    "gemm_m": 256,
+    "gemm_n": 256
+  },
+  "schedule_count": 1,
+  "tile": {
+    "block_k": 64,
+    "block_m": 128,
+    "block_n": 128
+  }
+}

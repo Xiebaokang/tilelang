@@ -1,0 +1,7 @@
+{
+  "enumerated_schedule_count": 2493,
+  "phase": "correctness_validation",
+  "schedule_file": "candidates/schedule_01433.json",
+  "schedule_index": 1433,
+  "source_file": "candidates/schedule_01433.cu"
+}

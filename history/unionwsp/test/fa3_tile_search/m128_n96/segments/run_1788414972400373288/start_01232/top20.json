@@ -1,0 +1,7312 @@
+{
+  "enumerated_schedules": 1262,
+  "examined_schedules": 30,
+  "failed_schedules": 0,
+  "successful_schedules": 30,
+  "top_results": [
+    {
+      "effective_threads": 512,
+      "latency_ms": 4.61220121383667,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 1,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 2,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 3,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 0,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 1,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 6,
+              "11": 7,
+              "12": 8,
+              "13": 10,
+              "14": 11,
+              "15": 9,
+              "16": 12,
+              "17": 0,
+              "18": 13,
+              "5": 2,
+              "6": 3,
+              "7": 1,
+              "8": 4,
+              "9": 5
+            },
+            "1": {},
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {
+              "21": 0
+            },
+            "2": {}
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 155696,
+          "shared_buffer_bytes": 155648,
+          "synchronization_bytes": 48
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 1,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 2
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1232,
+      "source_file": "schedule_01232.cu",
+      "tflops": 119.19597354918616
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 4.629184246063232,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 2,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 2,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 4,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 0,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 1,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 6,
+              "11": 7,
+              "12": 8,
+              "13": 10,
+              "14": 11,
+              "15": 9,
+              "16": 12,
+              "17": 0,
+              "18": 13,
+              "5": 2,
+              "6": 3,
+              "7": 1,
+              "8": 4,
+              "9": 5
+            },
+            "1": {},
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {
+              "21": 0
+            },
+            "2": {}
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 180272,
+          "shared_buffer_bytes": 180224,
+          "synchronization_bytes": 48
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 1,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 2
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1233,
+      "source_file": "schedule_01233.cu",
+      "tflops": 118.75868072339642
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 4.873293876647949,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 3,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 1,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 3,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 2,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 5,
+              "11": 6,
+              "12": 7,
+              "13": 9,
+              "14": 10,
+              "15": 8,
+              "16": 11,
+              "18": 12,
+              "5": 1,
+              "6": 2,
+              "7": 0,
+              "8": 3,
+              "9": 4
+            },
+            "1": {
+              "17": 0
+            },
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {},
+            "2": {
+              "21": 0
+            }
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 131184,
+          "shared_buffer_bytes": 131072,
+          "synchronization_bytes": 80
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 0,
+            "consumer_id": 18,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 2,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 17,
+            "scope": "per_iteration",
+            "slot_count": 3
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 2,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 1,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 1,
+            "consumer_id": 17,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 3,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 18,
+            "scope": "per_iteration",
+            "slot_count": 3
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1247,
+      "source_file": "schedule_01247.cu",
+      "tflops": 112.80990389730908
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 4.964553356170654,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 4,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 2,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 4,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 0,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 2,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 6,
+              "11": 7,
+              "12": 8,
+              "13": 10,
+              "14": 11,
+              "15": 9,
+              "16": 12,
+              "17": 0,
+              "18": 13,
+              "5": 2,
+              "6": 3,
+              "7": 1,
+              "8": 4,
+              "9": 5
+            },
+            "1": {},
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {},
+            "2": {
+              "21": 0
+            }
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 180272,
+          "shared_buffer_bytes": 180224,
+          "synchronization_bytes": 48
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 2,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 2
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1237,
+      "source_file": "schedule_01237.cu",
+      "tflops": 110.73620816355718
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 5.090251922607422,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 5,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 2,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 3,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 0,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 2,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 6,
+              "11": 7,
+              "12": 8,
+              "13": 10,
+              "14": 11,
+              "15": 9,
+              "16": 12,
+              "17": 0,
+              "18": 13,
+              "5": 2,
+              "6": 3,
+              "7": 1,
+              "8": 4,
+              "9": 5
+            },
+            "1": {},
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {},
+            "2": {
+              "21": 0
+            }
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 155696,
+          "shared_buffer_bytes": 155648,
+          "synchronization_bytes": 48
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 2,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 2
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1236,
+      "source_file": "schedule_01236.cu",
+      "tflops": 108.00169073093618
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 5.236274242401123,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 6,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 2,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 3,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 2,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 5,
+              "11": 6,
+              "12": 7,
+              "13": 9,
+              "14": 10,
+              "15": 8,
+              "16": 11,
+              "18": 12,
+              "5": 1,
+              "6": 2,
+              "7": 0,
+              "8": 3,
+              "9": 4
+            },
+            "1": {
+              "17": 0
+            },
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {},
+            "2": {
+              "21": 0
+            }
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 155760,
+          "shared_buffer_bytes": 155648,
+          "synchronization_bytes": 96
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 0,
+            "consumer_id": 18,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 2,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 17,
+            "scope": "per_iteration",
+            "slot_count": 3
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 2,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 1,
+            "consumer_id": 17,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 3,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 18,
+            "scope": "per_iteration",
+            "slot_count": 3
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1249,
+      "source_file": "schedule_01249.cu",
+      "tflops": 104.98988182022843
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 5.384274005889893,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 7,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 1,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 3,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 0,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 2,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 6,
+              "11": 7,
+              "12": 8,
+              "13": 10,
+              "14": 11,
+              "15": 9,
+              "16": 12,
+              "17": 0,
+              "18": 13,
+              "5": 2,
+              "6": 3,
+              "7": 1,
+              "8": 4,
+              "9": 5
+            },
+            "1": {},
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {},
+            "2": {
+              "21": 0
+            }
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 131120,
+          "shared_buffer_bytes": 131072,
+          "synchronization_bytes": 32
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 2,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 1,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 1
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1234,
+      "source_file": "schedule_01234.cu",
+      "tflops": 102.10398157423239
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 5.387218475341797,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 8,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 1,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 4,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 0,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 2,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 6,
+              "11": 7,
+              "12": 8,
+              "13": 10,
+              "14": 11,
+              "15": 9,
+              "16": 12,
+              "17": 0,
+              "18": 13,
+              "5": 2,
+              "6": 3,
+              "7": 1,
+              "8": 4,
+              "9": 5
+            },
+            "1": {},
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {},
+            "2": {
+              "21": 0
+            }
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 155696,
+          "shared_buffer_bytes": 155648,
+          "synchronization_bytes": 32
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 2,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 1,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 1
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1235,
+      "source_file": "schedule_01235.cu",
+      "tflops": 102.04817502841674
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 5.653855800628662,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 9,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 2,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 3,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 0,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 5,
+              "11": 6,
+              "12": 7,
+              "13": 9,
+              "14": 10,
+              "15": 8,
+              "16": 11,
+              "18": 12,
+              "5": 1,
+              "6": 2,
+              "7": 0,
+              "8": 3,
+              "9": 4
+            },
+            "1": {
+              "17": 0
+            },
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1,
+              "21": 2
+            },
+            "1": {},
+            "2": {}
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 155760,
+          "shared_buffer_bytes": 155648,
+          "synchronization_bytes": 88
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 0,
+            "consumer_id": 18,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 2,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 17,
+            "scope": "per_iteration",
+            "slot_count": 3
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 1,
+            "consumer_id": 17,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 3,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 18,
+            "scope": "per_iteration",
+            "slot_count": 3
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1241,
+      "source_file": "schedule_01241.cu",
+      "tflops": 97.23555627769491
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 5.655533313751221,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 10,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 2,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 3,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 1,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 5,
+              "11": 6,
+              "12": 7,
+              "13": 9,
+              "14": 10,
+              "15": 8,
+              "16": 11,
+              "18": 12,
+              "5": 1,
+              "6": 2,
+              "7": 0,
+              "8": 3,
+              "9": 4
+            },
+            "1": {
+              "17": 0
+            },
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {
+              "21": 0
+            },
+            "2": {}
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 155760,
+          "shared_buffer_bytes": 155648,
+          "synchronization_bytes": 96
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 0,
+            "consumer_id": 18,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 2,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 17,
+            "scope": "per_iteration",
+            "slot_count": 3
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 1,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 1,
+            "consumer_id": 17,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 3,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 18,
+            "scope": "per_iteration",
+            "slot_count": 3
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1245,
+      "source_file": "schedule_01245.cu",
+      "tflops": 97.20671480287969
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 5.656534671783447,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 11,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 2,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 2,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 0,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 5,
+              "11": 6,
+              "12": 7,
+              "13": 9,
+              "14": 10,
+              "15": 8,
+              "16": 11,
+              "18": 12,
+              "5": 1,
+              "6": 2,
+              "7": 0,
+              "8": 3,
+              "9": 4
+            },
+            "1": {
+              "17": 0
+            },
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1,
+              "21": 2
+            },
+            "1": {},
+            "2": {}
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 131152,
+          "shared_buffer_bytes": 131072,
+          "synchronization_bytes": 72
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 0,
+            "consumer_id": 18,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 2,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 17,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 1,
+            "consumer_id": 17,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 18,
+            "scope": "per_iteration",
+            "slot_count": 2
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1240,
+      "source_file": "schedule_01240.cu",
+      "tflops": 97.18950661265332
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.144895553588867,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 12,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 1,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 3,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 1,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 5,
+              "11": 6,
+              "12": 7,
+              "13": 9,
+              "14": 10,
+              "15": 8,
+              "16": 11,
+              "18": 12,
+              "5": 1,
+              "6": 2,
+              "7": 0,
+              "8": 3,
+              "9": 4
+            },
+            "1": {
+              "17": 0
+            },
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {
+              "21": 0
+            },
+            "2": {}
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 131184,
+          "shared_buffer_bytes": 131072,
+          "synchronization_bytes": 80
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 0,
+            "consumer_id": 18,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 2,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 17,
+            "scope": "per_iteration",
+            "slot_count": 3
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 1,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 1,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 1,
+            "consumer_id": 17,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 3,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 18,
+            "scope": "per_iteration",
+            "slot_count": 3
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1243,
+      "source_file": "schedule_01243.cu",
+      "tflops": 89.46544478968734
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.147583484649658,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 13,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 1,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 2,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 1,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 5,
+              "11": 6,
+              "12": 7,
+              "13": 9,
+              "14": 10,
+              "15": 8,
+              "16": 11,
+              "18": 12,
+              "5": 1,
+              "6": 2,
+              "7": 0,
+              "8": 3,
+              "9": 4
+            },
+            "1": {
+              "17": 0
+            },
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {
+              "21": 0
+            },
+            "2": {}
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 106576,
+          "shared_buffer_bytes": 106496,
+          "synchronization_bytes": 64
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 0,
+            "consumer_id": 18,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 2,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 17,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 1,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 1,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 1,
+            "consumer_id": 17,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 18,
+            "scope": "per_iteration",
+            "slot_count": 2
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1242,
+      "source_file": "schedule_01242.cu",
+      "tflops": 89.42632747659707
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.268251419067383,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 14,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 1,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 2,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 2,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 5,
+              "11": 6,
+              "12": 7,
+              "13": 9,
+              "14": 10,
+              "15": 8,
+              "16": 11,
+              "18": 12,
+              "5": 1,
+              "6": 2,
+              "7": 0,
+              "8": 3,
+              "9": 4
+            },
+            "1": {
+              "17": 0
+            },
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {},
+            "2": {
+              "21": 0
+            }
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 106576,
+          "shared_buffer_bytes": 106496,
+          "synchronization_bytes": 64
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 0,
+            "consumer_id": 18,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 2,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 17,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 2,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 1,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 1,
+            "consumer_id": 17,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 18,
+            "scope": "per_iteration",
+            "slot_count": 2
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1246,
+      "source_file": "schedule_01246.cu",
+      "tflops": 87.70481225684388
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.365030765533447,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 15,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 1,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 2,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 0,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 5,
+              "11": 6,
+              "12": 7,
+              "13": 9,
+              "14": 10,
+              "15": 8,
+              "16": 11,
+              "18": 12,
+              "5": 1,
+              "6": 2,
+              "7": 0,
+              "8": 3,
+              "9": 4
+            },
+            "1": {
+              "17": 0
+            },
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1,
+              "21": 2
+            },
+            "1": {},
+            "2": {}
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 106576,
+          "shared_buffer_bytes": 106496,
+          "synchronization_bytes": 56
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 0,
+            "consumer_id": 18,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 2,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 17,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 1,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 1,
+            "consumer_id": 17,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 18,
+            "scope": "per_iteration",
+            "slot_count": 2
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1238,
+      "source_file": "schedule_01238.cu",
+      "tflops": 86.37127362603181
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.496678352355957,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 16,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 2,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 2,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 1,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 5,
+              "11": 6,
+              "12": 7,
+              "13": 9,
+              "14": 10,
+              "15": 8,
+              "16": 11,
+              "18": 12,
+              "5": 1,
+              "6": 2,
+              "7": 0,
+              "8": 3,
+              "9": 4
+            },
+            "1": {
+              "17": 0
+            },
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {
+              "21": 0
+            },
+            "2": {}
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 131152,
+          "shared_buffer_bytes": 131072,
+          "synchronization_bytes": 80
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 0,
+            "consumer_id": 18,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 2,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 17,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 1,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 1,
+            "consumer_id": 17,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 18,
+            "scope": "per_iteration",
+            "slot_count": 2
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1244,
+      "source_file": "schedule_01244.cu",
+      "tflops": 84.62106080542473
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.618361473083496,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 17,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 1,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 3,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 0,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 5,
+              "11": 6,
+              "12": 7,
+              "13": 9,
+              "14": 10,
+              "15": 8,
+              "16": 11,
+              "18": 12,
+              "5": 1,
+              "6": 2,
+              "7": 0,
+              "8": 3,
+              "9": 4
+            },
+            "1": {
+              "17": 0
+            },
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1,
+              "21": 2
+            },
+            "1": {},
+            "2": {}
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 131184,
+          "shared_buffer_bytes": 131072,
+          "synchronization_bytes": 72
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 0,
+            "consumer_id": 18,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 2,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 17,
+            "scope": "per_iteration",
+            "slot_count": 3
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 1,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 1,
+            "consumer_id": 17,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 3,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 18,
+            "scope": "per_iteration",
+            "slot_count": 3
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1239,
+      "source_file": "schedule_01239.cu",
+      "tflops": 83.06524449047185
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.687136173248291,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 18,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 2,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 2,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 2,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 5,
+              "11": 6,
+              "12": 7,
+              "13": 9,
+              "14": 10,
+              "15": 8,
+              "16": 11,
+              "18": 12,
+              "5": 1,
+              "6": 2,
+              "7": 0,
+              "8": 3,
+              "9": 4
+            },
+            "1": {
+              "17": 0
+            },
+            "2": {
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {},
+            "2": {
+              "21": 0
+            }
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 131152,
+          "shared_buffer_bytes": 131072,
+          "synchronization_bytes": 80
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 0,
+            "consumer_id": 18,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 2,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 17,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 2,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 1,
+            "consumer_id": 17,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 18,
+            "scope": "per_iteration",
+            "slot_count": 2
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1248,
+      "source_file": "schedule_01248.cu",
+      "tflops": 82.21094944758018
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 6.849555015563965,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 19,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 2,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 3,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 2,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 2,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 5,
+              "11": 6,
+              "12": 7,
+              "13": 9,
+              "14": 10,
+              "15": 8,
+              "16": 11,
+              "18": 12,
+              "5": 1,
+              "6": 2,
+              "7": 0,
+              "8": 3,
+              "9": 4
+            },
+            "1": {},
+            "2": {
+              "17": 1,
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1
+            },
+            "1": {},
+            "2": {
+              "21": 0
+            }
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 155760,
+          "shared_buffer_bytes": 155648,
+          "synchronization_bytes": 96
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 0,
+            "consumer_id": 18,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 2,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 17,
+            "scope": "per_iteration",
+            "slot_count": 3
+          },
+          {
+            "buffer": "O_shared",
+            "consumer_group": 2,
+            "consumer_id": 21,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 0,
+            "producer_id": 20,
+            "scope": "once",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 2,
+            "consumer_id": 17,
+            "dependency_kinds": [],
+            "effective_stage_distance": 1,
+            "iteration_distance": 3,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 18,
+            "scope": "per_iteration",
+            "slot_count": 3
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1261,
+      "source_file": "schedule_01261.cu",
+      "tflops": 80.26153708362254
+    },
+    {
+      "effective_threads": 512,
+      "latency_ms": 7.905541896820068,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "rank": 20,
+      "schedule": {
+        "buffer_versions": {
+          "K": 1,
+          "K_shared": 1,
+          "O_shared": 1,
+          "Output": 1,
+          "Q": 1,
+          "Q_shared": 1,
+          "V": 1,
+          "V_shared": 2,
+          "acc_o": 1,
+          "acc_s": 1,
+          "acc_s_cast": 1,
+          "logsum": 1,
+          "scores_max": 1,
+          "scores_max_prev": 1,
+          "scores_scale": 1,
+          "scores_sum": 1
+        },
+        "groups": {
+          "0": 1,
+          "1": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0,
+          "17": 2,
+          "18": 0,
+          "19": 0,
+          "2": 0,
+          "20": 0,
+          "21": 0,
+          "3": 0,
+          "4": 2,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0
+        },
+        "operations": [
+          {
+            "instruction_kind": "tma",
+            "name": "copy_Q_to_Q_shared",
+            "node_id": 0,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_acc_o",
+            "node_id": 1,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_logsum",
+            "node_id": 2,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max",
+            "node_id": 3,
+            "region_id": 0
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_K_to_K_shared",
+            "node_id": 4,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_s",
+            "node_id": 5,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_s",
+            "node_id": 6,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_scores_max_to_scores_max_prev",
+            "node_id": 7,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "fill_scores_max_2",
+            "node_id": 8,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_max",
+            "node_id": 9,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_scores_max",
+            "node_id": 10,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_scores_scale",
+            "node_id": 11,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "function",
+            "name": "parallel_acc_s_2",
+            "node_id": 12,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "reduce_scores_sum",
+            "node_id": 13,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_logsum",
+            "node_id": 14,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "rrcp",
+            "name": "copy_acc_s_to_acc_s_cast",
+            "node_id": 15,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o",
+            "node_id": 16,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_V_to_V_shared",
+            "node_id": 17,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "wgmma",
+            "name": "gemm_acc_o",
+            "node_id": 18,
+            "region_id": 1
+          },
+          {
+            "instruction_kind": "generic",
+            "name": "parallel_acc_o_2",
+            "node_id": 19,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "rscp",
+            "name": "copy_acc_o_to_O_shared",
+            "node_id": 20,
+            "region_id": 2
+          },
+          {
+            "instruction_kind": "tma",
+            "name": "copy_O_shared_to_Output",
+            "node_id": 21,
+            "region_id": 2
+          }
+        ],
+        "orders": {
+          "0": {
+            "0": {
+              "1": 0,
+              "2": 1,
+              "3": 2
+            },
+            "1": {
+              "0": 0
+            },
+            "2": {}
+          },
+          "1": {
+            "0": {
+              "10": 5,
+              "11": 6,
+              "12": 7,
+              "13": 9,
+              "14": 10,
+              "15": 8,
+              "16": 11,
+              "18": 12,
+              "5": 1,
+              "6": 2,
+              "7": 0,
+              "8": 3,
+              "9": 4
+            },
+            "1": {},
+            "2": {
+              "17": 1,
+              "4": 0
+            }
+          },
+          "2": {
+            "0": {
+              "19": 0,
+              "20": 1,
+              "21": 2
+            },
+            "1": {},
+            "2": {}
+          }
+        },
+        "shared_memory": {
+          "merged_shared_bytes": 106576,
+          "shared_buffer_bytes": 106496,
+          "synchronization_bytes": 56
+        },
+        "stages_by_region": {
+          "1": {
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 0,
+            "18": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2
+          }
+        },
+        "synchronization": [
+          {
+            "buffer": "Q_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": null,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 1,
+            "producer_id": 0,
+            "scope": "region_boundary",
+            "slot_count": 1
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 0,
+            "consumer_id": 6,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 1,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 4,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 0,
+            "consumer_id": 18,
+            "dependency_kinds": [
+              "RAW"
+            ],
+            "effective_stage_distance": 2,
+            "iteration_distance": 0,
+            "kind": "forward_dependency",
+            "producer_group": 2,
+            "producer_id": 17,
+            "scope": "per_iteration",
+            "slot_count": 2
+          },
+          {
+            "buffer": "K_shared",
+            "consumer_group": 2,
+            "consumer_id": 4,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 1,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 6,
+            "scope": "per_iteration",
+            "slot_count": 1
+          },
+          {
+            "buffer": "V_shared",
+            "consumer_group": 2,
+            "consumer_id": 17,
+            "dependency_kinds": [],
+            "effective_stage_distance": 0,
+            "iteration_distance": 2,
+            "kind": "buffer_reuse",
+            "producer_group": 0,
+            "producer_id": 18,
+            "scope": "per_iteration",
+            "slot_count": 2
+          }
+        ],
+        "warp_allocation": {
+          "effective_threads": 512,
+          "groups": [
+            {
+              "first_warp": 0,
+              "group_id": 0,
+              "warp_count": 8
+            },
+            {
+              "first_warp": 8,
+              "group_id": 1,
+              "warp_count": 4
+            },
+            {
+              "first_warp": 12,
+              "group_id": 2,
+              "warp_count": 4
+            }
+          ],
+          "register_counts": [
+            224,
+            24,
+            24
+          ],
+          "register_is_increase": [
+            true,
+            false,
+            false
+          ]
+        }
+      },
+      "schedule_index": 1250,
+      "source_file": "schedule_01250.cu",
+      "tflops": 69.54056041485711
+    }
+  ]
+}

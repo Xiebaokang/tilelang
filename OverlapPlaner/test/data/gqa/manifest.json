@@ -1,0 +1,16 @@
+{
+  "operator": "gqa",
+  "options": {
+    "gqa_batch": 1,
+    "gqa_causal": false,
+    "gqa_dim": 128,
+    "gqa_groups": 8,
+    "gqa_heads": 16,
+    "gqa_seq": 256
+  },
+  "schedule_count": 1,
+  "tile": {
+    "block_m": 128,
+    "block_n": 128
+  }
+}

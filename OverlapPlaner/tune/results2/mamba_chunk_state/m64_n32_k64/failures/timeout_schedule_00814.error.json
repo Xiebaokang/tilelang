@@ -1,0 +1,9 @@
+{
+  "candidate_fingerprint": "c8d65d0bb06a2ed61adff7665bc03dcce5ee913271ac1d5e4818e79043f50a01",
+  "error": "phase exceeded 15 seconds",
+  "error_type": "timeout",
+  "phase": "benchmark",
+  "schedule_file": "candidates/schedule_00814.json",
+  "schedule_index": 814,
+  "source_file": null
+}

@@ -1,0 +1,1977 @@
+.2026-08-26 20:33:32  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[3]`
+[D] Show IR-2:
+ # from tvm.script import ir as I
+# from tvm.script import tirx as T
+
+@I.ir_module
+class Module:
+    @T.prim_func
+    def main(Q_handle: T.handle, K_handle: T.handle, V_handle: T.handle, Output_handle: T.handle):
+        T.func_attr({"target": T.target({"arch": "sm_90a", "host": {"keys": ["cpu"], "kind": "c", "tag": ""}, "keys": ["cuda", "gpu"], "kind": "cuda", "max_num_threads": 1024, "max_shared_memory_per_block": 232448, "max_threads_per_block": 1024, "tag": "", "thread_warp_size": 32}), "tl.program_schedule.buffer_communications": [0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 1, 1, 0, 2, 2, 0], "tl.program_schedule.buffer_requires_new_allocation": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "tl.program_schedule.buffer_versions": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.buffers_lowered": 1, "tl.program_schedule.effective_threads": 256, "tl.program_schedule.group_first_warps": [0], "tl.program_schedule.group_warp_counts": [8], "tl.program_schedule.groups_lowered": 1, "tl.program_schedule.operation_groups": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "tl.program_schedule.operation_local_orders": [0, 1, 2, 3, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 12, 1, 14, 0, 1, 2], "tl.program_schedule.operation_regions": [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2], "tl.program_schedule.operation_stages": [-1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1], "tl.program_schedule.pipeline_schedules_lowered": 1, "tl.program_schedule.region_num_stages": [0, 1, 0], "tl.program_schedule.register_domain_first_warps": [], "tl.program_schedule.register_domain_groups": [], "tl.program_schedule.register_domain_is_increase": [], "tl.program_schedule.register_domain_register_counts": [], "tl.program_schedule.register_domain_warp_counts": [], "tl.program_schedule.request": "cpp-pass-test=baseline_256_threads", "tl.program_schedule.setmaxnreg_enabled": 0, "tl.program_schedule.sync_buffer_ids": [], "tl.program_schedule.sync_consumer_groups": [], "tl.program_schedule.sync_consumer_regions": [], "tl.program_schedule.sync_consumers": [], "tl.program_schedule.sync_dependency_masks": [], "tl.program_schedule.sync_effective_stage_distances": [], "tl.program_schedule.sync_iteration_distances": [], "tl.program_schedule.sync_kinds": [], "tl.program_schedule.sync_producer_groups": [], "tl.program_schedule.sync_producer_regions": [], "tl.program_schedule.sync_producers": [], "tl.program_schedule.sync_scopes": [], "tl.program_schedule.synchronization_lowered": 1, "tl.program_schedule.version": 3})
+        Q = T.match_buffer(Q_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        K = T.match_buffer(K_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        V = T.match_buffer(V_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        Output = T.match_buffer(Output_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        # with T.sblock("root"):
+        bx = T.launch_thread("blockIdx.x", 2)
+        by = T.launch_thread("blockIdx.y", 1)
+        bz = T.launch_thread("blockIdx.z", 1)
+        tx = T.launch_thread("threadIdx.x", 256)
+        ty = T.launch_thread("threadIdx.y", 1)
+        tz = T.launch_thread("threadIdx.z", 1)
+        with T.sblock("tilelang_root"):
+            T.reads()
+            T.writes()
+            Q_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+            K_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+            V_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+            O_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+            acc_s = T.sblock_alloc_buffer((128, 128), scope="local.fragment")
+            acc_s_cast = T.sblock_alloc_buffer((128, 128), "float16", scope="local.fragment")
+            acc_o = T.sblock_alloc_buffer((128, 64), scope="local.fragment")
+            scores_max = T.sblock_alloc_buffer((128,), scope="local.fragment")
+            scores_max_prev = T.sblock_alloc_buffer((128,), scope="local.fragment")
+            scores_scale = T.sblock_alloc_buffer((128,), scope="local.fragment")
+            scores_sum = T.sblock_alloc_buffer((128,), scope="local.fragment")
+            logsum = T.sblock_alloc_buffer((128,), scope="local.fragment")
+            T.attr([256], "kWarpSpecializationScope", 0)
+            T.attr([0, 256], "tl.program_schedule.group_scope", 0)
+            with T.attr(0, "tl.program_schedule.operation", 0):
+                T.copy(T.region(Q[0, 0, bx * 128, 0], 1, 1, 1, 128, 64), T.region(Q_shared[0, 0], 2, 128, 64))
+            with T.attr(1, "tl.program_schedule.operation", 0):
+                T.fill(T.region(acc_o[0, 0], 2, 128, 64), 0)
+            with T.attr(2, "tl.program_schedule.operation", 0):
+                T.fill(T.region(logsum[0], 2, 128), 0)
+            with T.attr(3, "tl.program_schedule.operation", 0):
+                T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+            for k in T.serial(2, annotations={"tl.program_schedule.region_id": 1, "tl_pipeline_planned_version_buffers": [Q_shared.data, acc_o.data, logsum.data, scores_max.data, K_shared.data, acc_s.data, scores_max_prev.data, scores_scale.data, scores_sum.data, acc_s_cast.data, V_shared.data]}):
+                with T.attr(4, "tl.program_schedule.operation", 0):
+                    T.copy(T.region(K[0, 0, k * 128, 0], 1, 1, 1, 128, 64), T.region(K_shared[0, 0], 2, 128, 64))
+                with T.attr(5, "tl.program_schedule.operation", 0):
+                    for i in T.parallel(128):
+                        for j in T.parallel(128):
+                            acc_s[i, j] = T.float32(0.0)
+                with T.attr(6, "tl.program_schedule.operation", 0):
+                    T.gemm(T.region(Q_shared[0, 0], 1, 128, 64), T.region(K_shared[0, 0], 1, 128, 64), T.region(acc_s[0, 0], 3, 128, 128), T.bool(False), T.bool(True), 128, 128, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0)
+                with T.attr(7, "tl.program_schedule.operation", 0):
+                    T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_prev[0], 2, 128))
+                with T.attr(8, "tl.program_schedule.operation", 0):
+                    T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                with T.attr(9, "tl.program_schedule.operation", 0):
+                    T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_max[0], 2, 128), "max", 1, T.bool(False))
+                with T.attr(10, "tl.program_schedule.operation", 0):
+                    for i in T.parallel(128):
+                        scores_max[i] = T.max(scores_max[i], scores_max_prev[i])
+                with T.attr(11, "tl.program_schedule.operation", 0):
+                    for i in T.parallel(128):
+                        scores_scale[i] = T.exp2(scores_max_prev[i] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                with T.attr(12, "tl.program_schedule.operation", 0):
+                    for i in T.parallel(128):
+                        for j in T.parallel(128):
+                            acc_s[i, j] = T.exp2(acc_s[i, j] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                with T.attr(13, "tl.program_schedule.operation", 0):
+                    T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_sum[0], 2, 128), "sum", 1, T.bool(True))
+                with T.attr(14, "tl.program_schedule.operation", 0):
+                    for i in T.parallel(128):
+                        logsum[i] = logsum[i] * scores_scale[i] + scores_sum[i]
+                with T.attr(15, "tl.program_schedule.operation", 0):
+                    T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128))
+                with T.attr(16, "tl.program_schedule.operation", 0):
+                    for i in T.parallel(128):
+                        for j in T.parallel(64):
+                            acc_o[i, j] = acc_o[i, j] * scores_scale[i]
+                with T.attr(17, "tl.program_schedule.operation", 0):
+                    T.copy(T.region(V[0, 0, k * 128, 0], 1, 1, 1, 128, 64), T.region(V_shared[0, 0], 2, 128, 64))
+                T.attr(18, "tl.program_schedule.operation", 0)
+                T.gemm(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(V_shared[0, 0], 1, 128, 64), T.region(acc_o[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 128, 1, T.bool(False), 128, 64, 0, 0, 1, 0, 0, 0, 0)
+            with T.attr(19, "tl.program_schedule.operation", 0):
+                for i in T.parallel(128):
+                    for j in T.parallel(64):
+                        acc_o[i, j] = acc_o[i, j] / logsum[i]
+            with T.attr(20, "tl.program_schedule.operation", 0):
+                T.copy(T.region(acc_o[0, 0], 1, 128, 64), T.region(O_shared[0, 0], 2, 128, 64))
+            T.attr(21, "tl.program_schedule.operation", 0)
+            T.copy(T.region(O_shared[0, 0], 1, 128, 64), T.region(Output[0, 0, bx * 128, 0], 2, 1, 1, 128, 64))
+2026-08-26 20:33:39  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+.2026-08-26 20:33:40  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[3]`
+[D] Show IR-2:
+ # from tvm.script import ir as I
+# from tvm.script import tirx as T
+
+@I.ir_module
+class Module:
+    @T.prim_func
+    def main(Q_handle: T.handle, K_handle: T.handle, V_handle: T.handle, Output_handle: T.handle):
+        T.func_attr({"target": T.target({"arch": "sm_90a", "host": {"keys": ["cpu"], "kind": "c", "tag": ""}, "keys": ["cuda", "gpu"], "kind": "cuda", "max_num_threads": 1024, "max_shared_memory_per_block": 232448, "max_threads_per_block": 1024, "tag": "", "thread_warp_size": 32}), "tl.program_schedule.buffer_communications": [0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 1, 1, 0, 2, 2, 0], "tl.program_schedule.buffer_requires_new_allocation": [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0], "tl.program_schedule.buffer_versions": [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1], "tl.program_schedule.buffers_lowered": 1, "tl.program_schedule.effective_threads": 256, "tl.program_schedule.group_first_warps": [0], "tl.program_schedule.group_warp_counts": [8], "tl.program_schedule.groups_lowered": 1, "tl.program_schedule.operation_groups": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "tl.program_schedule.operation_local_orders": [0, 1, 2, 3, 0, 11, 2, 8, 3, 4, 5, 6, 7, 10, 12, 9, 13, 1, 14, 0, 1, 2], "tl.program_schedule.operation_regions": [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2], "tl.program_schedule.operation_stages": [-1, -1, -1, -1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, -1, -1, -1], "tl.program_schedule.pipeline_schedules_lowered": 1, "tl.program_schedule.region_num_stages": [0, 2, 0], "tl.program_schedule.register_domain_first_warps": [], "tl.program_schedule.register_domain_groups": [], "tl.program_schedule.register_domain_is_increase": [], "tl.program_schedule.register_domain_register_counts": [], "tl.program_schedule.register_domain_warp_counts": [], "tl.program_schedule.request": "cpp-pass-test=pipelined_versions_a", "tl.program_schedule.setmaxnreg_enabled": 0, "tl.program_schedule.sync_buffer_ids": [], "tl.program_schedule.sync_consumer_groups": [], "tl.program_schedule.sync_consumer_regions": [], "tl.program_schedule.sync_consumers": [], "tl.program_schedule.sync_dependency_masks": [], "tl.program_schedule.sync_effective_stage_distances": [], "tl.program_schedule.sync_iteration_distances": [], "tl.program_schedule.sync_kinds": [], "tl.program_schedule.sync_producer_groups": [], "tl.program_schedule.sync_producer_regions": [], "tl.program_schedule.sync_producers": [], "tl.program_schedule.sync_scopes": [], "tl.program_schedule.synchronization_lowered": 1, "tl.program_schedule.version": 3})
+        Q = T.match_buffer(Q_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        K = T.match_buffer(K_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        V = T.match_buffer(V_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        Output = T.match_buffer(Output_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        with T.sblock("root"):
+            bx = T.int32()
+            T.reads(Q[0, 0, bx * 128, 0], K[0, 0, 0:256, 0:64], V[0, 0, 0:256, 0:64], Output[0, 0, bx * 128, 0])
+            T.writes()
+            T.launch_thread(bx, 2)
+            by = T.launch_thread("blockIdx.y", 1)
+            bz = T.launch_thread("blockIdx.z", 1)
+            tx = T.launch_thread("threadIdx.x", 256)
+            ty = T.launch_thread("threadIdx.y", 1)
+            tz = T.launch_thread("threadIdx.z", 1)
+            with T.sblock("tilelang_root"):
+                T.reads(Q[0, 0, bx * 128, 0], K[0, 0, 0:256, 0:64], V[0, 0, 0:256, 0:64], Output[0, 0, bx * 128, 0])
+                T.writes()
+                Q_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                K_shared = T.sblock_alloc_buffer((2, 128, 64), "float16", scope="shared.dyn")
+                V_shared = T.sblock_alloc_buffer((2, 128, 64), "float16", scope="shared.dyn")
+                O_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                acc_s = T.sblock_alloc_buffer((128, 128), scope="local.fragment")
+                acc_s_cast = T.sblock_alloc_buffer((128, 128), "float16", scope="local.fragment")
+                acc_o = T.sblock_alloc_buffer((128, 64), scope="local.fragment")
+                scores_max = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_max_prev = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_scale = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_sum = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                logsum = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                T.attr([256], "kWarpSpecializationScope", 0)
+                T.attr([0, 256], "tl.program_schedule.group_scope", 0)
+                with T.attr(0, "tl.program_schedule.operation", 0):
+                    T.copy(T.region(Q[0, 0, bx * 128, 0], 1, 1, 1, 128, 64), T.region(Q_shared[0, 0], 2, 128, 64))
+                with T.attr(1, "tl.program_schedule.operation", 0):
+                    T.fill(T.region(acc_o[0, 0], 2, 128, 64), 0)
+                with T.attr(2, "tl.program_schedule.operation", 0):
+                    T.fill(T.region(logsum[0], 2, 128), 0)
+                with T.attr(3, "tl.program_schedule.operation", 0):
+                    T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                with T.sblock(""):
+                    T.reads(K[0, 0, 0:128, 0:64], K_shared[0, 0, 0], V[0, 0, 0:128, 0:64], V_shared[0, 0, 0], scores_max[0:128], scores_max_prev[0], K[0, 0, 0:128, 0:64], V[0, 0, 0:128, 0:64], scores_max[0:128])
+                    T.writes(K_shared[0, 0:128, 0:64], V_shared[0, 0:128, 0:64], scores_max_prev[0:128], acc_s[0:128, 0:128], K_shared[0, 0:128, 0:64], V_shared[0, 0:128, 0:64], scores_max_prev[0:128])
+                    with T.sblock(""):
+                        T.reads(K[0, 0, 0, 0], K_shared[0, 0, 0], K[0, 0, 0:128, 0:64])
+                        T.writes(K_shared[0, 0:128, 0:64])
+                        T.attr(4, "tl.program_schedule.operation", 0)
+                        T.copy(T.region(K[0, 0, 0, 0], 1, 1, 1, 128, 64), T.region(K_shared[0, 0, 0], 2, 1, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                    T.ptx_commit_group()
+                    with T.sblock(""):
+                        T.reads(V[0, 0, 0, 0], V_shared[0, 0, 0], V[0, 0, 0:128, 0:64])
+                        T.writes(V_shared[0, 0:128, 0:64])
+                        T.attr(17, "tl.program_schedule.operation", 0)
+                        T.copy(T.region(V[0, 0, 0, 0], 1, 1, 1, 128, 64), T.region(V_shared[0, 0, 0], 2, 1, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                    T.ptx_commit_group()
+                    with T.sblock(""):
+                        T.reads(scores_max[0], scores_max_prev[0], scores_max[0:128])
+                        T.writes(scores_max_prev[0:128])
+                        T.attr(7, "tl.program_schedule.operation", 0)
+                        T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_prev[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                    with T.sblock(""):
+                        T.reads()
+                        T.writes(acc_s[0:128, 0:128])
+                        T.attr(5, "tl.program_schedule.operation", 0)
+                        for i in T.parallel(128):
+                            for j in T.parallel(128):
+                                acc_s[i, j] = T.float32(0.0)
+                with T.sblock(""):
+                    T.reads(K[0, 0, 128:256, 0:64], K_shared[0:2, 0:128, 0:64], V[0, 0, 128:256, 0:64], V_shared[0:2, 0:128, 0:64], Q_shared[0:128, 0:64], acc_s[0:128, 0:128], scores_max[0:128], scores_max_prev[0:128], acc_s_cast[0:128, 0:128], scores_sum[0:128], logsum[0:128], scores_scale[0:128], acc_o[0:128, 0:64], K[0, 0, 128:256, 0:64], V[0, 0, 128:256, 0:64], Q_shared[0:128, 0:64], K_shared[0, 0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128], scores_max[0:128], scores_max[0:128], acc_s[0:128, 0:128], acc_s[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[0, 0:128, 0:64], acc_o[0:128, 0:64])
+                    T.writes(K_shared[1, 0:128, 0:64], V_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], scores_max[0:128], scores_scale[0:128], scores_max_prev[0:128], acc_s_cast[0:128, 0:128], scores_sum[0:128], logsum[0:128], acc_o[0:128, 0:64], K_shared[1, 0:128, 0:64], V_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], scores_max[0:128], scores_max[0:128], scores_max_prev[0:128], acc_s_cast[0:128, 0:128], scores_sum[0:128], acc_o[0:128, 0:64])
+                    with T.sblock(""):
+                        T.reads(K[0, 0, 128, 0], K_shared[1, 0, 0], K[0, 0, 128:256, 0:64])
+                        T.writes(K_shared[1, 0:128, 0:64])
+                        T.attr(4, "tl.program_schedule.operation", 0)
+                        T.copy(T.region(K[0, 0, 128, 0], 1, 1, 1, 128, 64), T.region(K_shared[1, 0, 0], 2, 1, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                    T.ptx_commit_group()
+                    with T.sblock(""):
+                        T.reads(V[0, 0, 128, 0], V_shared[1, 0, 0], V[0, 0, 128:256, 0:64])
+                        T.writes(V_shared[1, 0:128, 0:64])
+                        T.attr(17, "tl.program_schedule.operation", 0)
+                        T.copy(T.region(V[0, 0, 128, 0], 1, 1, 1, 128, 64), T.region(V_shared[1, 0, 0], 2, 1, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                    T.ptx_commit_group()
+                    T.ptx_wait_group(3)
+                    with T.sblock(""):
+                        T.reads(Q_shared[0, 0], K_shared[0, 0, 0], acc_s[0, 0], Q_shared[0:128, 0:64], K_shared[0, 0:128, 0:64], acc_s[0:128, 0:128])
+                        T.writes(acc_s[0:128, 0:128])
+                        T.attr(6, "tl.program_schedule.operation", 0)
+                        T.gemm(T.region(Q_shared[0, 0], 1, 128, 64), T.region(K_shared[0, 0, 0], 1, 1, 128, 64), T.region(acc_s[0, 0], 3, 128, 128), T.bool(False), T.bool(True), 128, 128, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                    with T.sblock(""):
+                        T.reads(scores_max[0])
+                        T.writes(scores_max[0:128])
+                        T.attr(8, "tl.program_schedule.operation", 0)
+                        T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                    with T.sblock(""):
+                        T.reads(acc_s[0, 0], scores_max[0], acc_s[0:128, 0:128], scores_max[0:128])
+                        T.writes(scores_max[0:128])
+                        T.attr(9, "tl.program_schedule.operation", 0)
+                        T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_max[0], 2, 128), "max", 1, T.bool(False))
+                    with T.sblock(""):
+                        T.reads(scores_max[0:128], scores_max_prev[0:128])
+                        T.writes(scores_max[0:128])
+                        T.attr(10, "tl.program_schedule.operation", 0)
+                        for i in T.parallel(128):
+                            scores_max[i] = T.max(scores_max[i], scores_max_prev[i])
+                    with T.sblock(""):
+                        T.reads(scores_max_prev[0:128], scores_max[0:128])
+                        T.writes(scores_scale[0:128])
+                        T.attr(11, "tl.program_schedule.operation", 0)
+                        for i in T.parallel(128):
+                            scores_scale[i] = T.exp2(scores_max_prev[i] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                    with T.sblock(""):
+                        T.reads(acc_s[0:128, 0:128], scores_max[0:128])
+                        T.writes(acc_s[0:128, 0:128])
+                        T.attr(12, "tl.program_schedule.operation", 0)
+                        for i in T.parallel(128):
+                            for j in T.parallel(128):
+                                acc_s[i, j] = T.exp2(acc_s[i, j] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                    with T.sblock(""):
+                        T.reads(scores_max[0], scores_max_prev[0], scores_max[0:128])
+                        T.writes(scores_max_prev[0:128])
+                        T.attr(7, "tl.program_schedule.operation", 0)
+                        T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_prev[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                    with T.sblock(""):
+                        T.reads(acc_s[0, 0], acc_s_cast[0, 0], acc_s[0:128, 0:128])
+                        T.writes(acc_s_cast[0:128, 0:128])
+                        T.attr(15, "tl.program_schedule.operation", 0)
+                        T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                    with T.sblock(""):
+                        T.reads(acc_s[0, 0], scores_sum[0], acc_s[0:128, 0:128])
+                        T.writes(scores_sum[0:128])
+                        T.attr(13, "tl.program_schedule.operation", 0)
+                        T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_sum[0], 2, 128), "sum", 1, T.bool(True))
+                    with T.sblock(""):
+                        T.reads()
+                        T.writes(acc_s[0:128, 0:128])
+                        T.attr(5, "tl.program_schedule.operation", 0)
+                        for i in T.parallel(128):
+                            for j in T.parallel(128):
+                                acc_s[i, j] = T.float32(0.0)
+                    with T.sblock(""):
+                        T.reads(logsum[0:128], scores_scale[0:128], scores_sum[0:128])
+                        T.writes(logsum[0:128])
+                        T.attr(14, "tl.program_schedule.operation", 0)
+                        for i in T.parallel(128):
+                            logsum[i] = logsum[i] * scores_scale[i] + scores_sum[i]
+                    with T.sblock(""):
+                        T.reads(acc_o[0:128, 0:64], scores_scale[0:128])
+                        T.writes(acc_o[0:128, 0:64])
+                        T.attr(16, "tl.program_schedule.operation", 0)
+                        for i in T.parallel(128):
+                            for j in T.parallel(64):
+                                acc_o[i, j] = acc_o[i, j] * scores_scale[i]
+                    T.ptx_wait_group(2)
+                    with T.sblock(""):
+                        T.reads(acc_s_cast[0, 0], V_shared[0, 0, 0], acc_o[0, 0], acc_s_cast[0:128, 0:128], V_shared[0, 0:128, 0:64], acc_o[0:128, 0:64])
+                        T.writes(acc_o[0:128, 0:64])
+                        T.attr(18, "tl.program_schedule.operation", 0)
+                        T.gemm(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(V_shared[0, 0, 0], 1, 1, 128, 64), T.region(acc_o[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 128, 1, T.bool(False), 128, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                with T.sblock(""):
+                    T.reads(Q_shared[0:128, 0:64], K_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], scores_max[0:128], scores_max_prev[0:128], acc_s_cast[0:128, 0:128], scores_sum[0:128], logsum[0:128], scores_scale[0:128], acc_o[0:128, 0:64], V_shared[1, 0:128, 0:64], Q_shared[0:128, 0:64], K_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128], scores_max[0:128], acc_s[0:128, 0:128], acc_s[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], acc_o[0:128, 0:64])
+                    T.writes(acc_s[0:128, 0:128], scores_max[0:128], scores_scale[0:128], acc_s_cast[0:128, 0:128], scores_sum[0:128], logsum[0:128], acc_o[0:128, 0:64], acc_s[0:128, 0:128], scores_max[0:128], scores_max[0:128], acc_s_cast[0:128, 0:128], scores_sum[0:128], acc_o[0:128, 0:64])
+                    T.ptx_wait_group(1)
+                    with T.sblock(""):
+                        T.reads(Q_shared[0, 0], K_shared[1, 0, 0], acc_s[0, 0], Q_shared[0:128, 0:64], K_shared[1, 0:128, 0:64], acc_s[0:128, 0:128])
+                        T.writes(acc_s[0:128, 0:128])
+                        T.attr(6, "tl.program_schedule.operation", 0)
+                        T.gemm(T.region(Q_shared[0, 0], 1, 128, 64), T.region(K_shared[1, 0, 0], 1, 1, 128, 64), T.region(acc_s[0, 0], 3, 128, 128), T.bool(False), T.bool(True), 128, 128, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                    with T.sblock(""):
+                        T.reads(scores_max[0])
+                        T.writes(scores_max[0:128])
+                        T.attr(8, "tl.program_schedule.operation", 0)
+                        T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                    with T.sblock(""):
+                        T.reads(acc_s[0, 0], scores_max[0], acc_s[0:128, 0:128], scores_max[0:128])
+                        T.writes(scores_max[0:128])
+                        T.attr(9, "tl.program_schedule.operation", 0)
+                        T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_max[0], 2, 128), "max", 1, T.bool(False))
+                    with T.sblock(""):
+                        T.reads(scores_max[0:128], scores_max_prev[0:128])
+                        T.writes(scores_max[0:128])
+                        T.attr(10, "tl.program_schedule.operation", 0)
+                        for i in T.parallel(128):
+                            scores_max[i] = T.max(scores_max[i], scores_max_prev[i])
+                    with T.sblock(""):
+                        T.reads(scores_max_prev[0:128], scores_max[0:128])
+                        T.writes(scores_scale[0:128])
+                        T.attr(11, "tl.program_schedule.operation", 0)
+                        for i in T.parallel(128):
+                            scores_scale[i] = T.exp2(scores_max_prev[i] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                    with T.sblock(""):
+                        T.reads(acc_s[0:128, 0:128], scores_max[0:128])
+                        T.writes(acc_s[0:128, 0:128])
+                        T.attr(12, "tl.program_schedule.operation", 0)
+                        for i in T.parallel(128):
+                            for j in T.parallel(128):
+                                acc_s[i, j] = T.exp2(acc_s[i, j] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                    with T.sblock(""):
+                        T.reads(acc_s[0, 0], acc_s_cast[0, 0], acc_s[0:128, 0:128])
+                        T.writes(acc_s_cast[0:128, 0:128])
+                        T.attr(15, "tl.program_schedule.operation", 0)
+                        T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                    with T.sblock(""):
+                        T.reads(acc_s[0, 0], scores_sum[0], acc_s[0:128, 0:128])
+                        T.writes(scores_sum[0:128])
+                        T.attr(13, "tl.program_schedule.operation", 0)
+                        T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_sum[0], 2, 128), "sum", 1, T.bool(True))
+                    with T.sblock(""):
+                        T.reads(logsum[0:128], scores_scale[0:128], scores_sum[0:128])
+                        T.writes(logsum[0:128])
+                        T.attr(14, "tl.program_schedule.operation", 0)
+                        for i in T.parallel(128):
+                            logsum[i] = logsum[i] * scores_scale[i] + scores_sum[i]
+                    with T.sblock(""):
+                        T.reads(acc_o[0:128, 0:64], scores_scale[0:128])
+                        T.writes(acc_o[0:128, 0:64])
+                        T.attr(16, "tl.program_schedule.operation", 0)
+                        for i in T.parallel(128):
+                            for j in T.parallel(64):
+                                acc_o[i, j] = acc_o[i, j] * scores_scale[i]
+                    T.ptx_wait_group(0)
+                    with T.sblock(""):
+                        T.reads(acc_s_cast[0, 0], V_shared[1, 0, 0], acc_o[0, 0], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], acc_o[0:128, 0:64])
+                        T.writes(acc_o[0:128, 0:64])
+                        T.attr(18, "tl.program_schedule.operation", 0)
+                        T.gemm(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(V_shared[1, 0, 0], 1, 1, 128, 64), T.region(acc_o[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 128, 1, T.bool(False), 128, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                with T.attr(19, "tl.program_schedule.operation", 0):
+                    for i in T.parallel(128):
+                        for j in T.parallel(64):
+                            acc_o[i, j] = acc_o[i, j] / logsum[i]
+                with T.attr(20, "tl.program_schedule.operation", 0):
+                    T.copy(T.region(acc_o[0, 0], 1, 128, 64), T.region(O_shared[0, 0], 2, 128, 64))
+                T.attr(21, "tl.program_schedule.operation", 0)
+                T.copy(T.region(O_shared[0, 0], 1, 128, 64), T.region(Output[0, 0, bx * 128, 0], 2, 1, 1, 128, 64))
+2026-08-26 20:33:49  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+.2026-08-26 20:33:49  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[3]`
+[D] Show IR-2:
+ # from tvm.script import ir as I
+# from tvm.script import tirx as T
+
+@I.ir_module
+class Module:
+    @T.prim_func
+    def main(Q_handle: T.handle, K_handle: T.handle, V_handle: T.handle, Output_handle: T.handle):
+        T.func_attr({"target": T.target({"arch": "sm_90a", "host": {"keys": ["cpu"], "kind": "c", "tag": ""}, "keys": ["cuda", "gpu"], "kind": "cuda", "max_num_threads": 1024, "max_shared_memory_per_block": 232448, "max_threads_per_block": 1024, "tag": "", "thread_warp_size": 32}), "tl.program_schedule.buffer_communications": [0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 1, 1, 0, 2, 2, 0], "tl.program_schedule.buffer_requires_new_allocation": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], "tl.program_schedule.buffer_versions": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1], "tl.program_schedule.buffers_lowered": 1, "tl.program_schedule.effective_threads": 256, "tl.program_schedule.group_first_warps": [0, 4], "tl.program_schedule.group_warp_counts": [4, 4], "tl.program_schedule.groups_lowered": 1, "tl.program_schedule.operation_groups": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0], "tl.program_schedule.operation_local_orders": [0, 1, 2, 3, 0, 2, 3, 5, 6, 7, 8, 4, 0, 1, 9, 2, 10, 1, 11, 0, 1, 2], "tl.program_schedule.operation_regions": [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2], "tl.program_schedule.operation_stages": [-1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, -1, -1, -1], "tl.program_schedule.pipeline_schedules_lowered": 1, "tl.program_schedule.region_num_stages": [0, 2, 0], "tl.program_schedule.register_domain_first_warps": [], "tl.program_schedule.register_domain_groups": [], "tl.program_schedule.register_domain_is_increase": [], "tl.program_schedule.register_domain_register_counts": [], "tl.program_schedule.register_domain_warp_counts": [], "tl.program_schedule.request": "cpp-pass-test=two_group_256_threads", "tl.program_schedule.setmaxnreg_enabled": 0, "tl.program_schedule.sync_buffer_ids": [7, 4, 10, 11, 7, 4, 10, 11], "tl.program_schedule.sync_consumer_groups": [1, 1, 0, 0, 0, 0, 1, 1], "tl.program_schedule.sync_consumer_regions": [1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.sync_consumers": [12, 12, 14, 18, 6, 10, 13, 15], "tl.program_schedule.sync_dependency_masks": [5, 1, 1, 1, 8, 8, 8, 8], "tl.program_schedule.sync_effective_stage_distances": [1, 1, 0, 0, 0, 0, 1, 1], "tl.program_schedule.sync_iteration_distances": [0, 0, 0, 0, 1, 1, 1, 1], "tl.program_schedule.sync_kinds": [0, 0, 0, 0, 1, 1, 1, 1], "tl.program_schedule.sync_producer_groups": [0, 0, 1, 1, 1, 1, 0, 0], "tl.program_schedule.sync_producer_regions": [1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.sync_producers": [6, 10, 13, 15, 12, 12, 14, 18], "tl.program_schedule.sync_scopes": [1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.synchronization_lowered": 1, "tl.program_schedule.version": 3})
+        Q = T.match_buffer(Q_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        K = T.match_buffer(K_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        V = T.match_buffer(V_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        Output = T.match_buffer(Output_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        with T.sblock("root"):
+            bx = T.int32()
+            T.reads(Q[0, 0, bx * 128, 0], K[0, 0, 0:256, 0:64], V[0, 0, 0:256, 0:64], Output[0, 0, bx * 128, 0])
+            T.writes()
+            T.launch_thread(bx, 2)
+            by = T.launch_thread("blockIdx.y", 1)
+            bz = T.launch_thread("blockIdx.z", 1)
+            tx = T.launch_thread("threadIdx.x", 256)
+            ty = T.launch_thread("threadIdx.y", 1)
+            tz = T.launch_thread("threadIdx.z", 1)
+            with T.sblock("tilelang_root"):
+                T.reads(Q[0, 0, bx * 128, 0], K[0, 0, 0:256, 0:64], V[0, 0, 0:256, 0:64], Output[0, 0, bx * 128, 0])
+                T.writes()
+                program_schedule_mbar = T.handle("uint64", "shared.barrier")
+                T.sblock_attr({"barrier_init": {program_schedule_mbar: [128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128]}})
+                Q_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                K_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                V_shared = T.sblock_alloc_buffer((2, 128, 64), "float16", scope="shared.dyn")
+                O_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                acc_s = T.sblock_alloc_buffer((128, 128), scope="local.fragment")
+                acc_s_wsp_handoff_0 = T.sblock_alloc_buffer((128, 128), scope="shared.dyn")
+                acc_s_cast = T.sblock_alloc_buffer((128, 128), "float16", scope="local.fragment")
+                acc_s_cast_wsp_handoff_3 = T.sblock_alloc_buffer((128, 128), "float16", scope="shared.dyn")
+                acc_o = T.sblock_alloc_buffer((128, 64), scope="local.fragment")
+                scores_max = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_max_wsp_handoff_1 = T.sblock_alloc_buffer((128,), scope="shared.dyn")
+                scores_max_prev = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_scale = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_sum = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_sum_wsp_handoff_2 = T.sblock_alloc_buffer((128,), scope="shared.dyn")
+                logsum = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                program_schedule_mbar_1 = T.sblock_alloc_buffer((16,), "uint64", data=program_schedule_mbar, scope="shared.barrier")
+                T.attr([128, 128], "kWarpSpecializationScope", 0)
+                if tx < 128:
+                    T.attr([0, 128], "tl.program_schedule.group_scope", 0)
+                    with T.attr(0, "tl.program_schedule.operation", 0):
+                        T.copy(T.region(Q[0, 0, bx * 128, 0], 1, 1, 1, 128, 64), T.region(Q_shared[0, 0], 2, 128, 64))
+                    with T.attr(1, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(acc_o[0, 0], 2, 128, 64), 0)
+                    with T.attr(2, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(logsum[0], 2, 128), 0)
+                    with T.attr(3, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                    with T.sblock(""):
+                        T.reads(K[0, 0, 0:128, 0:64], K_shared[0:128, 0:64], V[0, 0, 0:128, 0:64], V_shared[0, 0, 0], program_schedule_mbar_1[0:12], Q_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0, 0], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], K[0, 0, 0:128, 0:64], V[0, 0, 0:128, 0:64], Q_shared[0:128, 0:64], K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128], scores_max[0:128], acc_s[0:128, 0:128], scores_max[0:128], scores_max[0:128])
+                        T.writes(K_shared[0:128, 0:64], V_shared[0, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], K_shared[0:128, 0:64], V_shared[0, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                        with T.sblock(""):
+                            T.reads(K[0, 0, 0, 0], K_shared[0, 0], K[0, 0, 0:128, 0:64])
+                            T.writes(K_shared[0:128, 0:64])
+                            T.attr(4, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(K[0, 0, 0, 0], 1, 1, 1, 128, 64), T.region(K_shared[0, 0], 2, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads(V[0, 0, 0, 0], V_shared[0, 0, 0], V[0, 0, 0:128, 0:64])
+                            T.writes(V_shared[0, 0:128, 0:64])
+                            T.attr(17, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(V[0, 0, 0, 0], 1, 1, 1, 128, 64), T.region(V_shared[0, 0, 0], 2, 1, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads()
+                            T.writes(acc_s[0:128, 0:128])
+                            T.attr(5, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(128):
+                                    acc_s[i, j] = T.float32(0.0)
+                        T.ptx_wait_group(1)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[0:10], Q_shared[0, 0], K_shared[0, 0], acc_s[0, 0], acc_s_wsp_handoff_0[0, 0], Q_shared[0:128, 0:64], K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128])
+                            T.writes(acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128])
+                            T.attr(6, "tl.program_schedule.operation", 0)
+                            T.gemm(T.region(Q_shared[0, 0], 1, 128, 64), T.region(K_shared[0, 0], 1, 128, 64), T.region(acc_s[0, 0], 3, 128, 128), T.bool(False), T.bool(True), 128, 128, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_wsp_handoff_0[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[0])
+                        with T.sblock(""):
+                            T.reads(scores_max[0], scores_max_prev[0], scores_max[0:128])
+                            T.writes(scores_max_prev[0:128])
+                            T.attr(7, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_prev[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                        with T.sblock(""):
+                            T.reads(scores_max[0])
+                            T.writes(scores_max[0:128])
+                            T.attr(8, "tl.program_schedule.operation", 0)
+                            T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                        with T.sblock(""):
+                            T.reads(acc_s[0, 0], scores_max[0], acc_s[0:128, 0:128], scores_max[0:128])
+                            T.writes(scores_max[0:128])
+                            T.attr(9, "tl.program_schedule.operation", 0)
+                            T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_max[0], 2, 128), "max", 1, T.bool(False))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[2:12], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], scores_max[0:128])
+                            T.writes(scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                            T.attr(10, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_max[i] = T.max(scores_max[i], scores_max_prev[i])
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_wsp_handoff_1[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[2])
+                    with T.sblock(""):
+                        T.reads(K[0, 0, 128:256, 0:64], K_shared[0:128, 0:64], V[0, 0, 128:256, 0:64], V_shared[0:2, 0:128, 0:64], program_schedule_mbar_1[1:15], Q_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0, 0], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0], scores_sum_wsp_handoff_2[0:128], scores_sum[0:128], logsum[0:128], scores_scale[0:128], acc_o[0:128, 0:64], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], K[0, 0, 128:256, 0:64], V[0, 0, 128:256, 0:64], Q_shared[0:128, 0:64], K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128], scores_max[0:128], acc_s[0:128, 0:128], scores_max[0:128], scores_max[0:128], scores_sum_wsp_handoff_2[0:128], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[0, 0:128, 0:64], acc_o[0:128, 0:64])
+                        T.writes(K_shared[0:128, 0:64], V_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_scale[0:128], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], logsum[0:128], scores_sum[0:128], acc_o[0:128, 0:64], acc_s_cast[0:128, 0:128], K_shared[0:128, 0:64], V_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], scores_sum[0:128], acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                        with T.sblock(""):
+                            T.reads(K[0, 0, 128, 0], K_shared[0, 0], K[0, 0, 128:256, 0:64])
+                            T.writes(K_shared[0:128, 0:64])
+                            T.attr(4, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(K[0, 0, 128, 0], 1, 1, 1, 128, 64), T.region(K_shared[0, 0], 2, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads(V[0, 0, 128, 0], V_shared[1, 0, 0], V[0, 0, 128:256, 0:64])
+                            T.writes(V_shared[1, 0:128, 0:64])
+                            T.attr(17, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(V[0, 0, 128, 0], 1, 1, 1, 128, 64), T.region(V_shared[1, 0, 0], 2, 1, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads()
+                            T.writes(acc_s[0:128, 0:128])
+                            T.attr(5, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(128):
+                                    acc_s[i, j] = T.float32(0.0)
+                        T.ptx_wait_group(1)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[1:9], Q_shared[0, 0], K_shared[0, 0], acc_s[0, 0], acc_s_wsp_handoff_0[0, 0], Q_shared[0:128, 0:64], K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128])
+                            T.writes(acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128])
+                            T.attr(6, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[8], 0)
+                            T.gemm(T.region(Q_shared[0, 0], 1, 128, 64), T.region(K_shared[0, 0], 1, 128, 64), T.region(acc_s[0, 0], 3, 128, 128), T.bool(False), T.bool(True), 128, 128, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_wsp_handoff_0[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[1])
+                        with T.sblock(""):
+                            T.reads(scores_max_prev[0:128], scores_max[0:128])
+                            T.writes(scores_scale[0:128])
+                            T.attr(11, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_scale[i] = T.exp2(scores_max_prev[i] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                        with T.sblock(""):
+                            T.reads(scores_max[0], scores_max_prev[0], scores_max[0:128])
+                            T.writes(scores_max_prev[0:128])
+                            T.attr(7, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_prev[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                        with T.sblock(""):
+                            T.reads(scores_max[0])
+                            T.writes(scores_max[0:128])
+                            T.attr(8, "tl.program_schedule.operation", 0)
+                            T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                        with T.sblock(""):
+                            T.reads(acc_s[0, 0], scores_max[0], acc_s[0:128, 0:128], scores_max[0:128])
+                            T.writes(scores_max[0:128])
+                            T.attr(9, "tl.program_schedule.operation", 0)
+                            T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_max[0], 2, 128), "max", 1, T.bool(False))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[3:11], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], scores_max[0:128])
+                            T.writes(scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                            T.attr(10, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[10], 0)
+                            for i in T.parallel(128):
+                                scores_max[i] = T.max(scores_max[i], scores_max_prev[i])
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_wsp_handoff_1[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[3])
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[4:13], scores_sum_wsp_handoff_2[0], scores_sum[0:128], logsum[0:128], scores_scale[0:128], scores_sum_wsp_handoff_2[0:128])
+                            T.writes(logsum[0:128], scores_sum[0:128])
+                            T.attr(14, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[4], 0)
+                            T.copy(T.region(scores_sum_wsp_handoff_2[0], 1, 128), T.region(scores_sum[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            for i in T.parallel(128):
+                                logsum[i] = logsum[i] * scores_scale[i] + scores_sum[i]
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[12])
+                        with T.sblock(""):
+                            T.reads(acc_o[0:128, 0:64], scores_scale[0:128])
+                            T.writes(acc_o[0:128, 0:64])
+                            T.attr(16, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(64):
+                                    acc_o[i, j] = acc_o[i, j] * scores_scale[i]
+                        T.ptx_wait_group(2)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[6:15], acc_s_cast_wsp_handoff_3[0, 0], acc_s_cast[0, 0], V_shared[0, 0, 0], acc_o[0, 0], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[0, 0:128, 0:64], acc_o[0:128, 0:64])
+                            T.writes(acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                            T.attr(18, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[6], 0)
+                            T.copy(T.region(acc_s_cast_wsp_handoff_3[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.gemm(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(V_shared[0, 0, 0], 1, 1, 128, 64), T.region(acc_o[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 128, 1, T.bool(False), 128, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[14])
+                    with T.sblock(""):
+                        T.reads(scores_max_prev[0:128], scores_max[0:128], program_schedule_mbar_1[5:16], scores_sum_wsp_handoff_2[0:128], scores_sum[0:128], logsum[0:128], scores_scale[0:128], acc_o[0:128, 0:64], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], scores_sum_wsp_handoff_2[0:128], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], acc_o[0:128, 0:64])
+                        T.writes(scores_scale[0:128], logsum[0:128], scores_sum[0:128], acc_o[0:128, 0:64], acc_s_cast[0:128, 0:128], scores_sum[0:128], acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                        with T.sblock(""):
+                            T.reads(scores_max_prev[0:128], scores_max[0:128])
+                            T.writes(scores_scale[0:128])
+                            T.attr(11, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_scale[i] = T.exp2(scores_max_prev[i] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[5:14], scores_sum_wsp_handoff_2[0], scores_sum[0:128], logsum[0:128], scores_scale[0:128], scores_sum_wsp_handoff_2[0:128])
+                            T.writes(logsum[0:128], scores_sum[0:128])
+                            T.attr(14, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[5], 0)
+                            T.copy(T.region(scores_sum_wsp_handoff_2[0], 1, 128), T.region(scores_sum[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            for i in T.parallel(128):
+                                logsum[i] = logsum[i] * scores_scale[i] + scores_sum[i]
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[13])
+                        with T.sblock(""):
+                            T.reads(acc_o[0:128, 0:64], scores_scale[0:128])
+                            T.writes(acc_o[0:128, 0:64])
+                            T.attr(16, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(64):
+                                    acc_o[i, j] = acc_o[i, j] * scores_scale[i]
+                        T.ptx_wait_group(0)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[7:16], acc_s_cast_wsp_handoff_3[0, 0], acc_s_cast[0, 0], V_shared[1, 0, 0], acc_o[0, 0], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], acc_o[0:128, 0:64])
+                            T.writes(acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                            T.attr(18, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[7], 0)
+                            T.copy(T.region(acc_s_cast_wsp_handoff_3[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.gemm(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(V_shared[1, 0, 0], 1, 1, 128, 64), T.region(acc_o[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 128, 1, T.bool(False), 128, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[15])
+                    with T.attr(19, "tl.program_schedule.operation", 0):
+                        for i in T.parallel(128):
+                            for j in T.parallel(64):
+                                acc_o[i, j] = acc_o[i, j] / logsum[i]
+                    with T.attr(20, "tl.program_schedule.operation", 0):
+                        T.copy(T.region(acc_o[0, 0], 1, 128, 64), T.region(O_shared[0, 0], 2, 128, 64))
+                    T.attr(21, "tl.program_schedule.operation", 0)
+                    T.copy(T.region(O_shared[0, 0], 1, 128, 64), T.region(Output[0, 0, bx * 128, 0], 2, 1, 1, 128, 64))
+                else:
+                    T.attr([128, 128], "tl.program_schedule.group_scope", 1)
+                    for k in T.serial(2, annotations={"tl.program_schedule.region_id": 1, "tl_pipeline_planned_barrier_buffers": [program_schedule_mbar], "tl_pipeline_planned_version_buffers": [Q_shared.data, acc_o.data, logsum.data, scores_max.data, K_shared.data, acc_s.data, scores_max_prev.data, scores_scale.data, scores_sum.data, acc_s_cast.data, V_shared.data, acc_s_wsp_handoff_0.data, scores_max_wsp_handoff_1.data, scores_sum_wsp_handoff_2.data, acc_s_cast_wsp_handoff_3.data]}):
+                        with T.attr(12, "tl.program_schedule.operation", 1):
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[k], 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[k + 2], 0)
+                            T.copy(T.region(acc_s_wsp_handoff_0[0, 0], 1, 128, 128), T.region(acc_s[0, 0], 2, 128, 128))
+                            T.copy(T.region(scores_max_wsp_handoff_1[0], 1, 128), T.region(scores_max[0], 2, 128))
+                            for i in T.parallel(128):
+                                for j in T.parallel(128):
+                                    acc_s[i, j] = T.exp2(acc_s[i, j] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[k + 8])
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[k + 10])
+                        with T.attr(13, "tl.program_schedule.operation", 1):
+                            if k == 1:
+                                T.mbarrier_wait_parity(program_schedule_mbar_1[k + 11], 0)
+                            T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_sum[0], 2, 128), "sum", 1, T.bool(True))
+                            T.copy(T.region(scores_sum[0], 1, 128), T.region(scores_sum_wsp_handoff_2[0], 2, 128))
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[k + 4])
+                        T.attr(15, "tl.program_schedule.operation", 1)
+                        if k == 1:
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[k + 13], 0)
+                        T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128))
+                        T.copy(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(acc_s_cast_wsp_handoff_3[0, 0], 2, 128, 128))
+                        T.fence_proxy_async()
+                        T.ptx_arrive_barrier(program_schedule_mbar_1[k + 6])
+2026-08-26 20:34:02  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+.2026-08-26 20:34:02  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[3]`
+[D] Show IR-2:
+ # from tvm.script import ir as I
+# from tvm.script import tirx as T
+
+@I.ir_module
+class Module:
+    @T.prim_func
+    def main(Q_handle: T.handle, K_handle: T.handle, V_handle: T.handle, Output_handle: T.handle):
+        T.func_attr({"target": T.target({"arch": "sm_90a", "host": {"keys": ["cpu"], "kind": "c", "tag": ""}, "keys": ["cuda", "gpu"], "kind": "cuda", "max_num_threads": 1024, "max_shared_memory_per_block": 232448, "max_threads_per_block": 1024, "tag": "", "thread_warp_size": 32}), "tl.program_schedule.buffer_communications": [0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 1, 1, 0, 2, 2, 0], "tl.program_schedule.buffer_requires_new_allocation": [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0], "tl.program_schedule.buffer_versions": [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1], "tl.program_schedule.buffers_lowered": 1, "tl.program_schedule.effective_threads": 256, "tl.program_schedule.group_first_warps": [0, 4], "tl.program_schedule.group_warp_counts": [4, 4], "tl.program_schedule.groups_lowered": 1, "tl.program_schedule.operation_groups": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0], "tl.program_schedule.operation_local_orders": [0, 1, 2, 3, 0, 2, 3, 5, 6, 7, 8, 4, 0, 1, 9, 2, 10, 1, 11, 0, 1, 2], "tl.program_schedule.operation_regions": [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2], "tl.program_schedule.operation_stages": [-1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, -1, -1, -1], "tl.program_schedule.pipeline_schedules_lowered": 1, "tl.program_schedule.region_num_stages": [0, 2, 0], "tl.program_schedule.register_domain_first_warps": [], "tl.program_schedule.register_domain_groups": [], "tl.program_schedule.register_domain_is_increase": [], "tl.program_schedule.register_domain_register_counts": [], "tl.program_schedule.register_domain_warp_counts": [], "tl.program_schedule.request": "cpp-pass-test=two_group_versions_b_256_threads", "tl.program_schedule.setmaxnreg_enabled": 0, "tl.program_schedule.sync_buffer_ids": [7, 4, 10, 11, 7, 4, 10, 11], "tl.program_schedule.sync_consumer_groups": [1, 1, 0, 0, 0, 0, 1, 1], "tl.program_schedule.sync_consumer_regions": [1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.sync_consumers": [12, 12, 14, 18, 6, 10, 13, 15], "tl.program_schedule.sync_dependency_masks": [5, 1, 1, 1, 8, 8, 8, 8], "tl.program_schedule.sync_effective_stage_distances": [1, 1, 0, 0, 0, 0, 1, 1], "tl.program_schedule.sync_iteration_distances": [0, 0, 0, 0, 1, 1, 1, 1], "tl.program_schedule.sync_kinds": [0, 0, 0, 0, 1, 1, 1, 1], "tl.program_schedule.sync_producer_groups": [0, 0, 1, 1, 1, 1, 0, 0], "tl.program_schedule.sync_producer_regions": [1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.sync_producers": [6, 10, 13, 15, 12, 12, 14, 18], "tl.program_schedule.sync_scopes": [1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.synchronization_lowered": 1, "tl.program_schedule.version": 3})
+        Q = T.match_buffer(Q_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        K = T.match_buffer(K_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        V = T.match_buffer(V_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        Output = T.match_buffer(Output_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        with T.sblock("root"):
+            bx = T.int32()
+            T.reads(Q[0, 0, bx * 128, 0], K[0, 0, 0:256, 0:64], V[0, 0, 0:256, 0:64], Output[0, 0, bx * 128, 0])
+            T.writes()
+            T.launch_thread(bx, 2)
+            by = T.launch_thread("blockIdx.y", 1)
+            bz = T.launch_thread("blockIdx.z", 1)
+            tx = T.launch_thread("threadIdx.x", 256)
+            ty = T.launch_thread("threadIdx.y", 1)
+            tz = T.launch_thread("threadIdx.z", 1)
+            with T.sblock("tilelang_root"):
+                T.reads(Q[0, 0, bx * 128, 0], K[0, 0, 0:256, 0:64], V[0, 0, 0:256, 0:64], Output[0, 0, bx * 128, 0])
+                T.writes()
+                program_schedule_mbar = T.handle("uint64", "shared.barrier")
+                T.sblock_attr({"barrier_init": {program_schedule_mbar: [128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128]}})
+                Q_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                K_shared = T.sblock_alloc_buffer((2, 128, 64), "float16", scope="shared.dyn")
+                V_shared = T.sblock_alloc_buffer((2, 128, 64), "float16", scope="shared.dyn")
+                O_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                acc_s = T.sblock_alloc_buffer((128, 128), scope="local.fragment")
+                acc_s_wsp_handoff_0 = T.sblock_alloc_buffer((128, 128), scope="shared.dyn")
+                acc_s_cast = T.sblock_alloc_buffer((128, 128), "float16", scope="local.fragment")
+                acc_s_cast_wsp_handoff_3 = T.sblock_alloc_buffer((128, 128), "float16", scope="shared.dyn")
+                acc_o = T.sblock_alloc_buffer((128, 64), scope="local.fragment")
+                scores_max = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_max_wsp_handoff_1 = T.sblock_alloc_buffer((128,), scope="shared.dyn")
+                scores_max_prev = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_scale = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_sum = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_sum_wsp_handoff_2 = T.sblock_alloc_buffer((128,), scope="shared.dyn")
+                logsum = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                program_schedule_mbar_1 = T.sblock_alloc_buffer((16,), "uint64", data=program_schedule_mbar, scope="shared.barrier")
+                T.attr([128, 128], "kWarpSpecializationScope", 0)
+                if tx < 128:
+                    T.attr([0, 128], "tl.program_schedule.group_scope", 0)
+                    with T.attr(0, "tl.program_schedule.operation", 0):
+                        T.copy(T.region(Q[0, 0, bx * 128, 0], 1, 1, 1, 128, 64), T.region(Q_shared[0, 0], 2, 128, 64))
+                    with T.attr(1, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(acc_o[0, 0], 2, 128, 64), 0)
+                    with T.attr(2, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(logsum[0], 2, 128), 0)
+                    with T.attr(3, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                    with T.sblock(""):
+                        T.reads(K[0, 0, 0:128, 0:64], K_shared[0, 0:128, 0:64], V[0, 0, 0:128, 0:64], V_shared[0, 0, 0], program_schedule_mbar_1[0:12], Q_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0, 0], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], K[0, 0, 0:128, 0:64], V[0, 0, 0:128, 0:64], Q_shared[0:128, 0:64], K_shared[0, 0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128], scores_max[0:128], acc_s[0:128, 0:128], scores_max[0:128], scores_max[0:128])
+                        T.writes(K_shared[0, 0:128, 0:64], V_shared[0, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], K_shared[0, 0:128, 0:64], V_shared[0, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                        with T.sblock(""):
+                            T.reads(K[0, 0, 0, 0], K_shared[0, 0, 0], K[0, 0, 0:128, 0:64])
+                            T.writes(K_shared[0, 0:128, 0:64])
+                            T.attr(4, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(K[0, 0, 0, 0], 1, 1, 1, 128, 64), T.region(K_shared[0, 0, 0], 2, 1, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads(V[0, 0, 0, 0], V_shared[0, 0, 0], V[0, 0, 0:128, 0:64])
+                            T.writes(V_shared[0, 0:128, 0:64])
+                            T.attr(17, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(V[0, 0, 0, 0], 1, 1, 1, 128, 64), T.region(V_shared[0, 0, 0], 2, 1, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads()
+                            T.writes(acc_s[0:128, 0:128])
+                            T.attr(5, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(128):
+                                    acc_s[i, j] = T.float32(0.0)
+                        T.ptx_wait_group(1)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[0:10], Q_shared[0, 0], K_shared[0, 0, 0], acc_s[0, 0], acc_s_wsp_handoff_0[0, 0], Q_shared[0:128, 0:64], K_shared[0, 0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128])
+                            T.writes(acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128])
+                            T.attr(6, "tl.program_schedule.operation", 0)
+                            T.gemm(T.region(Q_shared[0, 0], 1, 128, 64), T.region(K_shared[0, 0, 0], 1, 1, 128, 64), T.region(acc_s[0, 0], 3, 128, 128), T.bool(False), T.bool(True), 128, 128, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_wsp_handoff_0[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[0])
+                        with T.sblock(""):
+                            T.reads(scores_max[0], scores_max_prev[0], scores_max[0:128])
+                            T.writes(scores_max_prev[0:128])
+                            T.attr(7, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_prev[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                        with T.sblock(""):
+                            T.reads(scores_max[0])
+                            T.writes(scores_max[0:128])
+                            T.attr(8, "tl.program_schedule.operation", 0)
+                            T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                        with T.sblock(""):
+                            T.reads(acc_s[0, 0], scores_max[0], acc_s[0:128, 0:128], scores_max[0:128])
+                            T.writes(scores_max[0:128])
+                            T.attr(9, "tl.program_schedule.operation", 0)
+                            T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_max[0], 2, 128), "max", 1, T.bool(False))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[2:12], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], scores_max[0:128])
+                            T.writes(scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                            T.attr(10, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_max[i] = T.max(scores_max[i], scores_max_prev[i])
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_wsp_handoff_1[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[2])
+                    with T.sblock(""):
+                        T.reads(K[0, 0, 128:256, 0:64], K_shared[1, 0:128, 0:64], V[0, 0, 128:256, 0:64], V_shared[0:2, 0:128, 0:64], program_schedule_mbar_1[1:15], Q_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0, 0], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0], scores_sum_wsp_handoff_2[0:128], scores_sum[0:128], logsum[0:128], scores_scale[0:128], acc_o[0:128, 0:64], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], K[0, 0, 128:256, 0:64], V[0, 0, 128:256, 0:64], Q_shared[0:128, 0:64], K_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128], scores_max[0:128], acc_s[0:128, 0:128], scores_max[0:128], scores_max[0:128], scores_sum_wsp_handoff_2[0:128], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[0, 0:128, 0:64], acc_o[0:128, 0:64])
+                        T.writes(K_shared[1, 0:128, 0:64], V_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_scale[0:128], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], logsum[0:128], scores_sum[0:128], acc_o[0:128, 0:64], acc_s_cast[0:128, 0:128], K_shared[1, 0:128, 0:64], V_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], scores_sum[0:128], acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                        with T.sblock(""):
+                            T.reads(K[0, 0, 128, 0], K_shared[1, 0, 0], K[0, 0, 128:256, 0:64])
+                            T.writes(K_shared[1, 0:128, 0:64])
+                            T.attr(4, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(K[0, 0, 128, 0], 1, 1, 1, 128, 64), T.region(K_shared[1, 0, 0], 2, 1, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads(V[0, 0, 128, 0], V_shared[1, 0, 0], V[0, 0, 128:256, 0:64])
+                            T.writes(V_shared[1, 0:128, 0:64])
+                            T.attr(17, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(V[0, 0, 128, 0], 1, 1, 1, 128, 64), T.region(V_shared[1, 0, 0], 2, 1, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads()
+                            T.writes(acc_s[0:128, 0:128])
+                            T.attr(5, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(128):
+                                    acc_s[i, j] = T.float32(0.0)
+                        T.ptx_wait_group(1)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[1:9], Q_shared[0, 0], K_shared[1, 0, 0], acc_s[0, 0], acc_s_wsp_handoff_0[0, 0], Q_shared[0:128, 0:64], K_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128])
+                            T.writes(acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128])
+                            T.attr(6, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[8], 0)
+                            T.gemm(T.region(Q_shared[0, 0], 1, 128, 64), T.region(K_shared[1, 0, 0], 1, 1, 128, 64), T.region(acc_s[0, 0], 3, 128, 128), T.bool(False), T.bool(True), 128, 128, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_wsp_handoff_0[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[1])
+                        with T.sblock(""):
+                            T.reads(scores_max_prev[0:128], scores_max[0:128])
+                            T.writes(scores_scale[0:128])
+                            T.attr(11, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_scale[i] = T.exp2(scores_max_prev[i] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                        with T.sblock(""):
+                            T.reads(scores_max[0], scores_max_prev[0], scores_max[0:128])
+                            T.writes(scores_max_prev[0:128])
+                            T.attr(7, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_prev[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                        with T.sblock(""):
+                            T.reads(scores_max[0])
+                            T.writes(scores_max[0:128])
+                            T.attr(8, "tl.program_schedule.operation", 0)
+                            T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                        with T.sblock(""):
+                            T.reads(acc_s[0, 0], scores_max[0], acc_s[0:128, 0:128], scores_max[0:128])
+                            T.writes(scores_max[0:128])
+                            T.attr(9, "tl.program_schedule.operation", 0)
+                            T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_max[0], 2, 128), "max", 1, T.bool(False))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[3:11], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], scores_max[0:128])
+                            T.writes(scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                            T.attr(10, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[10], 0)
+                            for i in T.parallel(128):
+                                scores_max[i] = T.max(scores_max[i], scores_max_prev[i])
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_wsp_handoff_1[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[3])
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[4:13], scores_sum_wsp_handoff_2[0], scores_sum[0:128], logsum[0:128], scores_scale[0:128], scores_sum_wsp_handoff_2[0:128])
+                            T.writes(logsum[0:128], scores_sum[0:128])
+                            T.attr(14, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[4], 0)
+                            T.copy(T.region(scores_sum_wsp_handoff_2[0], 1, 128), T.region(scores_sum[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            for i in T.parallel(128):
+                                logsum[i] = logsum[i] * scores_scale[i] + scores_sum[i]
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[12])
+                        with T.sblock(""):
+                            T.reads(acc_o[0:128, 0:64], scores_scale[0:128])
+                            T.writes(acc_o[0:128, 0:64])
+                            T.attr(16, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(64):
+                                    acc_o[i, j] = acc_o[i, j] * scores_scale[i]
+                        T.ptx_wait_group(2)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[6:15], acc_s_cast_wsp_handoff_3[0, 0], acc_s_cast[0, 0], V_shared[0, 0, 0], acc_o[0, 0], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[0, 0:128, 0:64], acc_o[0:128, 0:64])
+                            T.writes(acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                            T.attr(18, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[6], 0)
+                            T.copy(T.region(acc_s_cast_wsp_handoff_3[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.gemm(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(V_shared[0, 0, 0], 1, 1, 128, 64), T.region(acc_o[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 128, 1, T.bool(False), 128, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[14])
+                    with T.sblock(""):
+                        T.reads(scores_max_prev[0:128], scores_max[0:128], program_schedule_mbar_1[5:16], scores_sum_wsp_handoff_2[0:128], scores_sum[0:128], logsum[0:128], scores_scale[0:128], acc_o[0:128, 0:64], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], scores_sum_wsp_handoff_2[0:128], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], acc_o[0:128, 0:64])
+                        T.writes(scores_scale[0:128], logsum[0:128], scores_sum[0:128], acc_o[0:128, 0:64], acc_s_cast[0:128, 0:128], scores_sum[0:128], acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                        with T.sblock(""):
+                            T.reads(scores_max_prev[0:128], scores_max[0:128])
+                            T.writes(scores_scale[0:128])
+                            T.attr(11, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_scale[i] = T.exp2(scores_max_prev[i] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[5:14], scores_sum_wsp_handoff_2[0], scores_sum[0:128], logsum[0:128], scores_scale[0:128], scores_sum_wsp_handoff_2[0:128])
+                            T.writes(logsum[0:128], scores_sum[0:128])
+                            T.attr(14, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[5], 0)
+                            T.copy(T.region(scores_sum_wsp_handoff_2[0], 1, 128), T.region(scores_sum[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            for i in T.parallel(128):
+                                logsum[i] = logsum[i] * scores_scale[i] + scores_sum[i]
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[13])
+                        with T.sblock(""):
+                            T.reads(acc_o[0:128, 0:64], scores_scale[0:128])
+                            T.writes(acc_o[0:128, 0:64])
+                            T.attr(16, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(64):
+                                    acc_o[i, j] = acc_o[i, j] * scores_scale[i]
+                        T.ptx_wait_group(0)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[7:16], acc_s_cast_wsp_handoff_3[0, 0], acc_s_cast[0, 0], V_shared[1, 0, 0], acc_o[0, 0], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], acc_o[0:128, 0:64])
+                            T.writes(acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                            T.attr(18, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[7], 0)
+                            T.copy(T.region(acc_s_cast_wsp_handoff_3[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.gemm(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(V_shared[1, 0, 0], 1, 1, 128, 64), T.region(acc_o[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 128, 1, T.bool(False), 128, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[15])
+                    with T.attr(19, "tl.program_schedule.operation", 0):
+                        for i in T.parallel(128):
+                            for j in T.parallel(64):
+                                acc_o[i, j] = acc_o[i, j] / logsum[i]
+                    with T.attr(20, "tl.program_schedule.operation", 0):
+                        T.copy(T.region(acc_o[0, 0], 1, 128, 64), T.region(O_shared[0, 0], 2, 128, 64))
+                    T.attr(21, "tl.program_schedule.operation", 0)
+                    T.copy(T.region(O_shared[0, 0], 1, 128, 64), T.region(Output[0, 0, bx * 128, 0], 2, 1, 1, 128, 64))
+                else:
+                    T.attr([128, 128], "tl.program_schedule.group_scope", 1)
+                    for k in T.serial(2, annotations={"tl.program_schedule.region_id": 1, "tl_pipeline_planned_barrier_buffers": [program_schedule_mbar], "tl_pipeline_planned_version_buffers": [Q_shared.data, acc_o.data, logsum.data, scores_max.data, K_shared.data, acc_s.data, scores_max_prev.data, scores_scale.data, scores_sum.data, acc_s_cast.data, V_shared.data, acc_s_wsp_handoff_0.data, scores_max_wsp_handoff_1.data, scores_sum_wsp_handoff_2.data, acc_s_cast_wsp_handoff_3.data]}):
+                        with T.attr(12, "tl.program_schedule.operation", 1):
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[k], 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[k + 2], 0)
+                            T.copy(T.region(acc_s_wsp_handoff_0[0, 0], 1, 128, 128), T.region(acc_s[0, 0], 2, 128, 128))
+                            T.copy(T.region(scores_max_wsp_handoff_1[0], 1, 128), T.region(scores_max[0], 2, 128))
+                            for i in T.parallel(128):
+                                for j in T.parallel(128):
+                                    acc_s[i, j] = T.exp2(acc_s[i, j] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[k + 8])
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[k + 10])
+                        with T.attr(13, "tl.program_schedule.operation", 1):
+                            if k == 1:
+                                T.mbarrier_wait_parity(program_schedule_mbar_1[k + 11], 0)
+                            T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_sum[0], 2, 128), "sum", 1, T.bool(True))
+                            T.copy(T.region(scores_sum[0], 1, 128), T.region(scores_sum_wsp_handoff_2[0], 2, 128))
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[k + 4])
+                        T.attr(15, "tl.program_schedule.operation", 1)
+                        if k == 1:
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[k + 13], 0)
+                        T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128))
+                        T.copy(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(acc_s_cast_wsp_handoff_3[0, 0], 2, 128, 128))
+                        T.fence_proxy_async()
+                        T.ptx_arrive_barrier(program_schedule_mbar_1[k + 6])
+2026-08-26 20:34:15  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+.2026-08-26 20:34:15  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[3]`
+[D] Show IR-2:
+ # from tvm.script import ir as I
+# from tvm.script import tirx as T
+
+@I.ir_module
+class Module:
+    @T.prim_func
+    def main(Q_handle: T.handle, K_handle: T.handle, V_handle: T.handle, Output_handle: T.handle):
+        T.func_attr({"target": T.target({"arch": "sm_90a", "host": {"keys": ["cpu"], "kind": "c", "tag": ""}, "keys": ["cuda", "gpu"], "kind": "cuda", "max_num_threads": 1024, "max_shared_memory_per_block": 232448, "max_threads_per_block": 1024, "tag": "", "thread_warp_size": 32}), "tl.program_schedule.buffer_communications": [0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 1, 1, 0, 2, 2, 0], "tl.program_schedule.buffer_requires_new_allocation": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], "tl.program_schedule.buffer_versions": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1], "tl.program_schedule.buffers_lowered": 1, "tl.program_schedule.effective_threads": 512, "tl.program_schedule.group_first_warps": [0, 8], "tl.program_schedule.group_warp_counts": [8, 8], "tl.program_schedule.groups_lowered": 1, "tl.program_schedule.operation_groups": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0], "tl.program_schedule.operation_local_orders": [0, 1, 2, 3, 0, 2, 3, 5, 6, 7, 8, 4, 0, 1, 9, 2, 10, 1, 11, 0, 1, 2], "tl.program_schedule.operation_regions": [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2], "tl.program_schedule.operation_stages": [-1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, -1, -1, -1], "tl.program_schedule.pipeline_schedules_lowered": 1, "tl.program_schedule.region_num_stages": [0, 2, 0], "tl.program_schedule.register_domain_first_warps": [], "tl.program_schedule.register_domain_groups": [], "tl.program_schedule.register_domain_is_increase": [], "tl.program_schedule.register_domain_register_counts": [], "tl.program_schedule.register_domain_warp_counts": [], "tl.program_schedule.request": "cpp-pass-test=two_group_512_threads", "tl.program_schedule.setmaxnreg_enabled": 0, "tl.program_schedule.sync_buffer_ids": [7, 4, 10, 11, 7, 4, 10, 11], "tl.program_schedule.sync_consumer_groups": [1, 1, 0, 0, 0, 0, 1, 1], "tl.program_schedule.sync_consumer_regions": [1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.sync_consumers": [12, 12, 14, 18, 6, 10, 13, 15], "tl.program_schedule.sync_dependency_masks": [5, 1, 1, 1, 8, 8, 8, 8], "tl.program_schedule.sync_effective_stage_distances": [1, 1, 0, 0, 0, 0, 1, 1], "tl.program_schedule.sync_iteration_distances": [0, 0, 0, 0, 1, 1, 1, 1], "tl.program_schedule.sync_kinds": [0, 0, 0, 0, 1, 1, 1, 1], "tl.program_schedule.sync_producer_groups": [0, 0, 1, 1, 1, 1, 0, 0], "tl.program_schedule.sync_producer_regions": [1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.sync_producers": [6, 10, 13, 15, 12, 12, 14, 18], "tl.program_schedule.sync_scopes": [1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.synchronization_lowered": 1, "tl.program_schedule.version": 3})
+        Q = T.match_buffer(Q_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        K = T.match_buffer(K_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        V = T.match_buffer(V_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        Output = T.match_buffer(Output_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        with T.sblock("root"):
+            bx = T.int32()
+            T.reads(Q[0, 0, bx * 128, 0], K[0, 0, 0:256, 0:64], V[0, 0, 0:256, 0:64], Output[0, 0, bx * 128, 0])
+            T.writes()
+            T.launch_thread(bx, 2)
+            by = T.launch_thread("blockIdx.y", 1)
+            bz = T.launch_thread("blockIdx.z", 1)
+            tx = T.launch_thread("threadIdx.x", 512)
+            ty = T.launch_thread("threadIdx.y", 1)
+            tz = T.launch_thread("threadIdx.z", 1)
+            with T.sblock("tilelang_root"):
+                T.reads(Q[0, 0, bx * 128, 0], K[0, 0, 0:256, 0:64], V[0, 0, 0:256, 0:64], Output[0, 0, bx * 128, 0])
+                T.writes()
+                program_schedule_mbar = T.handle("uint64", "shared.barrier")
+                T.sblock_attr({"barrier_init": {program_schedule_mbar: [256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256]}})
+                Q_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                K_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                V_shared = T.sblock_alloc_buffer((2, 128, 64), "float16", scope="shared.dyn")
+                O_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                acc_s = T.sblock_alloc_buffer((128, 128), scope="local.fragment")
+                acc_s_wsp_handoff_0 = T.sblock_alloc_buffer((128, 128), scope="shared.dyn")
+                acc_s_cast = T.sblock_alloc_buffer((128, 128), "float16", scope="local.fragment")
+                acc_s_cast_wsp_handoff_3 = T.sblock_alloc_buffer((128, 128), "float16", scope="shared.dyn")
+                acc_o = T.sblock_alloc_buffer((128, 64), scope="local.fragment")
+                scores_max = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_max_wsp_handoff_1 = T.sblock_alloc_buffer((128,), scope="shared.dyn")
+                scores_max_prev = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_scale = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_sum = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_sum_wsp_handoff_2 = T.sblock_alloc_buffer((128,), scope="shared.dyn")
+                logsum = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                program_schedule_mbar_1 = T.sblock_alloc_buffer((16,), "uint64", data=program_schedule_mbar, scope="shared.barrier")
+                T.attr([256, 256], "kWarpSpecializationScope", 0)
+                if tx < 256:
+                    T.attr([0, 256], "tl.program_schedule.group_scope", 0)
+                    with T.attr(0, "tl.program_schedule.operation", 0):
+                        T.copy(T.region(Q[0, 0, bx * 128, 0], 1, 1, 1, 128, 64), T.region(Q_shared[0, 0], 2, 128, 64))
+                    with T.attr(1, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(acc_o[0, 0], 2, 128, 64), 0)
+                    with T.attr(2, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(logsum[0], 2, 128), 0)
+                    with T.attr(3, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                    with T.sblock(""):
+                        T.reads(K[0, 0, 0:128, 0:64], K_shared[0:128, 0:64], V[0, 0, 0:128, 0:64], V_shared[0, 0, 0], program_schedule_mbar_1[0:12], Q_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0, 0], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], K[0, 0, 0:128, 0:64], V[0, 0, 0:128, 0:64], Q_shared[0:128, 0:64], K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128], scores_max[0:128], acc_s[0:128, 0:128], scores_max[0:128], scores_max[0:128])
+                        T.writes(K_shared[0:128, 0:64], V_shared[0, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], K_shared[0:128, 0:64], V_shared[0, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                        with T.sblock(""):
+                            T.reads(K[0, 0, 0, 0], K_shared[0, 0], K[0, 0, 0:128, 0:64])
+                            T.writes(K_shared[0:128, 0:64])
+                            T.attr(4, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(K[0, 0, 0, 0], 1, 1, 1, 128, 64), T.region(K_shared[0, 0], 2, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads(V[0, 0, 0, 0], V_shared[0, 0, 0], V[0, 0, 0:128, 0:64])
+                            T.writes(V_shared[0, 0:128, 0:64])
+                            T.attr(17, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(V[0, 0, 0, 0], 1, 1, 1, 128, 64), T.region(V_shared[0, 0, 0], 2, 1, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads()
+                            T.writes(acc_s[0:128, 0:128])
+                            T.attr(5, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(128):
+                                    acc_s[i, j] = T.float32(0.0)
+                        T.ptx_wait_group(1)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[0:10], Q_shared[0, 0], K_shared[0, 0], acc_s[0, 0], acc_s_wsp_handoff_0[0, 0], Q_shared[0:128, 0:64], K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128])
+                            T.writes(acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128])
+                            T.attr(6, "tl.program_schedule.operation", 0)
+                            T.gemm(T.region(Q_shared[0, 0], 1, 128, 64), T.region(K_shared[0, 0], 1, 128, 64), T.region(acc_s[0, 0], 3, 128, 128), T.bool(False), T.bool(True), 128, 128, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_wsp_handoff_0[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[0])
+                        with T.sblock(""):
+                            T.reads(scores_max[0], scores_max_prev[0], scores_max[0:128])
+                            T.writes(scores_max_prev[0:128])
+                            T.attr(7, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_prev[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                        with T.sblock(""):
+                            T.reads(scores_max[0])
+                            T.writes(scores_max[0:128])
+                            T.attr(8, "tl.program_schedule.operation", 0)
+                            T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                        with T.sblock(""):
+                            T.reads(acc_s[0, 0], scores_max[0], acc_s[0:128, 0:128], scores_max[0:128])
+                            T.writes(scores_max[0:128])
+                            T.attr(9, "tl.program_schedule.operation", 0)
+                            T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_max[0], 2, 128), "max", 1, T.bool(False))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[2:12], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], scores_max[0:128])
+                            T.writes(scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                            T.attr(10, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_max[i] = T.max(scores_max[i], scores_max_prev[i])
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_wsp_handoff_1[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[2])
+                    with T.sblock(""):
+                        T.reads(K[0, 0, 128:256, 0:64], K_shared[0:128, 0:64], V[0, 0, 128:256, 0:64], V_shared[0:2, 0:128, 0:64], program_schedule_mbar_1[1:15], Q_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0, 0], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0], scores_sum_wsp_handoff_2[0:128], scores_sum[0:128], logsum[0:128], scores_scale[0:128], acc_o[0:128, 0:64], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], K[0, 0, 128:256, 0:64], V[0, 0, 128:256, 0:64], Q_shared[0:128, 0:64], K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128], scores_max[0:128], acc_s[0:128, 0:128], scores_max[0:128], scores_max[0:128], scores_sum_wsp_handoff_2[0:128], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[0, 0:128, 0:64], acc_o[0:128, 0:64])
+                        T.writes(K_shared[0:128, 0:64], V_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_scale[0:128], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], logsum[0:128], scores_sum[0:128], acc_o[0:128, 0:64], acc_s_cast[0:128, 0:128], K_shared[0:128, 0:64], V_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], scores_sum[0:128], acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                        with T.sblock(""):
+                            T.reads(K[0, 0, 128, 0], K_shared[0, 0], K[0, 0, 128:256, 0:64])
+                            T.writes(K_shared[0:128, 0:64])
+                            T.attr(4, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(K[0, 0, 128, 0], 1, 1, 1, 128, 64), T.region(K_shared[0, 0], 2, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads(V[0, 0, 128, 0], V_shared[1, 0, 0], V[0, 0, 128:256, 0:64])
+                            T.writes(V_shared[1, 0:128, 0:64])
+                            T.attr(17, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(V[0, 0, 128, 0], 1, 1, 1, 128, 64), T.region(V_shared[1, 0, 0], 2, 1, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads()
+                            T.writes(acc_s[0:128, 0:128])
+                            T.attr(5, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(128):
+                                    acc_s[i, j] = T.float32(0.0)
+                        T.ptx_wait_group(1)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[1:9], Q_shared[0, 0], K_shared[0, 0], acc_s[0, 0], acc_s_wsp_handoff_0[0, 0], Q_shared[0:128, 0:64], K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128])
+                            T.writes(acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128])
+                            T.attr(6, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[8], 0)
+                            T.gemm(T.region(Q_shared[0, 0], 1, 128, 64), T.region(K_shared[0, 0], 1, 128, 64), T.region(acc_s[0, 0], 3, 128, 128), T.bool(False), T.bool(True), 128, 128, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_wsp_handoff_0[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[1])
+                        with T.sblock(""):
+                            T.reads(scores_max_prev[0:128], scores_max[0:128])
+                            T.writes(scores_scale[0:128])
+                            T.attr(11, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_scale[i] = T.exp2(scores_max_prev[i] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                        with T.sblock(""):
+                            T.reads(scores_max[0], scores_max_prev[0], scores_max[0:128])
+                            T.writes(scores_max_prev[0:128])
+                            T.attr(7, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_prev[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                        with T.sblock(""):
+                            T.reads(scores_max[0])
+                            T.writes(scores_max[0:128])
+                            T.attr(8, "tl.program_schedule.operation", 0)
+                            T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                        with T.sblock(""):
+                            T.reads(acc_s[0, 0], scores_max[0], acc_s[0:128, 0:128], scores_max[0:128])
+                            T.writes(scores_max[0:128])
+                            T.attr(9, "tl.program_schedule.operation", 0)
+                            T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_max[0], 2, 128), "max", 1, T.bool(False))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[3:11], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], scores_max[0:128])
+                            T.writes(scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                            T.attr(10, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[10], 0)
+                            for i in T.parallel(128):
+                                scores_max[i] = T.max(scores_max[i], scores_max_prev[i])
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_wsp_handoff_1[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[3])
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[4:13], scores_sum_wsp_handoff_2[0], scores_sum[0:128], logsum[0:128], scores_scale[0:128], scores_sum_wsp_handoff_2[0:128])
+                            T.writes(logsum[0:128], scores_sum[0:128])
+                            T.attr(14, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[4], 0)
+                            T.copy(T.region(scores_sum_wsp_handoff_2[0], 1, 128), T.region(scores_sum[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            for i in T.parallel(128):
+                                logsum[i] = logsum[i] * scores_scale[i] + scores_sum[i]
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[12])
+                        with T.sblock(""):
+                            T.reads(acc_o[0:128, 0:64], scores_scale[0:128])
+                            T.writes(acc_o[0:128, 0:64])
+                            T.attr(16, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(64):
+                                    acc_o[i, j] = acc_o[i, j] * scores_scale[i]
+                        T.ptx_wait_group(2)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[6:15], acc_s_cast_wsp_handoff_3[0, 0], acc_s_cast[0, 0], V_shared[0, 0, 0], acc_o[0, 0], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[0, 0:128, 0:64], acc_o[0:128, 0:64])
+                            T.writes(acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                            T.attr(18, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[6], 0)
+                            T.copy(T.region(acc_s_cast_wsp_handoff_3[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.gemm(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(V_shared[0, 0, 0], 1, 1, 128, 64), T.region(acc_o[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 128, 1, T.bool(False), 128, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[14])
+                    with T.sblock(""):
+                        T.reads(scores_max_prev[0:128], scores_max[0:128], program_schedule_mbar_1[5:16], scores_sum_wsp_handoff_2[0:128], scores_sum[0:128], logsum[0:128], scores_scale[0:128], acc_o[0:128, 0:64], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], scores_sum_wsp_handoff_2[0:128], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], acc_o[0:128, 0:64])
+                        T.writes(scores_scale[0:128], logsum[0:128], scores_sum[0:128], acc_o[0:128, 0:64], acc_s_cast[0:128, 0:128], scores_sum[0:128], acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                        with T.sblock(""):
+                            T.reads(scores_max_prev[0:128], scores_max[0:128])
+                            T.writes(scores_scale[0:128])
+                            T.attr(11, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_scale[i] = T.exp2(scores_max_prev[i] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[5:14], scores_sum_wsp_handoff_2[0], scores_sum[0:128], logsum[0:128], scores_scale[0:128], scores_sum_wsp_handoff_2[0:128])
+                            T.writes(logsum[0:128], scores_sum[0:128])
+                            T.attr(14, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[5], 0)
+                            T.copy(T.region(scores_sum_wsp_handoff_2[0], 1, 128), T.region(scores_sum[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            for i in T.parallel(128):
+                                logsum[i] = logsum[i] * scores_scale[i] + scores_sum[i]
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[13])
+                        with T.sblock(""):
+                            T.reads(acc_o[0:128, 0:64], scores_scale[0:128])
+                            T.writes(acc_o[0:128, 0:64])
+                            T.attr(16, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(64):
+                                    acc_o[i, j] = acc_o[i, j] * scores_scale[i]
+                        T.ptx_wait_group(0)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[7:16], acc_s_cast_wsp_handoff_3[0, 0], acc_s_cast[0, 0], V_shared[1, 0, 0], acc_o[0, 0], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], acc_o[0:128, 0:64])
+                            T.writes(acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                            T.attr(18, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[7], 0)
+                            T.copy(T.region(acc_s_cast_wsp_handoff_3[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.gemm(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(V_shared[1, 0, 0], 1, 1, 128, 64), T.region(acc_o[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 128, 1, T.bool(False), 128, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[15])
+                    with T.attr(19, "tl.program_schedule.operation", 0):
+                        for i in T.parallel(128):
+                            for j in T.parallel(64):
+                                acc_o[i, j] = acc_o[i, j] / logsum[i]
+                    with T.attr(20, "tl.program_schedule.operation", 0):
+                        T.copy(T.region(acc_o[0, 0], 1, 128, 64), T.region(O_shared[0, 0], 2, 128, 64))
+                    T.attr(21, "tl.program_schedule.operation", 0)
+                    T.copy(T.region(O_shared[0, 0], 1, 128, 64), T.region(Output[0, 0, bx * 128, 0], 2, 1, 1, 128, 64))
+                else:
+                    T.attr([256, 256], "tl.program_schedule.group_scope", 1)
+                    for k in T.serial(2, annotations={"tl.program_schedule.region_id": 1, "tl_pipeline_planned_barrier_buffers": [program_schedule_mbar], "tl_pipeline_planned_version_buffers": [Q_shared.data, acc_o.data, logsum.data, scores_max.data, K_shared.data, acc_s.data, scores_max_prev.data, scores_scale.data, scores_sum.data, acc_s_cast.data, V_shared.data, acc_s_wsp_handoff_0.data, scores_max_wsp_handoff_1.data, scores_sum_wsp_handoff_2.data, acc_s_cast_wsp_handoff_3.data]}):
+                        with T.attr(12, "tl.program_schedule.operation", 1):
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[k], 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[k + 2], 0)
+                            T.copy(T.region(acc_s_wsp_handoff_0[0, 0], 1, 128, 128), T.region(acc_s[0, 0], 2, 128, 128))
+                            T.copy(T.region(scores_max_wsp_handoff_1[0], 1, 128), T.region(scores_max[0], 2, 128))
+                            for i in T.parallel(128):
+                                for j in T.parallel(128):
+                                    acc_s[i, j] = T.exp2(acc_s[i, j] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[k + 8])
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[k + 10])
+                        with T.attr(13, "tl.program_schedule.operation", 1):
+                            if k == 1:
+                                T.mbarrier_wait_parity(program_schedule_mbar_1[k + 11], 0)
+                            T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_sum[0], 2, 128), "sum", 1, T.bool(True))
+                            T.copy(T.region(scores_sum[0], 1, 128), T.region(scores_sum_wsp_handoff_2[0], 2, 128))
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[k + 4])
+                        T.attr(15, "tl.program_schedule.operation", 1)
+                        if k == 1:
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[k + 13], 0)
+                        T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128))
+                        T.copy(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(acc_s_cast_wsp_handoff_3[0, 0], 2, 128, 128))
+                        T.fence_proxy_async()
+                        T.ptx_arrive_barrier(program_schedule_mbar_1[k + 6])
+2026-08-26 20:34:29  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+.2026-08-26 20:34:29  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[3]`
+[D] Show IR-2:
+ # from tvm.script import ir as I
+# from tvm.script import tirx as T
+
+@I.ir_module
+class Module:
+    @T.prim_func
+    def main(Q_handle: T.handle, K_handle: T.handle, V_handle: T.handle, Output_handle: T.handle):
+        T.func_attr({"target": T.target({"arch": "sm_90a", "host": {"keys": ["cpu"], "kind": "c", "tag": ""}, "keys": ["cuda", "gpu"], "kind": "cuda", "max_num_threads": 1024, "max_shared_memory_per_block": 232448, "max_threads_per_block": 1024, "tag": "", "thread_warp_size": 32}), "tl.program_schedule.buffer_communications": [0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 1, 1, 0, 2, 2, 0], "tl.program_schedule.buffer_requires_new_allocation": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], "tl.program_schedule.buffer_versions": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1], "tl.program_schedule.buffers_lowered": 1, "tl.program_schedule.effective_threads": 384, "tl.program_schedule.group_first_warps": [0, 4, 8], "tl.program_schedule.group_warp_counts": [4, 4, 4], "tl.program_schedule.groups_lowered": 1, "tl.program_schedule.operation_groups": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 2, 0, 0, 0, 0], "tl.program_schedule.operation_local_orders": [0, 1, 2, 3, 0, 1, 2, 4, 5, 6, 7, 3, 0, 1, 8, 2, 9, 0, 10, 0, 1, 2], "tl.program_schedule.operation_regions": [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2], "tl.program_schedule.operation_stages": [-1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, -1, -1, -1], "tl.program_schedule.pipeline_schedules_lowered": 1, "tl.program_schedule.region_num_stages": [0, 2, 0], "tl.program_schedule.register_domain_first_warps": [0, 4, 8], "tl.program_schedule.register_domain_groups": [0, 1, 2], "tl.program_schedule.register_domain_is_increase": [1, 1, 0], "tl.program_schedule.register_domain_register_counts": [240, 240, 24], "tl.program_schedule.register_domain_warp_counts": [4, 4, 4], "tl.program_schedule.request": "cpp-pass-test=register_versions_a_384_threads", "tl.program_schedule.setmaxnreg_enabled": 1, "tl.program_schedule.sync_buffer_ids": [7, 4, 10, 11, 13, 7, 4, 10, 11, 13], "tl.program_schedule.sync_consumer_groups": [1, 1, 0, 0, 0, 0, 0, 1, 1, 2], "tl.program_schedule.sync_consumer_regions": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.sync_consumers": [12, 12, 14, 18, 18, 6, 10, 13, 15, 17], "tl.program_schedule.sync_dependency_masks": [5, 1, 1, 1, 1, 8, 8, 8, 8, 8], "tl.program_schedule.sync_effective_stage_distances": [1, 1, 0, 0, 1, 0, 0, 1, 1, 1], "tl.program_schedule.sync_iteration_distances": [0, 0, 0, 0, 0, 1, 1, 1, 1, 2], "tl.program_schedule.sync_kinds": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1], "tl.program_schedule.sync_producer_groups": [0, 0, 1, 1, 2, 1, 1, 0, 0, 0], "tl.program_schedule.sync_producer_regions": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.sync_producers": [6, 10, 13, 15, 17, 12, 12, 14, 18, 18], "tl.program_schedule.sync_scopes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.synchronization_lowered": 1, "tl.program_schedule.version": 3})
+        Q = T.match_buffer(Q_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        K = T.match_buffer(K_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        V = T.match_buffer(V_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        Output = T.match_buffer(Output_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        with T.sblock("root"):
+            bx = T.int32()
+            T.reads(Q[0, 0, bx * 128, 0], K[0, 0, 0:256, 0:64], Output[0, 0, bx * 128, 0], V[0, 0, 0:129, 0])
+            T.writes()
+            T.launch_thread(bx, 2)
+            by = T.launch_thread("blockIdx.y", 1)
+            bz = T.launch_thread("blockIdx.z", 1)
+            tx = T.launch_thread("threadIdx.x", 384)
+            ty = T.launch_thread("threadIdx.y", 1)
+            tz = T.launch_thread("threadIdx.z", 1)
+            with T.sblock("tilelang_root"):
+                T.reads(Q[0, 0, bx * 128, 0], K[0, 0, 0:256, 0:64], Output[0, 0, bx * 128, 0], V[0, 0, 0:129, 0])
+                T.writes()
+                program_schedule_mbar = T.handle("uint64", "shared.barrier")
+                T.sblock_attr({"barrier_init": {program_schedule_mbar: [128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128]}})
+                Q_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                K_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                V_shared = T.sblock_alloc_buffer((2, 128, 64), "float16", scope="shared.dyn")
+                O_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                acc_s = T.sblock_alloc_buffer((128, 128), scope="local.fragment")
+                acc_s_wsp_handoff_0 = T.sblock_alloc_buffer((128, 128), scope="shared.dyn")
+                acc_s_cast = T.sblock_alloc_buffer((128, 128), "float16", scope="local.fragment")
+                acc_s_cast_wsp_handoff_3 = T.sblock_alloc_buffer((128, 128), "float16", scope="shared.dyn")
+                acc_o = T.sblock_alloc_buffer((128, 64), scope="local.fragment")
+                scores_max = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_max_wsp_handoff_1 = T.sblock_alloc_buffer((128,), scope="shared.dyn")
+                scores_max_prev = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_scale = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_sum = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_sum_wsp_handoff_2 = T.sblock_alloc_buffer((128,), scope="shared.dyn")
+                logsum = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                program_schedule_mbar_1 = T.sblock_alloc_buffer((20,), "uint64", data=program_schedule_mbar, scope="shared.barrier")
+                T.attr([128, 128, 128], "kWarpSpecializationScope", 0)
+                if tx < 128:
+                    T.attr([0, 128], "tl.program_schedule.group_scope", 0)
+                    T.set_max_nreg(240, 1)
+                    with T.attr(0, "tl.program_schedule.operation", 0):
+                        T.copy(T.region(Q[0, 0, bx * 128, 0], 1, 1, 1, 128, 64), T.region(Q_shared[0, 0], 2, 128, 64))
+                    with T.attr(1, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(acc_o[0, 0], 2, 128, 64), 0)
+                    with T.attr(2, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(logsum[0], 2, 128), 0)
+                    with T.attr(3, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                    with T.sblock(""):
+                        T.reads(K[0, 0, 0:128, 0:64], K_shared[0:128, 0:64], program_schedule_mbar_1[0:14], Q_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0, 0], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], K[0, 0, 0:128, 0:64], Q_shared[0:128, 0:64], K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128], scores_max[0:128], acc_s[0:128, 0:128], scores_max[0:128], scores_max[0:128])
+                        T.writes(K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                        with T.sblock(""):
+                            T.reads(K[0, 0, 0, 0], K_shared[0, 0], K[0, 0, 0:128, 0:64])
+                            T.writes(K_shared[0:128, 0:64])
+                            T.attr(4, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(K[0, 0, 0, 0], 1, 1, 1, 128, 64), T.region(K_shared[0, 0], 2, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads()
+                            T.writes(acc_s[0:128, 0:128])
+                            T.attr(5, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(128):
+                                    acc_s[i, j] = T.float32(0.0)
+                        T.ptx_wait_group(0)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[0:12], Q_shared[0, 0], K_shared[0, 0], acc_s[0, 0], acc_s_wsp_handoff_0[0, 0], Q_shared[0:128, 0:64], K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128])
+                            T.writes(acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128])
+                            T.attr(6, "tl.program_schedule.operation", 0)
+                            T.gemm(T.region(Q_shared[0, 0], 1, 128, 64), T.region(K_shared[0, 0], 1, 128, 64), T.region(acc_s[0, 0], 3, 128, 128), T.bool(False), T.bool(True), 128, 128, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_wsp_handoff_0[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[0])
+                        with T.sblock(""):
+                            T.reads(scores_max[0], scores_max_prev[0], scores_max[0:128])
+                            T.writes(scores_max_prev[0:128])
+                            T.attr(7, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_prev[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                        with T.sblock(""):
+                            T.reads(scores_max[0])
+                            T.writes(scores_max[0:128])
+                            T.attr(8, "tl.program_schedule.operation", 0)
+                            T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                        with T.sblock(""):
+                            T.reads(acc_s[0, 0], scores_max[0], acc_s[0:128, 0:128], scores_max[0:128])
+                            T.writes(scores_max[0:128])
+                            T.attr(9, "tl.program_schedule.operation", 0)
+                            T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_max[0], 2, 128), "max", 1, T.bool(False))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[2:14], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], scores_max[0:128])
+                            T.writes(scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                            T.attr(10, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_max[i] = T.max(scores_max[i], scores_max_prev[i])
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_wsp_handoff_1[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[2])
+                    with T.sblock(""):
+                        T.reads(K[0, 0, 128:256, 0:64], K_shared[0:128, 0:64], program_schedule_mbar_1[1:19], Q_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0, 0], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0], scores_sum_wsp_handoff_2[0:128], scores_sum[0:128], logsum[0:128], scores_scale[0:128], acc_o[0:128, 0:64], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[0, 0:128, 0:64], K[0, 0, 128:256, 0:64], Q_shared[0:128, 0:64], K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128], scores_max[0:128], acc_s[0:128, 0:128], scores_max[0:128], scores_max[0:128], scores_sum_wsp_handoff_2[0:128], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[0, 0:128, 0:64], acc_o[0:128, 0:64])
+                        T.writes(K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_scale[0:128], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], logsum[0:128], scores_sum[0:128], acc_o[0:128, 0:64], acc_s_cast[0:128, 0:128], K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], scores_sum[0:128], acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                        with T.sblock(""):
+                            T.reads(K[0, 0, 128, 0], K_shared[0, 0], K[0, 0, 128:256, 0:64])
+                            T.writes(K_shared[0:128, 0:64])
+                            T.attr(4, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(K[0, 0, 128, 0], 1, 1, 1, 128, 64), T.region(K_shared[0, 0], 2, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads()
+                            T.writes(acc_s[0:128, 0:128])
+                            T.attr(5, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(128):
+                                    acc_s[i, j] = T.float32(0.0)
+                        T.ptx_wait_group(0)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[1:11], Q_shared[0, 0], K_shared[0, 0], acc_s[0, 0], acc_s_wsp_handoff_0[0, 0], Q_shared[0:128, 0:64], K_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128])
+                            T.writes(acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128])
+                            T.attr(6, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[10], 0)
+                            T.gemm(T.region(Q_shared[0, 0], 1, 128, 64), T.region(K_shared[0, 0], 1, 128, 64), T.region(acc_s[0, 0], 3, 128, 128), T.bool(False), T.bool(True), 128, 128, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_wsp_handoff_0[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[1])
+                        with T.sblock(""):
+                            T.reads(scores_max_prev[0:128], scores_max[0:128])
+                            T.writes(scores_scale[0:128])
+                            T.attr(11, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_scale[i] = T.exp2(scores_max_prev[i] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                        with T.sblock(""):
+                            T.reads(scores_max[0], scores_max_prev[0], scores_max[0:128])
+                            T.writes(scores_max_prev[0:128])
+                            T.attr(7, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_prev[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                        with T.sblock(""):
+                            T.reads(scores_max[0])
+                            T.writes(scores_max[0:128])
+                            T.attr(8, "tl.program_schedule.operation", 0)
+                            T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                        with T.sblock(""):
+                            T.reads(acc_s[0, 0], scores_max[0], acc_s[0:128, 0:128], scores_max[0:128])
+                            T.writes(scores_max[0:128])
+                            T.attr(9, "tl.program_schedule.operation", 0)
+                            T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_max[0], 2, 128), "max", 1, T.bool(False))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[3:13], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], scores_max[0:128])
+                            T.writes(scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                            T.attr(10, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[12], 0)
+                            for i in T.parallel(128):
+                                scores_max[i] = T.max(scores_max[i], scores_max_prev[i])
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_wsp_handoff_1[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[3])
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[4:15], scores_sum_wsp_handoff_2[0], scores_sum[0:128], logsum[0:128], scores_scale[0:128], scores_sum_wsp_handoff_2[0:128])
+                            T.writes(logsum[0:128], scores_sum[0:128])
+                            T.attr(14, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[4], 0)
+                            T.copy(T.region(scores_sum_wsp_handoff_2[0], 1, 128), T.region(scores_sum[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            for i in T.parallel(128):
+                                logsum[i] = logsum[i] * scores_scale[i] + scores_sum[i]
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[14])
+                        with T.sblock(""):
+                            T.reads(acc_o[0:128, 0:64], scores_scale[0:128])
+                            T.writes(acc_o[0:128, 0:64])
+                            T.attr(16, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(64):
+                                    acc_o[i, j] = acc_o[i, j] * scores_scale[i]
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[6:19], acc_s_cast_wsp_handoff_3[0, 0], acc_s_cast[0, 0], V_shared[0, 0, 0], acc_o[0, 0], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[0, 0:128, 0:64], acc_o[0:128, 0:64])
+                            T.writes(acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                            T.attr(18, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[6], 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[8], 0)
+                            T.copy(T.region(acc_s_cast_wsp_handoff_3[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.gemm(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(V_shared[0, 0, 0], 1, 1, 128, 64), T.region(acc_o[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 128, 1, T.bool(False), 128, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[16])
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[18])
+                    with T.sblock(""):
+                        T.reads(scores_max_prev[0:128], scores_max[0:128], program_schedule_mbar_1[5:20], scores_sum_wsp_handoff_2[0:128], scores_sum[0:128], logsum[0:128], scores_scale[0:128], acc_o[0:128, 0:64], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], scores_sum_wsp_handoff_2[0:128], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], acc_o[0:128, 0:64])
+                        T.writes(scores_scale[0:128], logsum[0:128], scores_sum[0:128], acc_o[0:128, 0:64], acc_s_cast[0:128, 0:128], scores_sum[0:128], acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                        with T.sblock(""):
+                            T.reads(scores_max_prev[0:128], scores_max[0:128])
+                            T.writes(scores_scale[0:128])
+                            T.attr(11, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_scale[i] = T.exp2(scores_max_prev[i] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[5:16], scores_sum_wsp_handoff_2[0], scores_sum[0:128], logsum[0:128], scores_scale[0:128], scores_sum_wsp_handoff_2[0:128])
+                            T.writes(logsum[0:128], scores_sum[0:128])
+                            T.attr(14, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[5], 0)
+                            T.copy(T.region(scores_sum_wsp_handoff_2[0], 1, 128), T.region(scores_sum[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            for i in T.parallel(128):
+                                logsum[i] = logsum[i] * scores_scale[i] + scores_sum[i]
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[15])
+                        with T.sblock(""):
+                            T.reads(acc_o[0:128, 0:64], scores_scale[0:128])
+                            T.writes(acc_o[0:128, 0:64])
+                            T.attr(16, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(64):
+                                    acc_o[i, j] = acc_o[i, j] * scores_scale[i]
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[7:20], acc_s_cast_wsp_handoff_3[0, 0], acc_s_cast[0, 0], V_shared[1, 0, 0], acc_o[0, 0], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], acc_o[0:128, 0:64])
+                            T.writes(acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                            T.attr(18, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[7], 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[9], 0)
+                            T.copy(T.region(acc_s_cast_wsp_handoff_3[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.gemm(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(V_shared[1, 0, 0], 1, 1, 128, 64), T.region(acc_o[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 128, 1, T.bool(False), 128, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[17])
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[19])
+                    with T.attr(19, "tl.program_schedule.operation", 0):
+                        for i in T.parallel(128):
+                            for j in T.parallel(64):
+                                acc_o[i, j] = acc_o[i, j] / logsum[i]
+                    with T.attr(20, "tl.program_schedule.operation", 0):
+                        T.copy(T.region(acc_o[0, 0], 1, 128, 64), T.region(O_shared[0, 0], 2, 128, 64))
+                    T.attr(21, "tl.program_schedule.operation", 0)
+                    T.copy(T.region(O_shared[0, 0], 1, 128, 64), T.region(Output[0, 0, bx * 128, 0], 2, 1, 1, 128, 64))
+                else:
+                    if tx < 256:
+                        T.attr([128, 128], "tl.program_schedule.group_scope", 1)
+                        T.set_max_nreg(240, 1)
+                        for k in T.serial(2, annotations={"tl.program_schedule.region_id": 1, "tl_pipeline_planned_barrier_buffers": [program_schedule_mbar], "tl_pipeline_planned_version_buffers": [Q_shared.data, acc_o.data, logsum.data, scores_max.data, K_shared.data, acc_s.data, scores_max_prev.data, scores_scale.data, scores_sum.data, acc_s_cast.data, V_shared.data, acc_s_wsp_handoff_0.data, scores_max_wsp_handoff_1.data, scores_sum_wsp_handoff_2.data, acc_s_cast_wsp_handoff_3.data]}):
+                            with T.attr(12, "tl.program_schedule.operation", 1):
+                                T.mbarrier_wait_parity(program_schedule_mbar_1[k], 0)
+                                T.mbarrier_wait_parity(program_schedule_mbar_1[k + 2], 0)
+                                T.copy(T.region(acc_s_wsp_handoff_0[0, 0], 1, 128, 128), T.region(acc_s[0, 0], 2, 128, 128))
+                                T.copy(T.region(scores_max_wsp_handoff_1[0], 1, 128), T.region(scores_max[0], 2, 128))
+                                for i in T.parallel(128):
+                                    for j in T.parallel(128):
+                                        acc_s[i, j] = T.exp2(acc_s[i, j] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                                T.ptx_arrive_barrier(program_schedule_mbar_1[k + 10])
+                                T.ptx_arrive_barrier(program_schedule_mbar_1[k + 12])
+                            with T.attr(13, "tl.program_schedule.operation", 1):
+                                if k == 1:
+                                    T.mbarrier_wait_parity(program_schedule_mbar_1[k + 13], 0)
+                                T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_sum[0], 2, 128), "sum", 1, T.bool(True))
+                                T.copy(T.region(scores_sum[0], 1, 128), T.region(scores_sum_wsp_handoff_2[0], 2, 128))
+                                T.fence_proxy_async()
+                                T.ptx_arrive_barrier(program_schedule_mbar_1[k + 4])
+                            T.attr(15, "tl.program_schedule.operation", 1)
+                            if k == 1:
+                                T.mbarrier_wait_parity(program_schedule_mbar_1[k + 15], 0)
+                            T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128))
+                            T.copy(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(acc_s_cast_wsp_handoff_3[0, 0], 2, 128, 128))
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[k + 6])
+                    else:
+                        T.attr([256, 128], "tl.program_schedule.group_scope", 2)
+                        T.set_max_nreg(24, 0)
+                        for k in T.serial(2, annotations={"tl.program_schedule.region_id": 1, "tl_pipeline_planned_barrier_buffers": [program_schedule_mbar], "tl_pipeline_planned_version_buffers": [Q_shared.data, acc_o.data, logsum.data, scores_max.data, K_shared.data, acc_s.data, scores_max_prev.data, scores_scale.data, scores_sum.data, acc_s_cast.data, V_shared.data, acc_s_wsp_handoff_0.data, scores_max_wsp_handoff_1.data, scores_sum_wsp_handoff_2.data, acc_s_cast_wsp_handoff_3.data]}):
+                            T.attr(17, "tl.program_schedule.operation", 2)
+                            T.copy(T.region(V[0, 0, k * 128, 0], 1, 1, 1, 128, 64), T.region(V_shared[k, 0, 0], 2, 1, 128, 64))
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[k + 8])[20:34:36] /home/xiebaokang/projects/rewrite/tilelang/src/transform/thread_storage_sync.cc:304: Fatal: [ThreadSync] Cannot lower a required shared-memory sync inside a divergent region with 120 participating threads (not a multiple of 32). Make the guarded thread range a warp multiple.
+
+F2026-08-26 20:34:36  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[3]`
+[D] Show IR-2:
+ # from tvm.script import ir as I
+# from tvm.script import tirx as T
+
+@I.ir_module
+class Module:
+    @T.prim_func
+    def main(Q_handle: T.handle, K_handle: T.handle, V_handle: T.handle, Output_handle: T.handle):
+        T.func_attr({"target": T.target({"arch": "sm_90a", "host": {"keys": ["cpu"], "kind": "c", "tag": ""}, "keys": ["cuda", "gpu"], "kind": "cuda", "max_num_threads": 1024, "max_shared_memory_per_block": 232448, "max_threads_per_block": 1024, "tag": "", "thread_warp_size": 32}), "tl.program_schedule.buffer_communications": [0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 1, 1, 0, 2, 2, 0], "tl.program_schedule.buffer_requires_new_allocation": [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0], "tl.program_schedule.buffer_versions": [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1], "tl.program_schedule.buffers_lowered": 1, "tl.program_schedule.effective_threads": 384, "tl.program_schedule.group_first_warps": [0, 4, 8], "tl.program_schedule.group_warp_counts": [4, 4, 4], "tl.program_schedule.groups_lowered": 1, "tl.program_schedule.operation_groups": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 2, 0, 0, 0, 0], "tl.program_schedule.operation_local_orders": [0, 1, 2, 3, 0, 1, 2, 4, 5, 6, 7, 3, 0, 1, 8, 2, 9, 0, 10, 0, 1, 2], "tl.program_schedule.operation_regions": [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2], "tl.program_schedule.operation_stages": [-1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, -1, -1, -1], "tl.program_schedule.pipeline_schedules_lowered": 1, "tl.program_schedule.region_num_stages": [0, 2, 0], "tl.program_schedule.register_domain_first_warps": [0, 4, 8], "tl.program_schedule.register_domain_groups": [0, 1, 2], "tl.program_schedule.register_domain_is_increase": [1, 1, 0], "tl.program_schedule.register_domain_register_counts": [240, 240, 24], "tl.program_schedule.register_domain_warp_counts": [4, 4, 4], "tl.program_schedule.request": "cpp-pass-test=register_versions_b_384_threads", "tl.program_schedule.setmaxnreg_enabled": 1, "tl.program_schedule.sync_buffer_ids": [7, 4, 10, 11, 13, 7, 4, 10, 11, 13], "tl.program_schedule.sync_consumer_groups": [1, 1, 0, 0, 0, 0, 0, 1, 1, 2], "tl.program_schedule.sync_consumer_regions": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.sync_consumers": [12, 12, 14, 18, 18, 6, 10, 13, 15, 17], "tl.program_schedule.sync_dependency_masks": [5, 1, 1, 1, 1, 8, 8, 8, 8, 8], "tl.program_schedule.sync_effective_stage_distances": [1, 1, 0, 0, 1, 0, 0, 1, 1, 1], "tl.program_schedule.sync_iteration_distances": [0, 0, 0, 0, 0, 1, 1, 1, 1, 2], "tl.program_schedule.sync_kinds": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1], "tl.program_schedule.sync_producer_groups": [0, 0, 1, 1, 2, 1, 1, 0, 0, 0], "tl.program_schedule.sync_producer_regions": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.sync_producers": [6, 10, 13, 15, 17, 12, 12, 14, 18, 18], "tl.program_schedule.sync_scopes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "tl.program_schedule.synchronization_lowered": 1, "tl.program_schedule.version": 3})
+        Q = T.match_buffer(Q_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        K = T.match_buffer(K_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        V = T.match_buffer(V_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        Output = T.match_buffer(Output_handle, (1, 1, 256, 64), "float16", strides=(16384, 16384, 64, 1))
+        with T.sblock("root"):
+            bx = T.int32()
+            T.reads(Q[0, 0, bx * 128, 0], K[0, 0, 0:256, 0:64], Output[0, 0, bx * 128, 0], V[0, 0, 0:129, 0])
+            T.writes()
+            T.launch_thread(bx, 2)
+            by = T.launch_thread("blockIdx.y", 1)
+            bz = T.launch_thread("blockIdx.z", 1)
+            tx = T.launch_thread("threadIdx.x", 384)
+            ty = T.launch_thread("threadIdx.y", 1)
+            tz = T.launch_thread("threadIdx.z", 1)
+            with T.sblock("tilelang_root"):
+                T.reads(Q[0, 0, bx * 128, 0], K[0, 0, 0:256, 0:64], Output[0, 0, bx * 128, 0], V[0, 0, 0:129, 0])
+                T.writes()
+                program_schedule_mbar = T.handle("uint64", "shared.barrier")
+                T.sblock_attr({"barrier_init": {program_schedule_mbar: [128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128]}})
+                Q_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                K_shared = T.sblock_alloc_buffer((2, 128, 64), "float16", scope="shared.dyn")
+                V_shared = T.sblock_alloc_buffer((2, 128, 64), "float16", scope="shared.dyn")
+                O_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+                acc_s = T.sblock_alloc_buffer((128, 128), scope="local.fragment")
+                acc_s_wsp_handoff_0 = T.sblock_alloc_buffer((128, 128), scope="shared.dyn")
+                acc_s_cast = T.sblock_alloc_buffer((128, 128), "float16", scope="local.fragment")
+                acc_s_cast_wsp_handoff_3 = T.sblock_alloc_buffer((128, 128), "float16", scope="shared.dyn")
+                acc_o = T.sblock_alloc_buffer((128, 64), scope="local.fragment")
+                scores_max = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_max_wsp_handoff_1 = T.sblock_alloc_buffer((128,), scope="shared.dyn")
+                scores_max_prev = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_scale = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_sum = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                scores_sum_wsp_handoff_2 = T.sblock_alloc_buffer((128,), scope="shared.dyn")
+                logsum = T.sblock_alloc_buffer((128,), scope="local.fragment")
+                program_schedule_mbar_1 = T.sblock_alloc_buffer((20,), "uint64", data=program_schedule_mbar, scope="shared.barrier")
+                T.attr([128, 128, 128], "kWarpSpecializationScope", 0)
+                if tx < 128:
+                    T.attr([0, 128], "tl.program_schedule.group_scope", 0)
+                    T.set_max_nreg(240, 1)
+                    with T.attr(0, "tl.program_schedule.operation", 0):
+                        T.copy(T.region(Q[0, 0, bx * 128, 0], 1, 1, 1, 128, 64), T.region(Q_shared[0, 0], 2, 128, 64))
+                    with T.attr(1, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(acc_o[0, 0], 2, 128, 64), 0)
+                    with T.attr(2, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(logsum[0], 2, 128), 0)
+                    with T.attr(3, "tl.program_schedule.operation", 0):
+                        T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                    with T.sblock(""):
+                        T.reads(K[0, 0, 0:128, 0:64], K_shared[0, 0:128, 0:64], program_schedule_mbar_1[0:14], Q_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0, 0], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], K[0, 0, 0:128, 0:64], Q_shared[0:128, 0:64], K_shared[0, 0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128], scores_max[0:128], acc_s[0:128, 0:128], scores_max[0:128], scores_max[0:128])
+                        T.writes(K_shared[0, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], K_shared[0, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                        with T.sblock(""):
+                            T.reads(K[0, 0, 0, 0], K_shared[0, 0, 0], K[0, 0, 0:128, 0:64])
+                            T.writes(K_shared[0, 0:128, 0:64])
+                            T.attr(4, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(K[0, 0, 0, 0], 1, 1, 1, 128, 64), T.region(K_shared[0, 0, 0], 2, 1, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads()
+                            T.writes(acc_s[0:128, 0:128])
+                            T.attr(5, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(128):
+                                    acc_s[i, j] = T.float32(0.0)
+                        T.ptx_wait_group(0)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[0:12], Q_shared[0, 0], K_shared[0, 0, 0], acc_s[0, 0], acc_s_wsp_handoff_0[0, 0], Q_shared[0:128, 0:64], K_shared[0, 0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128])
+                            T.writes(acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128])
+                            T.attr(6, "tl.program_schedule.operation", 0)
+                            T.gemm(T.region(Q_shared[0, 0], 1, 128, 64), T.region(K_shared[0, 0, 0], 1, 1, 128, 64), T.region(acc_s[0, 0], 3, 128, 128), T.bool(False), T.bool(True), 128, 128, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_wsp_handoff_0[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[0])
+                        with T.sblock(""):
+                            T.reads(scores_max[0], scores_max_prev[0], scores_max[0:128])
+                            T.writes(scores_max_prev[0:128])
+                            T.attr(7, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_prev[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                        with T.sblock(""):
+                            T.reads(scores_max[0])
+                            T.writes(scores_max[0:128])
+                            T.attr(8, "tl.program_schedule.operation", 0)
+                            T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                        with T.sblock(""):
+                            T.reads(acc_s[0, 0], scores_max[0], acc_s[0:128, 0:128], scores_max[0:128])
+                            T.writes(scores_max[0:128])
+                            T.attr(9, "tl.program_schedule.operation", 0)
+                            T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_max[0], 2, 128), "max", 1, T.bool(False))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[2:14], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], scores_max[0:128])
+                            T.writes(scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                            T.attr(10, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_max[i] = T.max(scores_max[i], scores_max_prev[i])
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_wsp_handoff_1[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[2])
+                    with T.sblock(""):
+                        T.reads(K[0, 0, 128:256, 0:64], K_shared[1, 0:128, 0:64], program_schedule_mbar_1[1:19], Q_shared[0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0, 0], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0], scores_sum_wsp_handoff_2[0:128], scores_sum[0:128], logsum[0:128], scores_scale[0:128], acc_o[0:128, 0:64], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[0, 0:128, 0:64], K[0, 0, 128:256, 0:64], Q_shared[0:128, 0:64], K_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128], scores_max[0:128], acc_s[0:128, 0:128], scores_max[0:128], scores_max[0:128], scores_sum_wsp_handoff_2[0:128], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[0, 0:128, 0:64], acc_o[0:128, 0:64])
+                        T.writes(K_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_scale[0:128], scores_max_prev[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], logsum[0:128], scores_sum[0:128], acc_o[0:128, 0:64], acc_s_cast[0:128, 0:128], K_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128], scores_max_prev[0:128], scores_max[0:128], scores_max[0:128], scores_max_wsp_handoff_1[0:128], scores_sum[0:128], acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                        with T.sblock(""):
+                            T.reads(K[0, 0, 128, 0], K_shared[1, 0, 0], K[0, 0, 128:256, 0:64])
+                            T.writes(K_shared[1, 0:128, 0:64])
+                            T.attr(4, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(K[0, 0, 128, 0], 1, 1, 1, 128, 64), T.region(K_shared[1, 0, 0], 2, 1, 128, 64), no_implicit_async_commit_wait=1, tl.pipeline_mbar_phase_expr=0)
+                        T.ptx_commit_group()
+                        with T.sblock(""):
+                            T.reads()
+                            T.writes(acc_s[0:128, 0:128])
+                            T.attr(5, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(128):
+                                    acc_s[i, j] = T.float32(0.0)
+                        T.ptx_wait_group(0)
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[1:11], Q_shared[0, 0], K_shared[1, 0, 0], acc_s[0, 0], acc_s_wsp_handoff_0[0, 0], Q_shared[0:128, 0:64], K_shared[1, 0:128, 0:64], acc_s[0:128, 0:128], acc_s[0:128, 0:128])
+                            T.writes(acc_s[0:128, 0:128], acc_s_wsp_handoff_0[0:128, 0:128])
+                            T.attr(6, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[10], 0)
+                            T.gemm(T.region(Q_shared[0, 0], 1, 128, 64), T.region(K_shared[1, 0, 0], 1, 1, 128, 64), T.region(acc_s[0, 0], 3, 128, 128), T.bool(False), T.bool(True), 128, 128, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_wsp_handoff_0[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[1])
+                        with T.sblock(""):
+                            T.reads(scores_max_prev[0:128], scores_max[0:128])
+                            T.writes(scores_scale[0:128])
+                            T.attr(11, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_scale[i] = T.exp2(scores_max_prev[i] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                        with T.sblock(""):
+                            T.reads(scores_max[0], scores_max_prev[0], scores_max[0:128])
+                            T.writes(scores_max_prev[0:128])
+                            T.attr(7, "tl.program_schedule.operation", 0)
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_prev[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                        with T.sblock(""):
+                            T.reads(scores_max[0])
+                            T.writes(scores_max[0:128])
+                            T.attr(8, "tl.program_schedule.operation", 0)
+                            T.fill(T.region(scores_max[0], 2, 128), T.infinity("float32") * T.float32(-1.0))
+                        with T.sblock(""):
+                            T.reads(acc_s[0, 0], scores_max[0], acc_s[0:128, 0:128], scores_max[0:128])
+                            T.writes(scores_max[0:128])
+                            T.attr(9, "tl.program_schedule.operation", 0)
+                            T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_max[0], 2, 128), "max", 1, T.bool(False))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[3:13], scores_max[0:128], scores_max_prev[0:128], scores_max_wsp_handoff_1[0], scores_max[0:128])
+                            T.writes(scores_max[0:128], scores_max_wsp_handoff_1[0:128])
+                            T.attr(10, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[12], 0)
+                            for i in T.parallel(128):
+                                scores_max[i] = T.max(scores_max[i], scores_max_prev[i])
+                            T.copy(T.region(scores_max[0], 1, 128), T.region(scores_max_wsp_handoff_1[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[3])
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[4:15], scores_sum_wsp_handoff_2[0], scores_sum[0:128], logsum[0:128], scores_scale[0:128], scores_sum_wsp_handoff_2[0:128])
+                            T.writes(logsum[0:128], scores_sum[0:128])
+                            T.attr(14, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[4], 0)
+                            T.copy(T.region(scores_sum_wsp_handoff_2[0], 1, 128), T.region(scores_sum[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            for i in T.parallel(128):
+                                logsum[i] = logsum[i] * scores_scale[i] + scores_sum[i]
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[14])
+                        with T.sblock(""):
+                            T.reads(acc_o[0:128, 0:64], scores_scale[0:128])
+                            T.writes(acc_o[0:128, 0:64])
+                            T.attr(16, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(64):
+                                    acc_o[i, j] = acc_o[i, j] * scores_scale[i]
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[6:19], acc_s_cast_wsp_handoff_3[0, 0], acc_s_cast[0, 0], V_shared[0, 0, 0], acc_o[0, 0], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[0, 0:128, 0:64], acc_o[0:128, 0:64])
+                            T.writes(acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                            T.attr(18, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[6], 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[8], 0)
+                            T.copy(T.region(acc_s_cast_wsp_handoff_3[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.gemm(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(V_shared[0, 0, 0], 1, 1, 128, 64), T.region(acc_o[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 128, 1, T.bool(False), 128, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[16])
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[18])
+                    with T.sblock(""):
+                        T.reads(scores_max_prev[0:128], scores_max[0:128], program_schedule_mbar_1[5:20], scores_sum_wsp_handoff_2[0:128], scores_sum[0:128], logsum[0:128], scores_scale[0:128], acc_o[0:128, 0:64], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], scores_sum_wsp_handoff_2[0:128], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], acc_o[0:128, 0:64])
+                        T.writes(scores_scale[0:128], logsum[0:128], scores_sum[0:128], acc_o[0:128, 0:64], acc_s_cast[0:128, 0:128], scores_sum[0:128], acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                        with T.sblock(""):
+                            T.reads(scores_max_prev[0:128], scores_max[0:128])
+                            T.writes(scores_scale[0:128])
+                            T.attr(11, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                scores_scale[i] = T.exp2(scores_max_prev[i] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[5:16], scores_sum_wsp_handoff_2[0], scores_sum[0:128], logsum[0:128], scores_scale[0:128], scores_sum_wsp_handoff_2[0:128])
+                            T.writes(logsum[0:128], scores_sum[0:128])
+                            T.attr(14, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[5], 0)
+                            T.copy(T.region(scores_sum_wsp_handoff_2[0], 1, 128), T.region(scores_sum[0], 2, 128), tl.pipeline_mbar_phase_expr=0)
+                            for i in T.parallel(128):
+                                logsum[i] = logsum[i] * scores_scale[i] + scores_sum[i]
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[15])
+                        with T.sblock(""):
+                            T.reads(acc_o[0:128, 0:64], scores_scale[0:128])
+                            T.writes(acc_o[0:128, 0:64])
+                            T.attr(16, "tl.program_schedule.operation", 0)
+                            for i in T.parallel(128):
+                                for j in T.parallel(64):
+                                    acc_o[i, j] = acc_o[i, j] * scores_scale[i]
+                        with T.sblock(""):
+                            T.reads(program_schedule_mbar_1[7:20], acc_s_cast_wsp_handoff_3[0, 0], acc_s_cast[0, 0], V_shared[1, 0, 0], acc_o[0, 0], acc_s_cast_wsp_handoff_3[0:128, 0:128], acc_s_cast[0:128, 0:128], V_shared[1, 0:128, 0:64], acc_o[0:128, 0:64])
+                            T.writes(acc_s_cast[0:128, 0:128], acc_o[0:128, 0:64])
+                            T.attr(18, "tl.program_schedule.operation", 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[7], 0)
+                            T.mbarrier_wait_parity(program_schedule_mbar_1[9], 0)
+                            T.copy(T.region(acc_s_cast_wsp_handoff_3[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128), tl.pipeline_mbar_phase_expr=0)
+                            T.gemm(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(V_shared[1, 0, 0], 1, 1, 128, 64), T.region(acc_o[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 128, 1, T.bool(False), 128, 64, 0, 0, 1, 0, 0, 0, 0, tl.pipeline_mbar_phase_expr=0)
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[17])
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[19])
+                    with T.attr(19, "tl.program_schedule.operation", 0):
+                        for i in T.parallel(128):
+                            for j in T.parallel(64):
+                                acc_o[i, j] = acc_o[i, j] / logsum[i]
+                    with T.attr(20, "tl.program_schedule.operation", 0):
+                        T.copy(T.region(acc_o[0, 0], 1, 128, 64), T.region(O_shared[0, 0], 2, 128, 64))
+                    T.attr(21, "tl.program_schedule.operation", 0)
+                    T.copy(T.region(O_shared[0, 0], 1, 128, 64), T.region(Output[0, 0, bx * 128, 0], 2, 1, 1, 128, 64))
+                else:
+                    if tx < 256:
+                        T.attr([128, 128], "tl.program_schedule.group_scope", 1)
+                        T.set_max_nreg(240, 1)
+                        for k in T.serial(2, annotations={"tl.program_schedule.region_id": 1, "tl_pipeline_planned_barrier_buffers": [program_schedule_mbar], "tl_pipeline_planned_version_buffers": [Q_shared.data, acc_o.data, logsum.data, scores_max.data, K_shared.data, acc_s.data, scores_max_prev.data, scores_scale.data, scores_sum.data, acc_s_cast.data, V_shared.data, acc_s_wsp_handoff_0.data, scores_max_wsp_handoff_1.data, scores_sum_wsp_handoff_2.data, acc_s_cast_wsp_handoff_3.data]}):
+                            with T.attr(12, "tl.program_schedule.operation", 1):
+                                T.mbarrier_wait_parity(program_schedule_mbar_1[k], 0)
+                                T.mbarrier_wait_parity(program_schedule_mbar_1[k + 2], 0)
+                                T.copy(T.region(acc_s_wsp_handoff_0[0, 0], 1, 128, 128), T.region(acc_s[0, 0], 2, 128, 128))
+                                T.copy(T.region(scores_max_wsp_handoff_1[0], 1, 128), T.region(scores_max[0], 2, 128))
+                                for i in T.parallel(128):
+                                    for j in T.parallel(128):
+                                        acc_s[i, j] = T.exp2(acc_s[i, j] * T.float32(0.18033688) - scores_max[i] * T.float32(0.18033688))
+                                T.ptx_arrive_barrier(program_schedule_mbar_1[k + 10])
+                                T.ptx_arrive_barrier(program_schedule_mbar_1[k + 12])
+                            with T.attr(13, "tl.program_schedule.operation", 1):
+                                if k == 1:
+                                    T.mbarrier_wait_parity(program_schedule_mbar_1[k + 13], 0)
+                                T.reduce(T.region(acc_s[0, 0], 1, 128, 128), T.region(scores_sum[0], 2, 128), "sum", 1, T.bool(True))
+                                T.copy(T.region(scores_sum[0], 1, 128), T.region(scores_sum_wsp_handoff_2[0], 2, 128))
+                                T.fence_proxy_async()
+                                T.ptx_arrive_barrier(program_schedule_mbar_1[k + 4])
+                            T.attr(15, "tl.program_schedule.operation", 1)
+                            if k == 1:
+                                T.mbarrier_wait_parity(program_schedule_mbar_1[k + 15], 0)
+                            T.copy(T.region(acc_s[0, 0], 1, 128, 128), T.region(acc_s_cast[0, 0], 2, 128, 128))
+                            T.copy(T.region(acc_s_cast[0, 0], 1, 128, 128), T.region(acc_s_cast_wsp_handoff_3[0, 0], 2, 128, 128))
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[k + 6])
+                    else:
+                        T.attr([256, 128], "tl.program_schedule.group_scope", 2)
+                        T.set_max_nreg(24, 0)
+                        for k in T.serial(2, annotations={"tl.program_schedule.region_id": 1, "tl_pipeline_planned_barrier_buffers": [program_schedule_mbar], "tl_pipeline_planned_version_buffers": [Q_shared.data, acc_o.data, logsum.data, scores_max.data, K_shared.data, acc_s.data, scores_max_prev.data, scores_scale.data, scores_sum.data, acc_s_cast.data, V_shared.data, acc_s_wsp_handoff_0.data, scores_max_wsp_handoff_1.data, scores_sum_wsp_handoff_2.data, acc_s_cast_wsp_handoff_3.data]}):
+                            T.attr(17, "tl.program_schedule.operation", 2)
+                            T.copy(T.region(V[0, 0, k * 128, 0], 1, 1, 1, 128, 64), T.region(V_shared[k, 0, 0], 2, 1, 128, 64))
+                            T.fence_proxy_async()
+                            T.ptx_arrive_barrier(program_schedule_mbar_1[k + 8])
+2026-08-26 20:34:49  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
+.
+=================================== FAILURES ===================================
+____ test_schedule_compiles_and_is_correct[register_versions_a_384_threads] ____
+
+case = 'register_versions_a_384_threads'
+
+    @pytest.mark.parametrize("case", SCHEDULE_CASES)
+    @pytest.mark.skipif(not _has_hopper_gpu(), reason="requires a Hopper CUDA GPU")
+    def test_schedule_compiles_and_is_correct(case):
+        """Compile and execute one representative schedule through the full pipeline."""
+    
+        target = _target()
+        torch.manual_seed(0)
+        q = torch.randn(1, 1, 256, 64, device="cuda", dtype=torch.float16)
+        k = torch.randn_like(q)
+        v = torch.randn_like(q)
+        scores = q.float() @ k.float().transpose(-2, -1) / math.sqrt(64)
+        expected = (scores.softmax(dim=-1) @ v.float()).half()
+    
+        selected = {}
+    
+        def planner(_name, analysis, planner_target):
+            candidate = _schedule_batch(analysis, planner_target)[case]
+            selected[case] = candidate
+            return candidate
+    
+        prim_func = _prim_func().with_attr(
+            "tl.program_schedule.request", f"cpp-pass-test={case}"
+        )
+        with wsp.use_schedule_planner(planner):
+>           kernel = tilelang.compile(
+                prim_func,
+                out_idx=[3],
+                target=target,
+                execution_backend="cython",
+                pass_configs={tilelang.PassConfigKey.TL_ENABLE_FAST_MATH: True},
+            )
+
+test_wsp_cpp_passes.py:237: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../tilelang/jit/__init__.py:161: in compile
+    return cached(
+../../tilelang/cache/__init__.py:82: in cached
+    return cache.cached(
+../../tilelang/cache/kernel_cache.py:329: in cached
+    return JITKernel(
+../../tilelang/jit/kernel.py:134: in __init__
+    adapter = self._compile_and_create_adapter(func, out_idx)
+../../tilelang/jit/kernel.py:277: in _compile_and_create_adapter
+    artifact = tilelang.lower(
+../../tilelang/engine/lower.py:312: in lower
+    host_mod, device_mod, params, target, target_host = lower_to_host_device_ir(
+../../tilelang/engine/lower.py:289: in lower_to_host_device_ir
+    mod = pipeline.lower(mod, target)
+../../tilelang/backend/pass_pipeline/pipeline.py:25: in lower
+    return self._lower(mod, target)
+../../tilelang/cuda/pipeline.py:256: in CUDAPassPipelineBody
+    mod = tilelang.transform.ThreadSync("shared.dyn")(mod)
+../../3rdparty/tvm/python/tvm/ir/transform.py:171: in __call__
+    return _ffi_transform_api.RunPass(self, mod)
+python/tvm_ffi/cython/function.pxi:968: in tvm_ffi.core.Function.__call__
+    ???
+<unknown>:0: in tvm::transform::Pass::operator()(tvm::IRModule) const
+    ???
+<unknown>:0: in tvm::transform::Pass::operator()(tvm::IRModule, tvm::transform::PassContext const&) const
+    ???
+<unknown>:0: in tvm::tirx::transform::PrimFuncPassNode::operator()(tvm::IRModule, tvm::transform::PassContext const&) const
+    ???
+<unknown>:0: in std::_Function_handler<tvm::tirx::PrimFunc (tvm::tirx::PrimFunc, tvm::IRModule, tvm::transform::PassContext), tvm::tl::transform::ThreadSync(tvm::ffi::String const&)::{lambda(tvm::tirx::PrimFunc, tvm::IRModule const&, tvm::transform::PassContext const&)#1}>::_M_invoke(std::_Any_data const&, tvm::tirx::PrimFunc&&, tvm::IRModule&&, tvm::transform::PassContext&&)
+    ???
+<unknown>:0: in std::enable_if<is_invocable_r_v<tvm::tirx::PrimFunc, tvm::tl::transform::ThreadSync(tvm::ffi::String const&)::{lambda(tvm::tirx::PrimFunc, tvm::IRModule const&, tvm::transform::PassContext const&)#1}&, tvm::tirx::PrimFunc, tvm::IRModule, tvm::transform::PassContext>, tvm::tirx::PrimFunc>::type std::__invoke_r<tvm::tirx::PrimFunc, tvm::tl::transform::ThreadSync(tvm::ffi::String const&)::{lambda(tvm::tirx::PrimFunc, tvm::IRModule const&, tvm::transform::PassContext const&)#1}&, tvm::tirx::PrimFunc, tvm::IRModule, tvm::transform::PassContext>(tvm::tl::transform::ThreadSync(tvm::ffi::String const&)::{lambda(tvm::tirx::PrimFunc, tvm::IRModule const&, tvm::transform::PassContext const&)#1}&, tvm::tirx::PrimFunc&&, tvm::IRModule&&, tvm::transform::PassContext&&)
+    ???
+<unknown>:0: in tvm::tirx::PrimFunc std::__invoke_impl<tvm::tirx::PrimFunc, tvm::tl::transform::ThreadSync(tvm::ffi::String const&)::{lambda(tvm::tirx::PrimFunc, tvm::IRModule const&, tvm::transform::PassContext const&)#1}&, tvm::tirx::PrimFunc, tvm::IRModule, tvm::transform::PassContext>(std::__invoke_other, tvm::tl::transform::ThreadSync(tvm::ffi::String const&)::{lambda(tvm::tirx::PrimFunc, tvm::IRModule const&, tvm::transform::PassContext const&)#1}&, tvm::tirx::PrimFunc&&, tvm::IRModule&&, tvm::transform::PassContext&&)
+    ???
+<unknown>:0: in tvm::tl::transform::ThreadSync(tvm::ffi::String const&)::{lambda(tvm::tirx::PrimFunc, tvm::IRModule const&, tvm::transform::PassContext const&)#1}::operator()(tvm::tirx::PrimFunc, tvm::IRModule const&, tvm::transform::PassContext const&) const
+    ???
+<unknown>:0: in tvm::tl::TileLangThreadSync(tvm::tirx::PrimFunc, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+    ???
+<unknown>:0: in tvm::tl::ThreadPartialSyncRewriter::Rewrite(tvm::tirx::Stmt, int)
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::operator()(tvm::tirx::Stmt)
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::NodeFunctor<tvm::tirx::Stmt (tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)>::operator()(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*) const
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::InitVTable()::{lambda(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)#9}::_FUN(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)
+    ???
+<unknown>:0: in non-virtual thunk to tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::SeqStmtNode const*)
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt_(tvm::tirx::SeqStmtNode const*)
+    ???
+<unknown>:0: in tvm::ffi::ObjectPtr<tvm::ffi::Object> tvm::ffi::Array<tvm::tirx::Stmt, void>::MapHelper<tvm::tirx::StmtMutator::Internal::Mutate(tvm::tirx::StmtMutator*, tvm::ffi::Array<tvm::tirx::Stmt, void> const&)::{lambda(tvm::tirx::Stmt const&)#1}, tvm::tirx::Stmt>(tvm::ffi::ObjectPtr<tvm::ffi::Object>, tvm::tirx::StmtMutator::Internal::Mutate(tvm::tirx::StmtMutator*, tvm::ffi::Array<tvm::tirx::Stmt, void> const&)::{lambda(tvm::tirx::Stmt const&)#1})
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::NodeFunctor<tvm::tirx::Stmt (tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)>::operator()(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*) const
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::InitVTable()::{lambda(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)#2}::_FUN(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)
+    ???
+<unknown>:0: in tvm::tl::ThreadPartialSyncRewriter::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::AttrStmtNode const*)::{lambda()#1}::operator()() const
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::NodeFunctor<tvm::tirx::Stmt (tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)>::operator()(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*) const
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::InitVTable()::{lambda(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)#9}::_FUN(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)
+    ???
+<unknown>:0: in non-virtual thunk to tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::SeqStmtNode const*)
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt_(tvm::tirx::SeqStmtNode const*)
+    ???
+<unknown>:0: in tvm::ffi::ObjectPtr<tvm::ffi::Object> tvm::ffi::Array<tvm::tirx::Stmt, void>::MapHelper<tvm::tirx::StmtMutator::Internal::Mutate(tvm::tirx::StmtMutator*, tvm::ffi::Array<tvm::tirx::Stmt, void> const&)::{lambda(tvm::tirx::Stmt const&)#1}, tvm::tirx::Stmt>(tvm::ffi::ObjectPtr<tvm::ffi::Object>, tvm::tirx::StmtMutator::Internal::Mutate(tvm::tirx::StmtMutator*, tvm::ffi::Array<tvm::tirx::Stmt, void> const&)::{lambda(tvm::tirx::Stmt const&)#1})
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::NodeFunctor<tvm::tirx::Stmt (tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)>::operator()(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*) const
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::InitVTable()::{lambda(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)#2}::_FUN(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)
+    ???
+<unknown>:0: in tvm::tl::ThreadPartialSyncRewriter::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::AttrStmtNode const*)::{lambda()#1}::operator()() const
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::NodeFunctor<tvm::tirx::Stmt (tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)>::operator()(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*) const
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::InitVTable()::{lambda(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)#2}::_FUN(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)
+    ???
+<unknown>:0: in tvm::tl::ThreadPartialSyncRewriter::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::AttrStmtNode const*)::{lambda()#1}::operator()() const
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::NodeFunctor<tvm::tirx::Stmt (tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)>::operator()(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*) const
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::InitVTable()::{lambda(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)#2}::_FUN(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)
+    ???
+<unknown>:0: in tvm::tl::ThreadPartialSyncRewriter::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::AttrStmtNode const*)::{lambda()#1}::operator()() const
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::NodeFunctor<tvm::tirx::Stmt (tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)>::operator()(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*) const
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::InitVTable()::{lambda(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)#2}::_FUN(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)
+    ???
+<unknown>:0: in tvm::tl::ThreadPartialSyncRewriter::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::AttrStmtNode const*)::{lambda()#1}::operator()() const
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::NodeFunctor<tvm::tirx::Stmt (tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)>::operator()(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*) const
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::InitVTable()::{lambda(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)#2}::_FUN(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)
+    ???
+<unknown>:0: in tvm::tl::ThreadPartialSyncRewriter::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::AttrStmtNode const*)::{lambda()#1}::operator()() const
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::NodeFunctor<tvm::tirx::Stmt (tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)>::operator()(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*) const
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::InitVTable()::{lambda(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)#9}::_FUN(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)
+    ???
+<unknown>:0: in non-virtual thunk to tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::SeqStmtNode const*)
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt_(tvm::tirx::SeqStmtNode const*)
+    ???
+<unknown>:0: in tvm::ffi::ObjectPtr<tvm::ffi::Object> tvm::ffi::Array<tvm::tirx::Stmt, void>::MapHelper<tvm::tirx::StmtMutator::Internal::Mutate(tvm::tirx::StmtMutator*, tvm::ffi::Array<tvm::tirx::Stmt, void> const&)::{lambda(tvm::tirx::Stmt const&)#1}, tvm::tirx::Stmt>(tvm::ffi::ObjectPtr<tvm::ffi::Object>, tvm::tirx::StmtMutator::Internal::Mutate(tvm::tirx::StmtMutator*, tvm::ffi::Array<tvm::tirx::Stmt, void> const&)::{lambda(tvm::tirx::Stmt const&)#1})
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::NodeFunctor<tvm::tirx::Stmt (tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)>::operator()(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*) const
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::InitVTable()::{lambda(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)#2}::_FUN(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)
+    ???
+<unknown>:0: in tvm::tl::ThreadPartialSyncRewriter::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::AttrStmtNode const*)::{lambda()#1}::operator()() const
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt_(tvm::tirx::AttrStmtNode const*)
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::NodeFunctor<tvm::tirx::Stmt (tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)>::operator()(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*) const
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::InitVTable()::{lambda(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)#3}::_FUN(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)
+    ???
+<unknown>:0: in non-virtual thunk to tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::IfThenElseNode const*)
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::IfThenElseNode const*)::{lambda()#1}::operator()() const
+    ???
+<unknown>:0: in tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::IfThenElseNode const*)::{lambda()#1}::operator()() const::{lambda()#1}::operator()() const::{lambda()#1}::operator()() const
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::NodeFunctor<tvm::tirx::Stmt (tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)>::operator()(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*) const
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::InitVTable()::{lambda(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)#9}::_FUN(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)
+    ???
+<unknown>:0: in non-virtual thunk to tvm::arith::IRMutatorWithAnalyzer::VisitStmt_(tvm::tirx::SeqStmtNode const*)
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt_(tvm::tirx::SeqStmtNode const*)
+    ???
+<unknown>:0: in tvm::ffi::ObjectPtr<tvm::ffi::Object> tvm::ffi::Array<tvm::tirx::Stmt, void>::MapHelper<tvm::tirx::StmtMutator::Internal::Mutate(tvm::tirx::StmtMutator*, tvm::ffi::Array<tvm::tirx::Stmt, void> const&)::{lambda(tvm::tirx::Stmt const&)#1}, tvm::tirx::Stmt>(tvm::ffi::ObjectPtr<tvm::ffi::Object>, tvm::tirx::StmtMutator::Internal::Mutate(tvm::tirx::StmtMutator*, tvm::ffi::Array<tvm::tirx::Stmt, void> const&)::{lambda(tvm::tirx::Stmt const&)#1})
+    ???
+<unknown>:0: in tvm::tirx::StmtMutator::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::VisitStmt(tvm::tirx::Stmt const&)
+    ???
+<unknown>:0: in tvm::NodeFunctor<tvm::tirx::Stmt (tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)>::operator()(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*) const
+    ???
+<unknown>:0: in tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>::InitVTable()::{lambda(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)#10}::_FUN(tvm::ffi::ObjectRef const&, tvm::tirx::StmtFunctor<tvm::tirx::Stmt (tvm::tirx::Stmt const&)>*)
+    ???
+<unknown>:0: in tvm::tl::ThreadPartialSyncRewriter::VisitStmt_(tvm::tirx::EvaluateNode const*)
+    ???
+<unknown>:0: in tvm::tl::ThreadPartialSyncRewriter::ProcessSharedSync(tvm::tirx::CallNode const*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   tvm.error.InternalError: [ThreadSync] Cannot lower a required shared-memory sync inside a divergent region with 120 participating threads (not a multiple of 32). Make the guarded thread range a warp multiple.
+
+<unknown>:0: InternalError
+------------------------------ Captured log call -------------------------------
+INFO     tilelang.jit.kernel:kernel.py:131 TileLang begins to compile kernel `main` with `out_idx=[3]`
+=========================== short test summary info ============================
+FAILED test_wsp_cpp_passes.py::test_schedule_compiles_and_is_correct[register_versions_a_384_threads]
+1 failed, 7 passed in 118.49s (0:01:58)

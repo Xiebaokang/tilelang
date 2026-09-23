@@ -1,0 +1,209 @@
+{
+  "enumerated_schedules": 894,
+  "examined_schedules": 894,
+  "failed_schedules": 3,
+  "output_directory": "/home/xiebaokang/projects/rewrite/tilelang/unionwsp/test/fa3_tile_search/m64_n192/segments/run_1788383291970669981/start_00000",
+  "successful_schedules": 891,
+  "top_results": [
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.7100086212158203,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 2
+      },
+      "schedule_index": 105,
+      "tflops": 321.4930071505267
+    },
+    {
+      "effective_threads": 384,
+      "latency_ms": 1.7542561292648315,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 636,
+      "tflops": 313.3840063129151
+    },
+    {
+      "effective_threads": 384,
+      "latency_ms": 1.8218529224395752,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 2
+      },
+      "schedule_index": 144,
+      "tflops": 301.7564190372967
+    },
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.8273738622665405,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 381,
+      "tflops": 300.84473967802256
+    },
+    {
+      "effective_threads": 384,
+      "latency_ms": 1.8324419260025024,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 2
+      },
+      "schedule_index": 350,
+      "tflops": 300.012680394898
+    },
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.8333948850631714,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 2
+      },
+      "schedule_index": 61,
+      "tflops": 299.8567402837811
+    },
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.8429206609725952,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 379,
+      "tflops": 298.30682651192825
+    },
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.8489965200424194,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 2
+      },
+      "schedule_index": 205,
+      "tflops": 297.3265811638129
+    },
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.8595366477966309,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 2
+      },
+      "schedule_index": 209,
+      "tflops": 295.64129028562405
+    },
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.8698487281799316,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 337,
+      "tflops": 294.01084997026464
+    },
+    {
+      "effective_threads": 384,
+      "latency_ms": 1.8748037815093994,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 2
+      },
+      "schedule_index": 348,
+      "tflops": 293.23378761557285
+    },
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.8779047727584839,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 2
+      },
+      "schedule_index": 35,
+      "tflops": 292.74956955376126
+    },
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.8848273754119873,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 2
+      },
+      "schedule_index": 207,
+      "tflops": 291.6743575882295
+    },
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.8855262994766235,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 2
+      },
+      "schedule_index": 31,
+      "tflops": 291.566240174215
+    },
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.8858178853988647,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 2
+      },
+      "schedule_index": 177,
+      "tflops": 291.52115808453186
+    },
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.8925209045410156,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 2
+      },
+      "schedule_index": 103,
+      "tflops": 290.4886347986364
+    },
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.899731993675232,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 2
+      },
+      "schedule_index": 179,
+      "tflops": 289.3859848222272
+    },
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.9017035961151123,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 539,
+      "tflops": 289.08596219256594
+    },
+    {
+      "effective_threads": 256,
+      "latency_ms": 1.9040807485580444,
+      "num_groups": 2,
+      "num_stages_by_region": {
+        "1": 3
+      },
+      "schedule_index": 537,
+      "tflops": 288.72505239303996
+    },
+    {
+      "effective_threads": 384,
+      "latency_ms": 1.9095312356948853,
+      "num_groups": 3,
+      "num_stages_by_region": {
+        "1": 2
+      },
+      "schedule_index": 26,
+      "tflops": 287.9009275215872
+    }
+  ]
+}
