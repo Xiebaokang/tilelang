@@ -1179,6 +1179,7 @@ private:
     lower_args.target = target_;
     lower_args.thread_bounds = thread_bounds;
     lower_args.thread_index = CurrentThreadIndex();
+    lower_args.thread_base = CurrentPhysicalThreadBase(thread_bounds);
     lower_args.layout_map = layout_map_;
     lower_args.buffer_remap = buffer_remap_;
     lower_args.bind_var_to_expr = bind_var_to_expr;
@@ -1517,6 +1518,13 @@ private:
                                   thread_count);
     }
     return ComputeThreadBounds(thread_binding_, *analyzer_);
+  }
+
+  PrimExpr CurrentPhysicalThreadBase(const Range &thread_bounds) const {
+    if (!group_thread_ranges_.empty()) {
+      return group_thread_ranges_.back().first;
+    }
+    return thread_bounds->min;
   }
 
   // Logical thread index handed to lowering helpers: the real threadIdx.x

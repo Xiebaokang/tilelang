@@ -7,10 +7,12 @@ from .fa3 import OPERATOR as FA3
 from .gemm import OPERATOR as GEMM
 from .gemm_fp8 import OPERATOR as GEMM_FP8
 from .gqa import OPERATOR as GQA
+from .gqa_bwd import OPERATOR as GQA_BWD
 from .linear_attn_fwd import OPERATOR as LINEAR_ATTN_FWD
 from .mamba_chunk_scan import OPERATOR as MAMBA_CHUNK_SCAN
 from .mamba_chunk_state import OPERATOR as MAMBA_CHUNK_STATE
 from .mla import OPERATOR as MLA
+from .mha_bwd import OPERATOR as MHA_BWD
 from .workloads import OperatorSpec, Options, SearchWorkload, TileConfig
 
 
@@ -19,6 +21,8 @@ OPERATORS = (
     GEMM,
     CONVOLUTION,
     GQA,
+    GQA_BWD,
+    MHA_BWD,
     GEMM_FP8,
     MLA,
     LINEAR_ATTN_FWD,
@@ -48,10 +52,12 @@ __all__ = [
     "GEMM",
     "GEMM_FP8",
     "GQA",
+    "GQA_BWD",
     "LINEAR_ATTN_FWD",
     "MAMBA_CHUNK_SCAN",
     "MAMBA_CHUNK_STATE",
     "MLA",
+    "MHA_BWD",
     "OPERATORS",
     "OPERATOR_NAMES",
     "OperatorSpec",

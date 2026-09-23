@@ -1,7 +1,8 @@
 """Search entrypoint: evaluate native OverlapPlan JSON files, then rank them.
 
-Edit :data:`SEARCH_OPERATORS` to choose which operators to search. All
-kernel results are written under a single ``--output`` directory:
+Use ``--operators`` to choose a subset, or omit it to search every registered
+operator in :data:`SEARCH_OPERATORS`. All kernel results are written under a
+single ``--output`` directory:
 
     <output>/<operator>/<tile>/candidates/
     <output>/<operator>/<tile>/sources/
@@ -22,7 +23,7 @@ import signal
 import subprocess
 import sys
 import time
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import replace
 from pathlib import Path
 from typing import Any
@@ -56,12 +57,13 @@ from OverlapPlaner.tune.dynamic import (
     should_stop,
 )
 from OverlapPlaner.tune.copy_search import classified_for_plan
-from OverlapPlaner.tune.operators import get_operator
+from OverlapPlaner.tune.operators import OPERATOR_NAMES, get_operator
 from OverlapPlaner.tune.operators.convolution import OPERATOR as CONVOLUTION
 from OverlapPlaner.tune.operators.fa3 import OPERATOR as FA3
 from OverlapPlaner.tune.operators.gemm import OPERATOR as GEMM
 from OverlapPlaner.tune.operators.gemm_fp8 import OPERATOR as GEMM_FP8
 from OverlapPlaner.tune.operators.gqa import OPERATOR as GQA
+from OverlapPlaner.tune.operators.gqa_bwd import OPERATOR as GQA_BWD
 from OverlapPlaner.tune.operators.linear_attn_fwd import (
     OPERATOR as LINEAR_ATTN_FWD,
 )
@@ -72,6 +74,7 @@ from OverlapPlaner.tune.operators.mamba_chunk_state import (
     OPERATOR as MAMBA_CHUNK_STATE,
 )
 from OverlapPlaner.tune.operators.mla import OPERATOR as MLA
+from OverlapPlaner.tune.operators.mha_bwd import OPERATOR as MHA_BWD
 from OverlapPlaner.tune.operators.workloads import OperatorSpec
 from OverlapPlaner.tune.joint_search import adjacent_joint_moves, realize_joint_move
 from OverlapPlaner.tune.order_search import adjacent_order_swaps, realize_order_swap
@@ -84,21 +87,23 @@ from OverlapPlaner.tune.search import (
 
 
 SEARCH_OPERATORS: list[OperatorSpec] = [
-    FA3,
+    # FA3,
     MLA,
-    LINEAR_ATTN_FWD,
-    MAMBA_CHUNK_SCAN,
-    MAMBA_CHUNK_STATE,
-    GEMM,
-    GQA,
-    CONVOLUTION,
-    GEMM_FP8,
+    # GQA_BWD,
+    # MHA_BWD,
+    # LINEAR_ATTN_FWD,
+    # MAMBA_CHUNK_SCAN,
+    # MAMBA_CHUNK_STATE,
+    # GEMM,
+    # GQA,
+    # CONVOLUTION,
+    # GEMM_FP8,
 ]
 
 # Bump whenever generated-code semantics or correctness validation changes.
 # Results are measurements of a plan *and* its implementation, so a plan-only
 # fingerprint must not reuse rows produced by an older lowering.
-_EVALUATION_CACHE_VERSION = "overlap-plan-lowering-v2"
+_EVALUATION_CACHE_VERSION = "overlap-plan-lowering-v3-thread-base"
 
 
 def _evaluation_fingerprint(path: Path) -> str:
@@ -1161,14 +1166,15 @@ def _supervise_dynamic_config(
     """Select candidates in batches using feedback from measured latency."""
 
     plan_dir = config_dir / "candidates"
-    candidates = load_candidates(
-        plan_dir,
-        fingerprint_salt=_EVALUATION_CACHE_VERSION,
-    )
-    policy = DynamicSearchPolicy(candidates)
     workload = operator.build(options, dict(tile))
     reduced = layout_reduced_prim_func(workload.prim_func)
     classified = HOPPER.classify(extract_fact_graph(reduced))
+    candidates = load_candidates(
+        plan_dir,
+        fingerprint_salt=_EVALUATION_CACHE_VERSION,
+        classified=classified,
+    )
+    policy = DynamicSearchPolicy(candidates)
     pool_fingerprint = plan_fingerprint(
         {"candidate_fingerprints": [item.fingerprint for item in candidates]}
     )
@@ -1224,7 +1230,9 @@ def _supervise_dynamic_config(
             )
             if fresh:
                 candidates = load_candidates(
-                    plan_dir, fingerprint_salt=_EVALUATION_CACHE_VERSION
+                    plan_dir,
+                    fingerprint_salt=_EVALUATION_CACHE_VERSION,
+                    classified=classified,
                 )
                 policy = DynamicSearchPolicy(candidates)
                 pool_fingerprint = plan_fingerprint(
@@ -1325,17 +1333,19 @@ def run(
     patience: int = 3,
     minimum_improvement: float = 0.01,
     stage_beam: int = 64,
+    operators: Sequence[OperatorSpec] | None = None,
 ) -> None:
-    """Search every operator in ``SEARCH_OPERATORS`` into ``output``."""
+    """Search selected operators into ``output``."""
 
-    if not SEARCH_OPERATORS:
-        raise ValueError("SEARCH_OPERATORS cannot be empty")
+    selected_operators = tuple(SEARCH_OPERATORS if operators is None else operators)
+    if not selected_operators:
+        raise ValueError("at least one search operator is required")
     if search_mode not in {"dynamic", "exhaustive"}:
         raise ValueError("search_mode must be dynamic or exhaustive")
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     search_summary: list[dict[str, Any]] = []
-    for operator in SEARCH_OPERATORS:
+    for operator in selected_operators:
         operator_dir = output / operator.name
         operator_dir.mkdir(parents=True, exist_ok=True)
         options = _default_options(operator)
@@ -1566,6 +1576,15 @@ def main() -> None:
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--patience", type=int, default=3)
     parser.add_argument("--minimum-improvement", type=float, default=0.01)
+    parser.add_argument(
+        "--operators",
+        nargs="+",
+        choices=OPERATOR_NAMES,
+        help=(
+            "operators to search; defaults to SEARCH_OPERATORS. For example: "
+            "--operators gqa_bwd mha_bwd"
+        ),
+    )
     parser.add_argument("--worker-job", type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.worker_job is not None:
@@ -1602,6 +1621,9 @@ def main() -> None:
         args.patience,
         args.minimum_improvement,
         args.stage_beam,
+        None
+        if args.operators is None
+        else tuple(get_operator(name) for name in args.operators),
     )
 
 

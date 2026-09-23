@@ -110,17 +110,18 @@ shared memory 规划计算版本化 buffer、跨组 fragment handoff、mbarrier�
 
 `tune/run.py` 对每个 operator 和 tile 先编译、测量 TileLang native，再生成 OverlapPlan JSON 候选。动态模式还加入异步 shared producer 与计算分组的额外初始种子。每个候选都有稳定 fingerprint；目录中保存计划、结构特征、manifest、生成的 CUDA、成功结果、失败原因和动态搜索状态，便于复现、续跑和排除过期结果。
 
-选择算子时修改 `tune/run.py` 的 `SEARCH_OPERATORS`。从仓库根目录启动，例如：
+从仓库根目录启动。省略 `--operators` 时运行 `SEARCH_OPERATORS` 中的全部算子；也可以只选择本次需要搜索的算子，例如 GQA/MHA backward：
 
 ```bash
 python -m OverlapPlaner.tune.run --output results --search-mode dynamic
+python -m OverlapPlaner.tune.run --output results_bwd --operators gqa_bwd mha_bwd --search-mode dynamic
 ```
 
 `--candidate-pool` 控制初始候选池规模，`--evaluation-budget` 控制最多尝试多少次 GPU 评测；`--search-mode exhaustive` 则评测生成的全部候选，不使用动态选择器。结果位于 `<output>/<operator>/<tile>/`，算子排名见 `top30.json`。已有计划可用 `python -m OverlapPlaner.tune.replay <schedule.json>` 重新编译测试。
 
 ### 用分桶探索取得第一批实测数据
 
-`tune/dynamic.py` 按 group 数、stage 深度、独立异步 shared producer copy 数，以及粗粒度 order 类型分桶。初始样本轮流覆盖这些桶，使有限的首批编译预算同时观察不同重叠机制。它并不预设更多 stage 或 group 一定更快，只是避免搜索从单一结构出发。
+`tune/dynamic.py` 按 group 数、stage 深度、独立异步 shared producer copy 数、粗粒度 order 类型，以及物理 group 排列分桶。物理排列保留各组的 warp 数与寄存器增减角色；同一桶内优先测试异步 copy 位于 producer 组、GEMM 位于 consumer 组的 native-like 方案。初始样本轮流覆盖这些桶，使有限的首批编译预算同时观察不同重叠机制。它并不预设更多 stage 或 group 一定更快，只是避免搜索从单一结构出发。
 
 ### 用观测延迟决定下一批测谁
 

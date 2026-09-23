@@ -25,6 +25,8 @@ class Candidate:
     features: tuple[float, ...]
     producer_copies: int = 0
     order_bucket: int = 0
+    physical_bucket: tuple[tuple[int, int], ...] = ()
+    seed_priority: float = 0.0
 
 
 def _plan_payload(path: Path) -> dict[str, Any]:
@@ -242,8 +244,50 @@ def order_bucket(features: tuple[float, ...]) -> int:
     return int(len(features) > inversion_index and features[inversion_index] > 0)
 
 
+def _physical_group_signature(
+    payload: dict[str, Any],
+) -> tuple[tuple[int, int], ...]:
+    """Preserve physical group order and its register-allocation role."""
+
+    return tuple(
+        (
+            int(group["warp_count"]),
+            -1
+            if group.get("register_increase") is None
+            else int(group["register_increase"]),
+        )
+        for group in payload["groups"]
+    )
+
+
+def _native_role_seed_priority(
+    payload: dict[str, Any], classified: Any | None
+) -> float:
+    """Prefer native-like producer/consumer roles within one coverage bucket."""
+
+    if classified is None:
+        return 0.0
+    placements = {
+        int(operation["operation_id"]): int(operation["group_id"])
+        for operation in payload["operations"]
+    }
+    roles = [group.get("register_increase") for group in payload["groups"]]
+    priority = 0.0
+    for node in classified.graph.nodes:
+        role = roles[placements[node.node_id]]
+        traits = classified.traits_for(node.node_id)
+        if traits.async_completion and node.kind.value == "copy":
+            priority += 2.0 if role == 0 else -2.0
+        if node.gemm is not None:
+            priority += 1.0 if role == 1 else -1.0
+    return priority
+
+
 def load_candidates(
-    plan_dir: str | Path, *, fingerprint_salt: str | None = None
+    plan_dir: str | Path,
+    *,
+    fingerprint_salt: str | None = None,
+    classified: Any | None = None,
 ) -> tuple[Candidate, ...]:
     """Load a deterministic candidate pool and verify unique identities."""
 
@@ -296,6 +340,17 @@ def load_candidates(
             features += (
                 float(sum(edge["completion_mode"] == 1 for edge in payload["sync_edges"])),
             )
+        physical_bucket = _physical_group_signature(payload)
+        # Aggregate resource features previously made physical permutations
+        # such as [producer, consumer] and [consumer, producer] identical to
+        # the learned model.  Add a fixed-size description of both ends; the
+        # complete signature remains part of coverage bucketing below.
+        first_warps, first_role = physical_bucket[0]
+        last_warps, last_role = physical_bucket[-1]
+        features += tuple(
+            float(value)
+            for value in (first_warps, first_role, last_warps, last_role)
+        )
         candidates.append(
             Candidate(
                 index=index,
@@ -309,6 +364,8 @@ def load_candidates(
                     else 0
                 ),
                 order_bucket=order_bucket(features),
+                physical_bucket=physical_bucket,
+                seed_priority=_native_role_seed_priority(payload, classified),
             )
         )
     return tuple(sorted(candidates, key=lambda item: item.index))
@@ -337,12 +394,19 @@ class DynamicSearchPolicy:
     def initial(self, measured: set[int], limit: int) -> list[int]:
         """Round-robin over group, stage, producer, and order buckets."""
 
-        buckets: dict[tuple[int, int, int, int], list[int]] = {}
+        buckets: dict[
+            tuple[int, int, int, int, tuple[tuple[int, int], ...]], list[int]
+        ] = {}
         for candidate in self.candidates:
             if candidate.index not in measured:
                 buckets.setdefault(self._coverage_bucket(candidate), []).append(
                     candidate.index
                 )
+        by_index = {candidate.index: candidate for candidate in self.candidates}
+        for bucket in buckets.values():
+            bucket.sort(
+                key=lambda index: (-by_index[index].seed_priority, index)
+            )
         selected = []
         keys = sorted(buckets, key=lambda key: (key[0], key[1], -key[2], key[3]))
         while keys and len(selected) < limit:
@@ -356,11 +420,14 @@ class DynamicSearchPolicy:
         return selected
 
     @staticmethod
-    def _coverage_bucket(candidate: Candidate) -> tuple[int, int, int, int]:
+    def _coverage_bucket(
+        candidate: Candidate,
+    ) -> tuple[int, int, int, int, tuple[tuple[int, int], ...]]:
         return (
             *candidate.bucket,
             min(candidate.producer_copies, 2),
             candidate.order_bucket,
+            candidate.physical_bucket,
         )
 
     def has_uncovered_bucket(

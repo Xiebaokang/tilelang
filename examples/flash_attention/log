@@ -1,212 +1,118 @@
 Loading tilelang libs from dev root: /home/xiebaokang/projects/rewrite/tilelang/build
-2026-09-04 14:39:44,542 WARNING:Tunable parameters ['block_M', 'block_N', 'num_stages', 'threads'] already provided during auto-tuning. Skipping compilation and using direct JIT
-2026-09-04 14:39:44  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `main` with `out_idx=[3]`
-2026-09-04 14:39:47  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `main`
-All checks pass.
-Ref: 10.34 ms
-Ref: 53.18 TFlops
-Tile-lang: 1.53 ms
-Tile-lang: 359.62 TFlops
-#if defined(_MSC_VER) && !defined(__clang__) && _MSC_VER < 1940
-#define _tl_orig_alignas alignas
-#define alignas(N) _tl_orig_alignas((N) <= 64 ? (N) : 64)
-#include <cuda.h>
-#undef alignas
-#define alignas _tl_orig_alignas
-#endif
-#include <tl_templates/cuda/instruction/wgmma.h>
-#include <tl_templates/cuda/intrin.h>
-#include <tl_templates/cuda/barrier.h>
-#include <tl_templates/cuda/copy_sm90.h>
-#include <math_constants.h>
-#include <tl_templates/cuda/reduce.h>
-#include <tl_templates/cuda/scan.h>
-#include <tl_templates/cuda/ldsm.h>
-#include <tl_templates/cuda/threadblock_swizzle.h>
-#include <tl_templates/cuda/debug.h>
-#ifdef ENABLE_BF16
-#include <tl_templates/cuda/cuda_bf16_fallbacks.cuh>
-#endif
+2026-09-23 18:51:37  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `flash_bwd_prep` with `out_idx=[2]`
+# from tvm.script import ir as I
+# from tvm.script import tirx as T
 
-extern "C" __global__ void main_kernel(__grid_constant__ const CUtensorMap K_desc, half_t* __restrict__ Output, __grid_constant__ const CUtensorMap Q_desc, __grid_constant__ const CUtensorMap V_desc);
-extern "C" __global__ void __launch_bounds__(384, 1) main_kernel(__grid_constant__ const CUtensorMap K_desc, half_t* __restrict__ Output, __grid_constant__ const CUtensorMap Q_desc, __grid_constant__ const CUtensorMap V_desc) {
-  extern __shared__ __align__(1024) uchar buf_dyn_shmem[];
-  void* O_shared = ((void*)((char*)buf_dyn_shmem + 0));
-  void* Q_shared = ((void*)((char*)buf_dyn_shmem + 0));
-  void* K_shared = ((void*)((char*)buf_dyn_shmem + 32768));
-  void* V_shared = ((void*)((char*)buf_dyn_shmem + 98304));
-  __shared__ __align__(16) uint64_t mbarrier_mem[9];
-  auto mbarrier = reinterpret_cast<Barrier*>(mbarrier_mem);
-  float acc_o[64];
-  float logsum[2];
-  float scores_max[2];
-  float acc_s[64];
-  float scores_max_prev[2];
-  float scores_max_clear[2];
-  float scores_scale[2];
-  float scores_sum[2];
-  half_t acc_s_cast[64];
-  if (tl::tl_shuffle_elect<0>()) {
-    tl::prefetch_tma_descriptor(Q_desc);
-    tl::prefetch_tma_descriptor(K_desc);
-    tl::prefetch_tma_descriptor(V_desc);
-  }
-  if (tl::tl_shuffle_elect<0>()) {
-    mbarrier[0].init(1);
-    mbarrier[1].init(1);
-    mbarrier[2].init(1);
-    mbarrier[3].init(1);
-    mbarrier[4].init(256);
-    mbarrier[5].init(256);
-    mbarrier[6].init(256);
-    mbarrier[7].init(256);
-    mbarrier[8].init(1);
-  }
-  tl::fence_barrier_init();
-  __syncthreads();
-  if (tl::tl_shuffle_elect<384>()) {
-    mbarrier[8].arrive_and_expect_tx(32768);
-    tl::tma_load(Q_desc, mbarrier[8], (&(((half_t*)Q_shared)[0])), 0, (((int)blockIdx.x) * 128), ((int)blockIdx.y), 0);
-    tl::tma_load(Q_desc, mbarrier[8], (&(((half_t*)Q_shared)[8192])), 64, (((int)blockIdx.x) * 128), ((int)blockIdx.y), 0);
-  }
-  if (((int)threadIdx.x) < 128) {
-    tl::warpgroup_reg_dealloc<24>();
-    for (int k = 0; k < 64; ++k) {
-      mbarrier[((k & 1) + 4)].wait((((k & 3) >> 1) ^ 1));
-      if (tl::tl_shuffle_elect<128>()) {
-        mbarrier[(k & 1)].arrive_and_expect_tx(32768);
-        tl::tma_load(K_desc, mbarrier[(k & 1)], (&(((half_t*)K_shared)[((k & 1) * 16384)])), 0, (k * 128), ((int)blockIdx.y), 0);
-        tl::tma_load(K_desc, mbarrier[(k & 1)], (&(((half_t*)K_shared)[(((k & 1) * 16384) + 8192)])), 64, (k * 128), ((int)blockIdx.y), 0);
-      }
-      mbarrier[((k & 1) + 6)].wait((((k & 3) >> 1) ^ 1));
-      if (tl::tl_shuffle_elect<128>()) {
-        mbarrier[((k & 1) + 2)].arrive_and_expect_tx(32768);
-        tl::tma_load(V_desc, mbarrier[((k & 1) + 2)], (&(((half_t*)V_shared)[((k & 1) * 16384)])), 0, (k * 128), ((int)blockIdx.y), 0);
-        tl::tma_load(V_desc, mbarrier[((k & 1) + 2)], (&(((half_t*)V_shared)[(((k & 1) * 16384) + 8192)])), 64, (k * 128), ((int)blockIdx.y), 0);
-      }
-    }
-  } else {
-    tl::warpgroup_reg_alloc<240>();
-    #pragma unroll
-    for (int i = 0; i < 16; ++i) {
-      float broadcast_var = 0x0p+0f/*0.000000e+00*/;
-      *(float4*)(acc_o + (i * 4)) = make_float4(broadcast_var, broadcast_var, broadcast_var, broadcast_var);
-    }
-    float broadcast_var_1 = 0x0p+0f/*0.000000e+00*/;
-    *(float2*)(logsum + 0) = make_float2(broadcast_var_1, broadcast_var_1);
-    float broadcast_var_2 = -CUDART_INF_F;
-    *(float2*)(scores_max + 0) = make_float2(broadcast_var_2, broadcast_var_2);
-    for (int k_1 = 0; k_1 < 64; ++k_1) {
-      #pragma unroll
-      for (int i_1 = 0; i_1 < 64; ++i_1) {
-        acc_s[i_1] = 0x0p+0f/*0.000000e+00*/;
-      }
-      if (k_1 == 0) {
-        mbarrier[8].wait(0);
-      }
-      mbarrier[(k_1 & 1)].wait(((k_1 & 3) >> 1));
-      {
-        tl::GmmaDescriptor desc_a;
-        tl::GmmaDescriptor desc_b;
-        tl::initialize_wgmma_descriptor<1, 1, 64>(desc_a, (&(((half_t*)Q_shared)[0])));
-        tl::initialize_wgmma_descriptor<1, 1, 64>(desc_b, (&(((half_t*)K_shared)[0])));
-        tl::increase_descriptor_offset<int>(desc_b, ((k_1 & 1) * 32768));
-        tl::warpgroup_fence_operand(reinterpret_cast<float*>(acc_s + 0), 128);
-        tl::warpgroup_arrive();
-        #pragma unroll
-        for (int ki = 0; ki < 8; ++ki) {
-          tl::wgmma_ss<tl::DataType::kFloat16, tl::DataType::kFloat16, tl::DataType::kFloat32, 64, 128, 16, false, false, 1, 1>(uint64_t(desc_a + (((((ki >> 2) * 16384) + ((((((int)threadIdx.x) >> 7) + 1) & 1) * 8192)) + ((ki & 3) * 32)) >> 4)), uint64_t(desc_b + ((((ki >> 2) * 16384) + ((ki & 3) * 32)) >> 4)), ((uint32_t*)(acc_s + 0)), 1);
-        }
-        tl::warpgroup_commit_batch();
-        tl::warpgroup_wait<0>();
-        tl::warpgroup_fence_operand(reinterpret_cast<float*>(acc_s + 0), 128);
-      }
-      mbarrier[((k_1 & 1) + 4)].arrive();
-      *(float2*)(scores_max_prev + 0) = *(float2*)(scores_max + 0);
-      float broadcast_var_3 = -CUDART_INF_F;
-      *(float2*)(scores_max + 0) = make_float2(broadcast_var_3, broadcast_var_3);
-      #pragma unroll
-      for (int i_2 = 0; i_2 < 2; ++i_2) {
-        scores_max_clear[i_2] = -CUDART_INF_F;
-        #pragma unroll
-        for (int rv = 0; rv < 32; ++rv) {
-          scores_max_clear[i_2] = max(scores_max_clear[i_2], acc_s[((((rv & 15) * 4) + (i_2 * 2)) + (rv >> 4))]);
-        }
-        scores_max_clear[i_2] = tl::AllReduce<tl::MaxOp, 4, 1, 128, tl::NamedBarrier<256>>::run(scores_max_clear[i_2]);
-        scores_max[i_2] = max(scores_max[i_2], scores_max_clear[i_2]);
-      }
-      #pragma unroll
-      for (int i_3 = 0; i_3 < 2; ++i_3) {
-        scores_max[i_3] = max(scores_max[i_3], scores_max_prev[i_3]);
-      }
-      #pragma unroll
-      for (int i_4 = 0; i_4 < 2; ++i_4) {
-        scores_scale[i_4] = exp2f(((scores_max_prev[i_4] * 0x1.0527dbd5cafffp-3f/*1.275174e-01*/) - (scores_max[i_4] * 0x1.0527dbd5cafffp-3f/*1.275174e-01*/)));
-      }
-      #pragma unroll
-      for (int i_5 = 0; i_5 < 64; ++i_5) {
-        acc_s[i_5] = exp2f(((acc_s[i_5] * 0x1.0527dbd5cafffp-3f/*1.275174e-01*/) - (scores_max[((i_5 & 3) >> 1)] * 0x1.0527dbd5cafffp-3f/*1.275174e-01*/)));
-      }
-      #pragma unroll
-      for (int i_6 = 0; i_6 < 2; ++i_6) {
-        scores_sum[i_6] = 0x0p+0f/*0.000000e+00*/;
-        #pragma unroll
-        for (int rv_1 = 0; rv_1 < 32; ++rv_1) {
-          scores_sum[i_6] = (scores_sum[i_6] + acc_s[((((rv_1 & 15) * 4) + (i_6 * 2)) + (rv_1 >> 4))]);
-        }
-        scores_sum[i_6] = tl::AllReduce<tl::SumOp, 4, 1, 128, tl::NamedBarrier<256>>::run(scores_sum[i_6]);
-      }
-      #pragma unroll
-      for (int i_7 = 0; i_7 < 2; ++i_7) {
-        logsum[i_7] = ((logsum[i_7] * scores_scale[i_7]) + scores_sum[i_7]);
-      }
-      #pragma unroll
-      for (int i_8 = 0; i_8 < 16; ++i_8) {
-        uint2 __1;
-        float4 v_ = *(float4*)(acc_s + (i_8 * 4));
-        ((half2*)(&__1))[0] = __float22half2_rn(((float2*)(&v_))[0]);
-        ((half2*)(&__1))[1] = __float22half2_rn(((float2*)(&v_))[1]);
-        *(uint2*)(acc_s_cast + (i_8 * 4)) = __1;
-      }
-      #pragma unroll
-      for (int i_9 = 0; i_9 < 64; ++i_9) {
-        acc_o[i_9] = (acc_o[i_9] * scores_scale[((i_9 & 3) >> 1)]);
-      }
-      mbarrier[((k_1 & 1) + 2)].wait(((k_1 & 3) >> 1));
-      {
-        tl::GmmaDescriptor desc_b_1;
-        tl::initialize_wgmma_descriptor<1, 1024, 64>(desc_b_1, (&(((half_t*)V_shared)[0])));
-        tl::increase_descriptor_offset<int>(desc_b_1, ((k_1 & 1) * 32768));
-        tl::warpgroup_fence_operand(reinterpret_cast<uint32_t*>(acc_s_cast + 0), 32);
-        tl::warpgroup_fence_operand(reinterpret_cast<float*>(acc_o + 0), 128);
-        tl::warpgroup_arrive();
-        #pragma unroll
-        for (int ki_1 = 0; ki_1 < 8; ++ki_1) {
-          tl::wgmma_rs<tl::DataType::kFloat16, tl::DataType::kFloat16, tl::DataType::kFloat32, 64, 128, 16, false, true, 1, 1>(reinterpret_cast<const uint32_t*>(acc_s_cast + (ki_1 * 8)), uint64_t(desc_b_1 + ((ki_1 * 2048) >> 4)), reinterpret_cast<uint32_t*>(acc_o + 0), 1);
-        }
-        tl::warpgroup_commit_batch();
-        tl::warpgroup_wait<0>();
-        tl::warpgroup_fence_operand(reinterpret_cast<float*>(acc_o + 0), 128);
-        tl::warpgroup_fence_operand(reinterpret_cast<uint32_t*>(acc_s_cast + 0), 32);
-      }
-      mbarrier[((k_1 & 1) + 6)].arrive();
-    }
-    #pragma unroll
-    for (int i_10 = 0; i_10 < 64; ++i_10) {
-      acc_o[i_10] = (acc_o[i_10] / logsum[((i_10 & 3) >> 1)]);
-    }
-    #pragma unroll
-    for (int i_11 = 0; i_11 < 8; ++i_11) {
-      tl::ptx_stmatrix_m8n8_x4((&(((half_t*)O_shared)[((((((((int)threadIdx.x) >> 5) * 2048) + ((((int)threadIdx.x) & 15) * 128)) + (i_11 * 16)) + (((((int)threadIdx.x) & 31) >> 4) * 8)) - 8192)])), __pack_half2(((half_t)acc_o[(i_11 * 8)]), ((half_t)acc_o[((i_11 * 8) + 1)])), __pack_half2(((half_t)acc_o[((i_11 * 8) + 2)]), ((half_t)acc_o[((i_11 * 8) + 3)])), __pack_half2(((half_t)acc_o[((i_11 * 8) + 4)]), ((half_t)acc_o[((i_11 * 8) + 5)])), __pack_half2(((half_t)acc_o[((i_11 * 8) + 6)]), ((half_t)acc_o[((i_11 * 8) + 7)])));
-    }
-    tl::__sync_thread_partial(3, 256);
-    if (tl::tl_shuffle_elect<256>()) {
-      tl::fence_proxy_async();
-      tl::tma_store((&(Output[((((int)blockIdx.y) * 1048576) + (((int)blockIdx.x) * 16384))])), (&(((half_t*)O_shared)[0])), 32768);
-      tl::tma_store_arrive();
-      tl::tma_store_wait<0, true>();
-    }
-  }
-}
+@I.ir_module
+class Module:
+    @T.prim_func
+    def flash_bwd_prep(O_handle: T.handle, dO_handle: T.handle, Delta_handle: T.handle):
+        T.func_attr({"target": T.target({"arch": "sm_90a", "host": {"keys": ["cpu"], "kind": "c", "tag": ""}, "keys": ["cuda", "gpu"], "kind": "cuda", "max_num_threads": 1024, "tag": "", "thread_warp_size": 32})})
+        O = T.match_buffer(O_handle, (1, 16, 4096, 64), "float16", strides=(4194304, 262144, 64, 1))
+        dO = T.match_buffer(dO_handle, (1, 16, 4096, 64), "float16", strides=(4194304, 262144, 64, 1))
+        Delta = T.match_buffer(Delta_handle, (1, 16, 4096), strides=(65536, 4096, 1))
+        # with T.sblock("root"):
+        bx = T.launch_thread("blockIdx.x", 16)
+        by = T.launch_thread("blockIdx.y", 128)
+        bz = T.launch_thread("blockIdx.z", 1)
+        tx = T.launch_thread("threadIdx.x", 128)
+        ty = T.launch_thread("threadIdx.y", 1)
+        tz = T.launch_thread("threadIdx.z", 1)
+        with T.sblock("tilelang_root"):
+            T.reads()
+            T.writes()
+            o = T.sblock_alloc_buffer((32, 32), "float16", scope="local.fragment")
+            do = T.sblock_alloc_buffer((32, 32), "float16", scope="local.fragment")
+            acc = T.sblock_alloc_buffer((32, 32), scope="local.fragment")
+            delta = T.sblock_alloc_buffer((32,), scope="local.fragment")
+            T.fill(T.region(acc[0, 0], 2, 32, 32), 0)
+            for k in range(2):
+                T.copy(T.region(O[0, bx, by * 32, k * 32], 1, 1, 1, 32, 32), T.region(o[0, 0], 2, 32, 32))
+                T.copy(T.region(dO[0, bx, by * 32, k * 32], 1, 1, 1, 32, 32), T.region(do[0, 0], 2, 32, 32))
+                for i in T.parallel(32):
+                    for j in T.parallel(32):
+                        acc[i, j] = acc[i, j] + T.Cast("float32", o[i, j] * do[i, j])
+            T.reduce(T.region(acc[0, 0], 1, 32, 32), T.region(delta[0], 2, 32), "sum", 1, T.bool(True))
+            T.copy(T.region(delta[0], 1, 32), T.region(Delta[0, bx, by * 32], 2, 1, 1, 32))
+2026-09-23 18:51:38  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `flash_bwd_prep`
+2026-09-23 18:51:38  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:131): TileLang begins to compile kernel `flash_bwd` with `out_idx=None`
+# from tvm.script import ir as I
+# from tvm.script import tirx as T
 
+@I.ir_module
+class Module:
+    @T.prim_func
+    def flash_bwd(Q_handle: T.handle, K_handle: T.handle, V_handle: T.handle, dO_handle: T.handle, lse_handle: T.handle, Delta_handle: T.handle, dQ_handle: T.handle, dK_handle: T.handle, dV_handle: T.handle):
+        T.func_attr({"target": T.target({"arch": "sm_90a", "host": {"keys": ["cpu"], "kind": "c", "tag": ""}, "keys": ["cuda", "gpu"], "kind": "cuda", "max_num_threads": 1024, "tag": "", "thread_warp_size": 32})})
+        Q = T.match_buffer(Q_handle, (1, 16, 4096, 64), "float16", strides=(4194304, 262144, 64, 1))
+        K = T.match_buffer(K_handle, (1, 16, 4096, 64), "float16", strides=(4194304, 262144, 64, 1))
+        V = T.match_buffer(V_handle, (1, 16, 4096, 64), "float16", strides=(4194304, 262144, 64, 1))
+        dO = T.match_buffer(dO_handle, (1, 16, 4096, 64), "float16", strides=(4194304, 262144, 64, 1))
+        lse = T.match_buffer(lse_handle, (1, 16, 4096), strides=(65536, 4096, 1))
+        Delta = T.match_buffer(Delta_handle, (1, 16, 4096), strides=(65536, 4096, 1))
+        dQ = T.match_buffer(dQ_handle, (1, 16, 4096, 64), strides=(4194304, 262144, 64, 1))
+        dK = T.match_buffer(dK_handle, (1, 16, 4096, 64), "float16", strides=(4194304, 262144, 64, 1))
+        dV = T.match_buffer(dV_handle, (1, 16, 4096, 64), "float16", strides=(4194304, 262144, 64, 1))
+        # with T.sblock("root"):
+        bx = T.launch_thread("blockIdx.x", 16)
+        by = T.launch_thread("blockIdx.y", 32)
+        bz = T.launch_thread("blockIdx.z", 1)
+        tx = T.launch_thread("threadIdx.x", 256)
+        ty = T.launch_thread("threadIdx.y", 1)
+        tz = T.launch_thread("threadIdx.z", 1)
+        with T.sblock("tilelang_root"):
+            T.reads()
+            T.writes()
+            T.sblock_attr({"layout_map": {dQ.data: metadata["tl.Layout"][0]}})
+            K_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+            dsT_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+            q = T.sblock_alloc_buffer((64, 64), "float16", scope="shared.dyn")
+            V_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+            qkT = T.sblock_alloc_buffer((128, 64), scope="local.fragment")
+            dsT = T.sblock_alloc_buffer((128, 64), scope="local.fragment")
+            qkT_cast = T.sblock_alloc_buffer((128, 64), "float16", scope="local.fragment")
+            dsT_cast = T.sblock_alloc_buffer((128, 64), "float16", scope="local.fragment")
+            lse_shared = T.sblock_alloc_buffer((64,), scope="shared.dyn")
+            delta = T.sblock_alloc_buffer((64,), scope="shared.dyn")
+            do = T.sblock_alloc_buffer((64, 64), "float16", scope="shared.dyn")
+            dv = T.sblock_alloc_buffer((128, 64), scope="local.fragment")
+            dk = T.sblock_alloc_buffer((128, 64), scope="local.fragment")
+            dq = T.sblock_alloc_buffer((64, 64), scope="local.fragment")
+            dv_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+            dk_shared = T.sblock_alloc_buffer((128, 64), "float16", scope="shared.dyn")
+            T.copy(T.region(K[0, bx, by * 128, 0], 1, 1, 1, 128, 64), T.region(K_shared[0, 0], 2, 128, 64))
+            T.copy(T.region(V[0, bx, by * 128, 0], 1, 1, 1, 128, 64), T.region(V_shared[0, 0], 2, 128, 64))
+            T.fill(T.region(dv[0, 0], 2, 128, 64), 0)
+            T.fill(T.region(dk[0, 0], 2, 128, 64), 0)
+            for k in T.serial(64, annotations={"num_stages": 2, "tl.pipelined": 1}):
+                T.copy(T.region(Q[0, bx, k * 64, 0], 1, 1, 1, 64, 64), T.region(q[0, 0], 2, 64, 64))
+                T.fill(T.region(qkT[0, 0], 2, 128, 64), 0)
+                T.gemm(T.region(K_shared[0, 0], 1, 128, 64), T.region(q[0, 0], 1, 64, 64), T.region(qkT[0, 0], 3, 128, 64), T.bool(False), T.bool(True), 128, 64, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0)
+                T.copy(T.region(lse[0, bx, k * 64], 1, 1, 1, 64), T.region(lse_shared[0], 2, 64))
+                for i in T.parallel(128):
+                    for j in T.parallel(64):
+                        qkT[i, j] = T.exp2(qkT[i, j] * T.float32(0.18033688) - lse_shared[j])
+                T.copy(T.region(dO[0, bx, k * 64, 0], 1, 1, 1, 64, 64), T.region(do[0, 0], 2, 64, 64))
+                T.fill(T.region(dsT[0, 0], 2, 128, 64), 0)
+                T.gemm(T.region(V_shared[0, 0], 1, 128, 64), T.region(do[0, 0], 1, 64, 64), T.region(dsT[0, 0], 3, 128, 64), T.bool(False), T.bool(True), 128, 64, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0)
+                T.copy(T.region(qkT[0, 0], 1, 128, 64), T.region(qkT_cast[0, 0], 2, 128, 64))
+                T.gemm(T.region(qkT_cast[0, 0], 1, 128, 64), T.region(do[0, 0], 1, 64, 64), T.region(dv[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0)
+                T.copy(T.region(Delta[0, bx, k * 64], 1, 1, 1, 64), T.region(delta[0], 2, 64))
+                for i in T.parallel(128):
+                    for j in T.parallel(64):
+                        dsT_cast[i, j] = T.Cast("float16", qkT[i, j] * (dsT[i, j] - delta[j]) * T.float32(0.125))
+                T.gemm(T.region(dsT_cast[0, 0], 1, 128, 64), T.region(q[0, 0], 1, 64, 64), T.region(dk[0, 0], 3, 128, 64), T.bool(False), T.bool(False), 128, 64, 64, 1, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0)
+                T.copy(T.region(dsT_cast[0, 0], 1, 128, 64), T.region(dsT_shared[0, 0], 2, 128, 64))
+                T.fill(T.region(dq[0, 0], 2, 64, 64), 0)
+                T.gemm(T.region(dsT_shared[0, 0], 1, 128, 64), T.region(K_shared[0, 0], 1, 128, 64), T.region(dq[0, 0], 3, 64, 64), T.bool(True), T.bool(False), 64, 64, 128, 0, T.bool(False), 64, 64, 0, 0, 1, 0, 0, 0, 0)
+                for i in T.parallel(64):
+                    for j in T.parallel(64):
+                        T.atomic_add_elem_op(T.access_ptr(dQ[0, bx, k * 64 + i, j], 1, 3), dq[i, j])
+            T.copy(T.region(dv[0, 0], 1, 128, 64), T.region(dv_shared[0, 0], 2, 128, 64))
+            T.copy(T.region(dk[0, 0], 1, 128, 64), T.region(dk_shared[0, 0], 2, 128, 64))
+            T.copy(T.region(dv_shared[0, 0], 1, 128, 64), T.region(dV[0, bx, by * 128, 0], 2, 1, 1, 128, 64))
+            T.copy(T.region(dk_shared[0, 0], 1, 128, 64), T.region(dK[0, bx, by * 128, 0], 2, 1, 1, 128, 64))
 
+# Metadata omitted. Use show_meta=True in script() method to show it.
+2026-09-23 18:51:41  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:139): TileLang completes to compile kernel `flash_bwd`
+0.6520028467741937

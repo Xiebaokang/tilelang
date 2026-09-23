@@ -1,0 +1,25 @@
+{
+  "base_schedule_count": 807,
+  "candidate_features": "features.jsonl",
+  "operator": "mla",
+  "options": {
+    "mla_batch": 1,
+    "mla_block_h": [
+      64
+    ],
+    "mla_block_n": [
+      64
+    ],
+    "mla_dim": 512,
+    "mla_heads": 128,
+    "mla_kv_heads": 1,
+    "mla_pe_dim": 64,
+    "mla_seq": 8192
+  },
+  "schedule_count": 855,
+  "stage_beam": 256,
+  "tile": {
+    "block_h": 64,
+    "block_n": 64
+  }
+}

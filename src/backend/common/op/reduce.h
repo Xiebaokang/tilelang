@@ -932,7 +932,7 @@ template <typename Impl> struct ReduceLowerer {
                                       "tl.reduce");
           int block_threads =
               static_cast<int>(*as_const_int(lower_args.thread_bounds->extent));
-          auto thread_offset = lower_args.thread_bounds->min;
+          PrimExpr thread_offset = lower_args.thread_base;
 
           int vsize = Impl::GetPreferedVectorizedSize(clear_buffer->dtype,
                                                       lower_args.target);
@@ -1124,7 +1124,7 @@ template <typename Impl> struct ReduceLowerer {
         int reducing_threads = thread_step.ReducingThreads();
         reduce::CheckAllReduceWidth(reducing_threads, thread_step.scale,
                                     "tl.reduce");
-        auto thread_offset = lower_args.thread_bounds->min;
+        PrimExpr thread_offset = lower_args.thread_base;
         std::string allreduce = Impl::MakeScalarAllReduce(
             reduce::MakeCodegenReducer(op).value(), reducing_threads,
             thread_step.scale, thread_offset, lower_args.thread_bounds->extent,

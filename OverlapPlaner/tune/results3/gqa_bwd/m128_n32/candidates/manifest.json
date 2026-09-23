@@ -1,0 +1,26 @@
+{
+  "base_schedule_count": 2286,
+  "candidate_features": "features.jsonl",
+  "operator": "gqa_bwd",
+  "options": {
+    "gqa_bwd_batch": 1,
+    "gqa_bwd_block_m": [
+      128
+    ],
+    "gqa_bwd_block_n": [
+      32
+    ],
+    "gqa_bwd_causal": false,
+    "gqa_bwd_dim_qk": 64,
+    "gqa_bwd_dim_v": 64,
+    "gqa_bwd_groups": 4,
+    "gqa_bwd_heads": 16,
+    "gqa_bwd_seq": 1024
+  },
+  "schedule_count": 2334,
+  "stage_beam": 256,
+  "tile": {
+    "block_m": 128,
+    "block_n": 32
+  }
+}

@@ -55,6 +55,33 @@ def test_initial_selection_covers_independent_async_producer() -> None:
     assert not policy.has_uncovered_bucket({0, 1})
 
 
+def test_initial_selection_covers_physical_group_permutations() -> None:
+    common = {
+        "bucket": (2, 1),
+        "features": (2.0, 1.0, 2.0),
+        "producer_copies": 2,
+    }
+    candidates = (
+        Candidate(
+            index=0,
+            path=Path("schedule_00000.json"),
+            fingerprint="0",
+            physical_bucket=((8, 1), (4, 0)),
+            **common,
+        ),
+        Candidate(
+            index=1,
+            path=Path("schedule_00001.json"),
+            fingerprint="1",
+            physical_bucket=((4, 0), (8, 1)),
+            **common,
+        ),
+    )
+    policy = DynamicSearchPolicy(candidates)
+    assert set(policy.initial(set(), 2)) == {0, 1}
+    assert policy.has_uncovered_bucket({0})
+
+
 def test_failed_candidate_does_not_cover_structure_bucket() -> None:
     candidates = (
         _candidate(0, 1, 1, 0.0),

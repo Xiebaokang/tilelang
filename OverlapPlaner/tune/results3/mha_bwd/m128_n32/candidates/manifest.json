@@ -1,0 +1,24 @@
+{
+  "base_schedule_count": 2286,
+  "candidate_features": "features.jsonl",
+  "operator": "mha_bwd",
+  "options": {
+    "mha_bwd_batch": 1,
+    "mha_bwd_block_m": [
+      128
+    ],
+    "mha_bwd_block_n": [
+      32
+    ],
+    "mha_bwd_causal": false,
+    "mha_bwd_dim": 64,
+    "mha_bwd_heads": 16,
+    "mha_bwd_seq": 1024
+  },
+  "schedule_count": 2334,
+  "stage_beam": 256,
+  "tile": {
+    "block_m": 128,
+    "block_n": 32
+  }
+}

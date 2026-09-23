@@ -54,7 +54,7 @@ template <typename Impl> struct FinalizeReducerLowerer {
 
     int reducing_threads = extent;
     reduce::CheckAllReduceWidth(reducing_threads, 1, "tl.finalize_reducer");
-    auto thread_offset = lower_args.thread_bounds->min;
+    PrimExpr thread_offset = lower_args.thread_base;
 
     int64_t layout_batch_size = 1;
     for (int i = 0; i < layout->OutputDim(); ++i) {

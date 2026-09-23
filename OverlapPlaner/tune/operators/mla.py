@@ -18,7 +18,7 @@ from .workloads import OperatorSpec, Options, SearchWorkload, TileConfig
 
 def add_arguments(parser) -> None:
     group = parser.add_argument_group("MLA")
-    group.add_argument("--mla-block-h", type=int, nargs="+", default=[64])
+    group.add_argument("--mla-block-h", type=int, nargs="+", default=[16, 32, 64])
     group.add_argument("--mla-block-n", type=int, nargs="+", default=[64])
     group.add_argument("--mla-batch", type=int, default=1)
     group.add_argument("--mla-heads", type=int, default=128)

@@ -110,6 +110,11 @@ struct LowerArgs {
   // a thread_extent AttrStmt), while targets without thread bindings (e.g.
   // CPU) pass constant 0. It must never be an unbound synthetic Var.
   PrimExpr thread_index;
+  // Physical threadIdx.x base of the active logical thread range. Most tile
+  // operators consume zero-based logical coordinates, while named-barrier
+  // collectives must retain the physical base to address the correct warp
+  // partition after warp specialization.
+  PrimExpr thread_base = IntImm(DataType::Int(32), 0);
   LayoutMap layout_map;
   ffi::Map<tirx::Buffer, tirx::Buffer> buffer_remap;
   // Map from Bind variable to its bound expression, for resolving
