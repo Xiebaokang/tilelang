@@ -129,5 +129,5 @@ maint/host_checks/logs/*
 uv.lock
 
 # 
-OverlapPlan/tune/results*
+OverlapPlaner/tune/results*
 history/results*

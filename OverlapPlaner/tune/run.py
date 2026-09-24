@@ -20,6 +20,7 @@ import json
 import math
 import os
 import signal
+import statistics
 import subprocess
 import sys
 import time
@@ -51,6 +52,7 @@ from OverlapPlaner.tune.dynamic import (
     file_fingerprint,
     load_candidates,
     order_bucket,
+    physical_plan_features,
     plan_features,
     plan_fingerprint,
     producer_copy_count,
@@ -94,8 +96,8 @@ from OverlapPlaner.tune.search import (
 
 
 SEARCH_OPERATORS: list[OperatorSpec] = [
-    # FA3,
-    # MLA,
+    FA3,
+    MLA,
     DEQUANT_GEMM_FP4,
     GDN_CHUNK_O_BWD,
     GDN_CHUNK_DELTA_BWD,
@@ -107,10 +109,10 @@ SEARCH_OPERATORS: list[OperatorSpec] = [
     LINEAR_ATTN_FWD,
     MAMBA_CHUNK_SCAN,
     MAMBA_CHUNK_STATE,
-    # GEMM,
-    # GQA,
-    # CONVOLUTION,
-    # GEMM_FP8,
+    GEMM,
+    GQA,
+    CONVOLUTION,
+    GEMM_FP8,
 ]
 
 # Bump whenever generated-code semantics or correctness validation changes.
@@ -961,6 +963,7 @@ def _expand_order_candidates(
             features = (
                 *plan_features(proposal),
                 *classified_plan_features(proposal, proposal_classified),
+                *physical_plan_features(proposal),
             )
             proposal_candidates.append(
                 Candidate(
@@ -1052,8 +1055,6 @@ def _expand_joint_candidates(
 
     proposals: dict[int, tuple[dict[str, Any], str, tuple]] = {}
     proposal_candidates: list[Candidate] = []
-    dimensions: dict[int, str] = {}
-    copy_cross_group: set[int] = set()
     per_dimension = {
         "stage": 0, "group": 0, "order": 0, "version": 0, "copy": 0
     }
@@ -1075,6 +1076,7 @@ def _expand_joint_candidates(
             features = (
                 *plan_features(proposal),
                 *classified_plan_features(proposal, proposal_classified),
+                *physical_plan_features(proposal),
             )
             proposal_candidates.append(
                 Candidate(
@@ -1090,23 +1092,6 @@ def _expand_joint_candidates(
                 )
             )
             proposals[temporary_index] = (proposal, plan_fingerprint(payload), move)
-            dimensions[temporary_index] = dimension
-            if dimension == "copy":
-                groups = {
-                    int(item["operation_id"]): int(item["group_id"])
-                    for item in payload["operations"]
-                }
-                if any(
-                    edge.producer_id == move[1]
-                    and edge.buffer_id
-                    in classified.graph.node_for_id(move[1]).writes
-                    and classified.graph.buffer_for_id(
-                        edge.buffer_id
-                    ).scope.startswith("shared")
-                    and groups[edge.producer_id] != groups[edge.consumer_id]
-                    for edge in classified.graph.edges
-                ):
-                    copy_cross_group.add(temporary_index)
             per_dimension[dimension] += 1
             known.add(fingerprint)
     if not proposal_candidates:
@@ -1117,40 +1102,11 @@ def _expand_joint_candidates(
     ranked_proposals = policy.next_batch(
         dict(measured_latency), existing_unmeasured, len(proposal_candidates)
     )
-    # Every batch may change any dimension. Rotate the first choice so a
-    # modest evaluation budget does not always spend its moves on stage.
-    cycle = ("stage", "group", "order", "version", "copy")
-    prior_moves = next_index - base_count
-    rotated = cycle[prior_moves % len(cycle):] + cycle[:prior_moves % len(cycle)]
-    chosen: list[int] = []
-    for dimension in rotated:
-        if dimension == "copy":
-            cross_group_choice = next(
-                (
-                    index
-                    for index in ranked_proposals
-                    if index in copy_cross_group and index not in chosen
-                ),
-                None,
-            )
-            if cross_group_choice is not None:
-                chosen.append(cross_group_choice)
-                if len(chosen) >= remaining:
-                    break
-                continue
-        match = next(
-            (
-                index
-                for index in ranked_proposals
-                if dimensions[index] == dimension and index not in chosen
-            ),
-            None,
-        )
-        if match is not None:
-            chosen.append(match)
-        if len(chosen) >= remaining:
-            break
-    chosen.extend(index for index in ranked_proposals if index not in chosen)
+    # Rank all legal stage/group/order/version/copy moves together. Diversity
+    # is already represented by the uncertainty and coverage terms in the
+    # acquisition policy; forcing a dimension rotation can spend a scarce GPU
+    # measurement on a move the feedback model predicts to be poor.
+    chosen = ranked_proposals
 
     added: list[int] = []
     for temporary_index in chosen[:remaining]:
@@ -1216,9 +1172,13 @@ def _supervise_dynamic_config(
             for batch in previous_state.get("batches", [])
         ][-evaluation_budget:]
         best_history = best_history[-evaluation_budget:]
+        batch_diagnostics = list(
+            previous_state.get("batch_diagnostics", [])
+        )[-evaluation_budget:]
     else:
         best_history = []
         batches = []
+        batch_diagnostics = []
     stopped_early = False
     while True:
         successful = _read_jsonl(config_dir / "results.jsonl")
@@ -1253,7 +1213,7 @@ def _supervise_dynamic_config(
                 plan_dir,
                 classified,
                 measured_latency,
-                min(max(1, batch_size // 2), remaining_budget),
+                min(1, remaining_budget),
                 max_extra=evaluation_budget * 2,
             )
             if fresh:
@@ -1271,12 +1231,18 @@ def _supervise_dynamic_config(
                 set(measured_latency) | unavailable,
                 min(initial_samples - attempted, remaining_budget),
             )
+            selection_roles = {index: "coverage" for index in selected}
         else:
-            selected = fresh + policy.next_batch(
+            feedback_selected = policy.next_batch(
                 measured_latency,
                 unavailable | set(fresh),
                 min(batch_size, remaining_budget) - len(fresh),
             )
+            selected = fresh + feedback_selected
+            selection_roles = {
+                **{index: "local_mutation" for index in fresh},
+                **policy.last_selection_roles,
+            }
         if not selected:
             break
         batches.append(selected)
@@ -1316,6 +1282,28 @@ def _supervise_dynamic_config(
             else min(measured_latency.values(), default=math.inf)
         )
         best_history.append(min([previous, *batch_successes.values()]))
+        batch_latencies = list(batch_successes.values())
+        batch_diagnostics.append(
+            {
+                "selected": selected,
+                "selection_roles": {
+                    str(index): selection_roles.get(index, "feedback")
+                    for index in selected
+                },
+                "successful": len(batch_successes),
+                "failed": len(batch_failures),
+                "failure_rate": len(batch_failures) / len(selected),
+                "batch_min_latency_ms": (
+                    min(batch_latencies) if batch_latencies else None
+                ),
+                "batch_median_latency_ms": (
+                    statistics.median(batch_latencies)
+                    if batch_latencies
+                    else None
+                ),
+                "cumulative_best_latency_ms": best_history[-1],
+            }
+        )
         _write_json(
             config_dir / "dynamic_state.json",
             {
@@ -1324,15 +1312,13 @@ def _supervise_dynamic_config(
                 "attempted": attempted + len(selected),
                 "batches": batches,
                 "best_latency_history_ms": best_history,
+                "batch_diagnostics": batch_diagnostics,
             },
         )
         if attempted + len(selected) >= initial_samples and should_stop(
             best_history,
             patience=patience,
             minimum_improvement=minimum_improvement,
-        ) and not policy.has_uncovered_bucket(
-            set(measured_latency) | set(batch_successes),
-            unavailable | batch_failures,
         ):
             stopped_early = True
             break
@@ -1355,6 +1341,7 @@ def _supervise_dynamic_config(
             "attempted": len(final_completed),
             "batches": batches,
             "best_latency_history_ms": best_history,
+            "batch_diagnostics": batch_diagnostics,
         },
     )
 
@@ -1389,7 +1376,7 @@ def run(
     search_mode: str = "dynamic",
     candidate_pool: int = 2048,
     evaluation_budget: int = 48,
-    initial_samples: int = 16,
+    initial_samples: int = 12,
     batch_size: int = 4,
     patience: int = 3,
     minimum_improvement: float = 0.01,
@@ -1632,8 +1619,8 @@ def main() -> None:
     )
     parser.add_argument("--candidate-pool", type=int, default=4096)
     parser.add_argument("--stage-beam", type=int, default=256)
-    parser.add_argument("--evaluation-budget", type=int, default=48)
-    parser.add_argument("--initial-samples", type=int, default=16)
+    parser.add_argument("--evaluation-budget", type=int, default=64)
+    parser.add_argument("--initial-samples", type=int, default=24)
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--patience", type=int, default=3)
     parser.add_argument("--minimum-improvement", type=float, default=0.01)

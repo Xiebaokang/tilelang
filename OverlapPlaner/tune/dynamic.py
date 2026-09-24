@@ -270,6 +270,18 @@ def _physical_group_signature(
     )
 
 
+def physical_plan_features(payload: dict[str, Any]) -> tuple[float, ...]:
+    """Describe the physical order of the first and last warp groups."""
+
+    signature = _physical_group_signature(payload)
+    first_warps, first_role = signature[0]
+    last_warps, last_role = signature[-1]
+    return tuple(
+        float(value)
+        for value in (first_warps, first_role, last_warps, last_role)
+    )
+
+
 def _native_role_seed_priority(
     payload: dict[str, Any], classified: Any | None
 ) -> float:
@@ -353,12 +365,7 @@ def load_candidates(
         # such as [producer, consumer] and [consumer, producer] identical to
         # the learned model.  Add a fixed-size description of both ends; the
         # complete signature remains part of coverage bucketing below.
-        first_warps, first_role = physical_bucket[0]
-        last_warps, last_role = physical_bucket[-1]
-        features += tuple(
-            float(value)
-            for value in (first_warps, first_role, last_warps, last_role)
-        )
+        features += physical_plan_features(payload)
         candidates.append(
             Candidate(
                 index=index,
@@ -398,6 +405,7 @@ class DynamicSearchPolicy:
         self.seed = seed
         self.exploration = exploration
         self.ensemble_size = ensemble_size
+        self.last_selection_roles: dict[int, str] = {}
 
     def initial(self, measured: set[int], limit: int) -> list[int]:
         """Round-robin over group, stage, producer, and order buckets."""
@@ -461,34 +469,21 @@ class DynamicSearchPolicy:
         unavailable: set[int],
         limit: int,
     ) -> list[int]:
-        """Use an ensemble lower-confidence bound to choose the next batch."""
+        """Mix predicted winners with uncertainty and soft structural coverage."""
 
+        self.last_selection_roles = {}
         excluded = set(measured_latency) | unavailable
         remaining = [
             item for item in self.candidates if item.index not in excluded
         ]
         if not remaining or limit < 1:
             return []
-        covered = {
-            self._coverage_bucket(item)
-            for item in self.candidates
-            if item.index in measured_latency
-        }
-        uncovered = [
-            item for item in remaining
-            if self._coverage_bucket(item) not in covered
-        ]
-        if uncovered:
-            seeds = DynamicSearchPolicy(
-                tuple(uncovered), seed=self.seed
-            ).initial(set(), limit)
-            if len(seeds) == limit:
-                return seeds
-            return seeds + self.next_batch(
-                measured_latency, unavailable | set(seeds), limit - len(seeds)
-            )
         if len(measured_latency) < 4:
-            return self.initial(excluded, min(limit, len(remaining)))
+            selected = self.initial(excluded, min(limit, len(remaining)))
+            self.last_selection_roles = {
+                index: "coverage" for index in selected
+            }
+            return selected
 
         by_index = {item.index: item for item in self.candidates}
         train_ids = sorted(measured_latency)
@@ -502,11 +497,21 @@ class DynamicSearchPolicy:
             )
         )
         x_test = np.asarray([item.features for item in remaining], dtype=np.float64)
-        mean = x_train.mean(axis=0)
-        scale = x_train.std(axis=0)
+        known_ids = [
+            item.index
+            for item in self.candidates
+            if item.index in measured_latency or item.index in unavailable
+        ]
+        x_known = np.asarray(
+            [by_index[index].features for index in known_ids], dtype=np.float64
+        )
+        mean = x_known.mean(axis=0)
+        scale = x_known.std(axis=0)
         scale[scale < 1e-9] = 1.0
         x_train = (x_train - mean) / scale
         x_test = (x_test - mean) / scale
+        x_known = (x_known - mean) / scale
+        x_test_features = x_test
         x_train = np.column_stack((np.ones(len(x_train)), x_train))
         x_test = np.column_stack((np.ones(len(x_test)), x_test))
 
@@ -523,18 +528,87 @@ class DynamicSearchPolicy:
             ) @ sampled_x.T @ sampled_y
             predictions.append(x_test @ weights)
         prediction = np.asarray(predictions)
-        acquisition = prediction.mean(axis=0) - self.exploration * prediction.std(
-            axis=0
+        predicted_mean = prediction.mean(axis=0)
+        predicted_std = prediction.std(axis=0)
+
+        # Failed schedules are useful measurements too. Estimate local
+        # infeasibility from nearby successful and failed structures, then
+        # penalize regions dominated by compilation, correctness, or timeout
+        # failures. The beta prior prevents one isolated failure from banning
+        # an otherwise unexplored neighborhood.
+        known_failed = np.asarray(
+            [float(index in unavailable) for index in known_ids],
+            dtype=np.float64,
         )
-        order = sorted(
-            range(len(remaining)),
-            key=lambda offset: (
-                float(acquisition[offset]),
-                remaining[offset].bucket,
-                remaining[offset].index,
-            ),
+        invalid_probability = np.zeros(len(remaining), dtype=np.float64)
+        neighbor_count = min(8, len(known_ids))
+        distance_scale = math.sqrt(max(1, x_known.shape[1]))
+        for offset, sample in enumerate(x_test_features):
+            distances = np.linalg.norm(x_known - sample, axis=1)
+            nearest = np.argsort(distances)[:neighbor_count]
+            weights = np.exp(-distances[nearest] / distance_scale)
+            invalid_probability[offset] = (
+                0.5 + float(weights @ known_failed[nearest])
+            ) / (2.0 + float(weights.sum()))
+
+        covered = {
+            self._coverage_bucket(item)
+            for item in self.candidates
+            if item.index in measured_latency
+        }
+        uncovered = np.asarray(
+            [self._coverage_bucket(item) not in covered for item in remaining],
+            dtype=np.float64,
         )
-        return [remaining[offset].index for offset in order[:limit]]
+        acquisition = (
+            predicted_mean
+            - self.exploration * predicted_std
+            + 0.5 * invalid_probability
+        )
+
+        def ranked(offsets, key):
+            return sorted(
+                offsets,
+                key=lambda offset: (
+                    key(offset),
+                    remaining[offset].bucket,
+                    remaining[offset].index,
+                ),
+            )
+
+        available_offsets = set(range(len(remaining)))
+        selected_offsets: list[int] = []
+        exploit_count = min(limit, max(1, (limit + 1) // 2))
+        for offset in ranked(available_offsets, lambda item: acquisition[item]):
+            selected_offsets.append(offset)
+            available_offsets.remove(offset)
+            self.last_selection_roles[remaining[offset].index] = "exploit"
+            if len(selected_offsets) >= exploit_count:
+                break
+
+        exploration_slots = min(limit - len(selected_offsets), len(available_offsets))
+        for slot in range(exploration_slots):
+            uncovered_offsets = [
+                offset for offset in available_offsets if uncovered[offset]
+            ]
+            if slot == exploration_slots - 1 and uncovered_offsets:
+                offset = ranked(
+                    uncovered_offsets, lambda item: acquisition[item]
+                )[0]
+                role = "coverage"
+            else:
+                offset = ranked(
+                    available_offsets,
+                    lambda item: (
+                        -predicted_std[item] + 0.5 * invalid_probability[item]
+                    ),
+                )[0]
+                role = "uncertainty"
+            selected_offsets.append(offset)
+            available_offsets.remove(offset)
+            self.last_selection_roles[remaining[offset].index] = role
+
+        return [remaining[offset].index for offset in selected_offsets]
 
 
 def should_stop(

@@ -108,6 +108,41 @@ def test_feedback_selection_is_deterministic_and_skips_completed() -> None:
     assert not (set(first) & ({0, 1, 2, 3, 4}))
 
 
+def test_feedback_uses_soft_coverage_instead_of_filling_the_batch() -> None:
+    candidates = tuple(
+        _candidate(index, 1 if index < 6 else 2, 1, float(index))
+        for index in range(8)
+    )
+    measured = {0: 1.00, 1: 0.95, 2: 0.90, 3: 0.85}
+    policy = DynamicSearchPolicy(candidates, seed=3)
+    selected = policy.next_batch(measured, set(), 2)
+    roles = policy.last_selection_roles
+    assert len(selected) == 2
+    assert list(roles.values()).count("coverage") == 1
+    assert list(roles.values()).count("exploit") == 1
+
+
+def test_feedback_penalizes_neighborhoods_with_failures() -> None:
+    candidates = tuple(
+        Candidate(
+            index=index,
+            path=Path(f"schedule_{index:05d}.json"),
+            fingerprint=str(index),
+            bucket=(1, 1),
+            features=(float(index >= 4) * 10.0 + (index % 4) * 0.01,),
+        )
+        for index in range(8)
+    ) + (
+        Candidate(8, Path("schedule_00008.json"), "8", (1, 1), (0.1,)),
+        Candidate(9, Path("schedule_00009.json"), "9", (1, 1), (10.1,)),
+    )
+    measured = {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0}
+    policy = DynamicSearchPolicy(candidates, seed=5, exploration=0.0)
+    selected = policy.next_batch(measured, {4, 5, 6, 7}, 1)
+    assert selected == [8]
+    assert policy.last_selection_roles[selected[0]] == "exploit"
+
+
 def test_dynamic_stopping_uses_measured_improvement() -> None:
     assert should_stop(
         [10.0, 9.0, 8.99, 8.98, 8.98],
@@ -250,7 +285,7 @@ def test_joint_expansion_samples_stage_group_and_order_and_replays(tmp_path):
     )
     assert len(added) == 4
     mutations = [json.loads(row) for row in (plan_dir / "joint_mutations.jsonl").read_text().splitlines()]
-    assert {row["move"][0] for row in mutations} == dimensions
+    assert {row["move"][0] for row in mutations} <= dimensions
     fingerprints = [
         file_fingerprint(plan_dir / f"schedule_{index:05d}.json") for index in added
     ]
