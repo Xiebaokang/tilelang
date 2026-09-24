@@ -161,13 +161,13 @@
     {
       "group_id": 0,
       "operation_id": 7,
-      "order": 2,
+      "order": 3,
       "stage": 0
     },
     {
       "group_id": 0,
       "operation_id": 8,
-      "order": 3,
+      "order": 2,
       "stage": 0
     },
     {

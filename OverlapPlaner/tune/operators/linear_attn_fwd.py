@@ -7,7 +7,13 @@ import tilelang.language as T
 import torch
 import torch.nn.functional as F
 
-from .workloads import OperatorSpec, Options, SearchWorkload, TileConfig
+from .workloads import (
+    OperatorSpec,
+    Options,
+    SearchWorkload,
+    TileConfig,
+    threads_from_tile_extent,
+)
 
 
 def add_arguments(parser) -> None:
@@ -41,6 +47,7 @@ def linear_attn(
     value_dim: int,
     block_k: int,
     block_v: int,
+    threads: int,
 ):
     chunk = 64
     num_chunks = T.ceildiv(seq_len, chunk)
@@ -61,7 +68,12 @@ def linear_attn(
         O: T.Tensor(v_shape, accum_dtype),
         FinalState: T.Tensor(state_shape, accum_dtype),
     ):
-        with T.Kernel(num_value_tiles, num_key_tiles, batch * heads) as (
+        with T.Kernel(
+            num_value_tiles,
+            num_key_tiles,
+            batch * heads,
+            threads=threads,
+        ) as (
             iv,
             ik,
             ibh,
@@ -185,7 +197,14 @@ def build(options: Options, config: TileConfig) -> SearchWorkload:
     if value_dim % block_v:
         raise ValueError("linear attention value dimension must be divisible by block_v")
     prim_func = linear_attn(
-        batch, seq_len, heads, key_dim, value_dim, block_k, block_v
+        batch,
+        seq_len,
+        heads,
+        key_dim,
+        value_dim,
+        block_k,
+        block_v,
+        threads_from_tile_extent(max(block_k, block_v)),
     )
     total_flops = 2.0 * batch * heads * (
         seq_len * 64 * (key_dim + value_dim)

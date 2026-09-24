@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from .block_causal_bwd import OPERATOR as BLOCK_CAUSAL_BWD
 from .convolution import OPERATOR as CONVOLUTION
 from .dequant_gemm_fp4 import OPERATOR as DEQUANT_GEMM_FP4
 from .fa3 import OPERATOR as FA3
-from .flash_decode import OPERATOR as FLASH_DECODE
 from .fused_moe import OPERATOR as FUSED_MOE
 from .gemm import OPERATOR as GEMM
 from .gemm_fp8 import OPERATOR as GEMM_FP8
@@ -31,13 +29,11 @@ OPERATORS = (
     GQA,
     GQA_BWD,
     MHA_BWD,
-    BLOCK_CAUSAL_BWD,
-    DEQUANT_GEMM_FP4,
     GDN_CHUNK_O_BWD,
     GDN_CHUNK_DELTA_BWD,
-    KDA_WY_FAST_BWD,
     KDA_CHUNK_BWD_INTRA,
-    FLASH_DECODE,
+    DEQUANT_GEMM_FP4,
+    KDA_WY_FAST_BWD,
     FUSED_MOE,
     GEMM_FP8,
     MLA,
@@ -63,11 +59,9 @@ def get_operator(name: str) -> OperatorSpec:
 
 
 __all__ = [
-    "BLOCK_CAUSAL_BWD",
     "CONVOLUTION",
     "DEQUANT_GEMM_FP4",
     "FA3",
-    "FLASH_DECODE",
     "FUSED_MOE",
     "GEMM",
     "GEMM_FP8",

@@ -9,7 +9,17 @@ num_split = 4
 
 
 @tilelang.jit(out_idx=[3])
-def flashattn(batch, heads, seqlen_q, seqlen_kv, dim, is_causal, block_M, block_N):
+def flashattn(
+    batch,
+    heads,
+    seqlen_q,
+    seqlen_kv,
+    dim,
+    is_causal,
+    block_M,
+    block_N,
+    threads=128,
+):
     scale = (1.0 / dim) ** 0.5 * 1.44269504  # log2(e)
     shape_q = [batch, seqlen_q, heads, dim]
     shape_kv = [batch, seqlen_kv, heads, dim]
@@ -27,7 +37,7 @@ def flashattn(batch, heads, seqlen_q, seqlen_kv, dim, is_causal, block_M, block_
         glse = T.alloc_global([batch, heads, num_split, seqlen_q], dtype)
         Output_partial = T.alloc_global(part_shape, dtype)  # [batch, seqlen_q, heads, num_split, dim]
         # split
-        with T.Kernel(T.ceildiv(seqlen_q, block_M), heads * batch, num_split, threads=128) as (bx, by, bz):
+        with T.Kernel(T.ceildiv(seqlen_q, block_M), heads * batch, num_split, threads=threads) as (bx, by, bz):
             Q_shared = T.alloc_shared([block_M, dim], dtype)
             K_shared = T.alloc_shared([block_N, dim], dtype)
             V_shared = T.alloc_shared([block_N, dim], dtype)
@@ -113,7 +123,7 @@ def flashattn(batch, heads, seqlen_q, seqlen_kv, dim, is_causal, block_M, block_
             T.copy(O_shared, Output_partial[bid, mid * block_M : (mid + 1) * block_M, hid, sid, :], disable_tma=True)
 
         # combine
-        with T.Kernel(T.ceildiv(seqlen_q, block_M), heads, batch, threads=128) as (bx, by, bz):
+        with T.Kernel(T.ceildiv(seqlen_q, block_M), heads, batch, threads=threads) as (bx, by, bz):
             po_local = T.alloc_fragment([block_M, dim], dtype)
             o_accum_local = T.alloc_fragment([block_M, dim], accum_dtype)
             o_shared = T.alloc_shared([block_M, dim], dtype)

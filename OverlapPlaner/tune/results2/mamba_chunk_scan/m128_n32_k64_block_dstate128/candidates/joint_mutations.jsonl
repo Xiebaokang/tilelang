@@ -1,6 +1,0 @@
-{"fingerprint": "e1dd717ea3042c6ca02779b3f53e25ec0de29f640385abc0e1eac44433ff1d23", "move": ["stage", 1, 18, 0, 1], "parent_fingerprint": "aad55ad608666fd1b746cfa8a5d75a91e0d7a3864e409e2c76abf876431e25b5"}
-{"fingerprint": "8907ef86bdd9f909334efaf48a5bf402adfe903cea03afecbb604f1b34fbb659", "move": ["group", 4, 1, 0, 0], "parent_fingerprint": "cdaab30b2b791027e71722139555de6f63586ed66fee60151718d135c309f518"}
-{"fingerprint": "6584c57c0d385fc015b86b5806886876be83a34a91a028a75f7de66f178f75d2", "move": ["order", 1, 0, 13, 17], "parent_fingerprint": "cdaab30b2b791027e71722139555de6f63586ed66fee60151718d135c309f518"}
-{"fingerprint": "2ab4096180d1f7a3a17c60d7de816b0c526a3609b0273e3be90732739589f75f", "move": ["version", 12, 3, 0, 0], "parent_fingerprint": "6a70f28f9c1f6d884ba015db90520c743e8bfddcff04f97e88a5b3479b68db49"}
-{"fingerprint": "91646f4054143e4c317b3f001a9b48097aaea78bb5923b8b339b70cae06f1366", "move": ["copy", 0, 1, 0, 0], "parent_fingerprint": "6a70f28f9c1f6d884ba015db90520c743e8bfddcff04f97e88a5b3479b68db49"}
-{"fingerprint": "cacaf7a130e319b6dec5bf1d8ae9c492b3721ac3cd69f072d7129ade68b385d8", "move": ["stage", 1, 18, 1, 1], "parent_fingerprint": "6a70f28f9c1f6d884ba015db90520c743e8bfddcff04f97e88a5b3479b68db49"}

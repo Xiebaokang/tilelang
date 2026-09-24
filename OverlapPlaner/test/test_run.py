@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from OverlapPlaner.structure import SearchBudget
+from OverlapPlaner.tune.dynamic import load_candidates
 from OverlapPlaner.tune.operators.gemm import OPERATOR as GEMM
 from OverlapPlaner.tune.operators.workloads import OperatorSpec
 from OverlapPlaner.tune.run import (
@@ -48,6 +49,17 @@ def test_generate_plans_writes_replay_manifest(tmp_path: Path) -> None:
     assert len(feature_rows) == manifest["schedule_count"]
     assert len(feature_rows[0]["fingerprint"]) == 64
     assert len(feature_rows[0]["features"]) > 16
+    workload_fingerprint = _workload_fingerprint(
+        GEMM,
+        {"block_m": 128, "block_n": 128, "block_k": 64},
+        {"gemm_m": 256, "gemm_n": 256, "gemm_k": 256},
+    )
+    candidate = load_candidates(
+        plan_dir, fingerprint_salt=workload_fingerprint
+    )[0]
+    assert candidate.fingerprint == _evaluation_fingerprint(
+        candidate.path, workload_fingerprint
+    )
 
 
 def test_workload_fingerprint_includes_problem_size() -> None:

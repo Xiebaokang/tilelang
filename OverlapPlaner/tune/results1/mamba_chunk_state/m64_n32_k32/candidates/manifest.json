@@ -1,5 +1,5 @@
 {
-  "base_schedule_count": 2048,
+  "base_schedule_count": 3556,
   "candidate_features": "features.jsonl",
   "operator": "mamba_chunk_state",
   "options": {
@@ -24,8 +24,8 @@
     "mamba_state_heads": 80,
     "mamba_state_seq": 4096
   },
-  "schedule_count": 2064,
-  "stage_beam": 64,
+  "schedule_count": 3604,
+  "stage_beam": 256,
   "tile": {
     "block_k": 32,
     "block_m": 64,

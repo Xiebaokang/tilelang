@@ -88,13 +88,31 @@ def _forward_synchronizations(
 ) -> list[SyncSkeleton]:
     graph = classified.graph
     result = []
+    # A same-group wait on the current-iteration value already completes the
+    # asynchronous shared-memory write for every later use in that group's
+    # program order. Dependence extraction may additionally report a
+    # conservative loop-carried RAW edge for the same producer/buffer/consumer.
+    # A second completion channel for that duplicate edge can deadlock when it
+    # is waited in the following iteration.
+    current_async_handoffs = {
+        (edge.producer_id, edge.consumer_id, edge.buffer_id)
+        for edge in graph.edges
+        if edge.iteration_distance == 0
+        and groups[edge.producer_id] == groups[edge.consumer_id]
+        and _is_intra_group_async_handoff(classified, edge)
+    }
     for edge in graph.edges:
         producer_group = groups[edge.producer_id]
         consumer_group = groups[edge.consumer_id]
-        if producer_group == consumer_group and not _is_intra_group_async_handoff(
-            classified, edge
-        ):
-            continue
+        if producer_group == consumer_group:
+            if not _is_intra_group_async_handoff(classified, edge):
+                continue
+            if (
+                edge.iteration_distance > 0
+                and (edge.producer_id, edge.consumer_id, edge.buffer_id)
+                in current_async_handoffs
+            ):
+                continue
 
         scope = _scope(graph, edge.producer_id, edge.consumer_id)
         distance = None

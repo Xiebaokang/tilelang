@@ -1,5 +1,5 @@
 {
-  "base_schedule_count": 1133,
+  "base_schedule_count": 2297,
   "candidate_features": "features.jsonl",
   "operator": "gqa",
   "options": {
@@ -18,8 +18,8 @@
     "gqa_heads": 16,
     "gqa_seq": 4096
   },
-  "schedule_count": 1149,
-  "stage_beam": 64,
+  "schedule_count": 2303,
+  "stage_beam": 256,
   "tile": {
     "block_m": 64,
     "block_n": 64

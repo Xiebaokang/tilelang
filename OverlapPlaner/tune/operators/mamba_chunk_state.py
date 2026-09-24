@@ -7,7 +7,13 @@ import tilelang.language as T
 import torch
 import torch.nn.functional as F
 
-from .workloads import OperatorSpec, Options, SearchWorkload, TileConfig
+from .workloads import (
+    OperatorSpec,
+    Options,
+    SearchWorkload,
+    TileConfig,
+    threads_from_tile_extent,
+)
 
 
 def add_arguments(parser) -> None:
@@ -221,6 +227,9 @@ def build(options: Options, config: TileConfig) -> SearchWorkload:
         config["block_m"],
         config["block_n"],
         config["block_k"],
+        threads=threads_from_tile_extent(
+            max(config["block_m"], config["block_n"])
+        ),
     )
     return SearchWorkload(
         prim_func=prim_func,

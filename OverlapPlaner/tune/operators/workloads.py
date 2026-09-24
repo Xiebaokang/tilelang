@@ -14,6 +14,22 @@ Options = Mapping[str, Any]
 TileConfig = dict[str, int]
 
 
+def threads_from_tile_extent(
+    extent: int,
+    *,
+    tile_unit: int = 64,
+    threads_per_unit: int = 128,
+    minimum: int = 128,
+    maximum: int = 512,
+) -> int:
+    """Choose one CTA width from the tile's parallel tensorcore extent."""
+
+    if min(extent, tile_unit, threads_per_unit, minimum, maximum) < 1:
+        raise ValueError("thread mapping inputs must be positive")
+    threads = math.ceil(extent / tile_unit) * threads_per_unit
+    return min(max(threads, minimum), maximum)
+
+
 @dataclass(frozen=True, slots=True)
 class SearchWorkload:
     """Everything the schedule search needs for one concrete tile."""

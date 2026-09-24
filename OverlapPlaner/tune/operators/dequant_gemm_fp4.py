@@ -5,7 +5,7 @@ from itertools import product
 import tilelang
 
 from .example_loader import NativeKernelReference, load_example_factory, mark_for_overlap
-from .workloads import OperatorSpec, SearchWorkload
+from .workloads import OperatorSpec, SearchWorkload, threads_from_tile_extent
 
 
 def add_arguments(parser):
@@ -51,7 +51,9 @@ def build(options, config):
         block_N=config["block_n"],
         block_K=config["block_k"],
         num_stages=2,
-        threads=256,
+        # This kernel computes Ct = B_dequant @ A^T, so its WGMMA M axis is
+        # block_n even though the public output is [M, N].
+        threads=threads_from_tile_extent(config["block_n"]),
         split=1,
     )
     passes = {tilelang.PassConfigKey.TL_ENABLE_FAST_MATH: True}

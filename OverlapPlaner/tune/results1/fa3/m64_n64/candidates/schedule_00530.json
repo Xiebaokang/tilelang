@@ -99,13 +99,13 @@
   ],
   "groups": [
     {
-      "register_count": 24,
-      "register_increase": 0,
+      "register_count": 240,
+      "register_increase": 1,
       "warp_count": 4
     },
     {
-      "register_count": 240,
-      "register_increase": 1,
+      "register_count": 24,
+      "register_increase": 0,
       "warp_count": 4
     },
     {
@@ -148,19 +148,19 @@
     {
       "group_id": 2,
       "operation_id": 5,
-      "order": 2,
+      "order": 1,
       "stage": 0
     },
     {
       "group_id": 2,
       "operation_id": 6,
-      "order": 3,
+      "order": 2,
       "stage": 0
     },
     {
       "group_id": 2,
       "operation_id": 7,
-      "order": 1,
+      "order": 3,
       "stage": 0
     },
     {
@@ -196,17 +196,17 @@
     {
       "group_id": 2,
       "operation_id": 13,
-      "order": 10,
+      "order": 9,
       "stage": 0
     },
     {
       "group_id": 2,
       "operation_id": 14,
-      "order": 11,
+      "order": 10,
       "stage": 0
     },
     {
-      "group_id": 1,
+      "group_id": 0,
       "operation_id": 15,
       "order": 0,
       "stage": 0
@@ -214,17 +214,17 @@
     {
       "group_id": 2,
       "operation_id": 16,
-      "order": 9,
+      "order": 11,
       "stage": 0
     },
     {
-      "group_id": 0,
+      "group_id": 1,
       "operation_id": 17,
       "order": 0,
       "stage": 0
     },
     {
-      "group_id": 1,
+      "group_id": 0,
       "operation_id": 18,
       "order": 1,
       "stage": 0
@@ -242,7 +242,7 @@
       "stage": null
     },
     {
-      "group_id": 1,
+      "group_id": 0,
       "operation_id": 21,
       "order": 0,
       "stage": null

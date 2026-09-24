@@ -58,7 +58,7 @@
       "buffer_id": 9,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 2
+      "version_count": 3
     },
     {
       "buffer_id": 10,
@@ -70,7 +70,7 @@
       "buffer_id": 11,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 1
+      "version_count": 2
     },
     {
       "buffer_id": 12,
@@ -192,13 +192,13 @@
       "group_id": 1,
       "operation_id": 13,
       "order": 9,
-      "stage": 1
+      "stage": 0
     },
     {
       "group_id": 1,
       "operation_id": 14,
       "order": 10,
-      "stage": 1
+      "stage": 0
     },
     {
       "group_id": 1,
@@ -210,19 +210,19 @@
       "group_id": 1,
       "operation_id": 16,
       "order": 12,
-      "stage": 1
+      "stage": 2
     },
     {
-      "group_id": 1,
+      "group_id": 0,
       "operation_id": 17,
-      "order": 13,
+      "order": 0,
       "stage": 0
     },
     {
       "group_id": 1,
       "operation_id": 18,
-      "order": 14,
-      "stage": 1
+      "order": 13,
+      "stage": 2
     },
     {
       "group_id": 1,

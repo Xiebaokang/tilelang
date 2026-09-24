@@ -143,19 +143,19 @@
     {
       "group_id": 1,
       "operation_id": 5,
-      "order": 2,
+      "order": 1,
       "stage": 0
     },
     {
       "group_id": 1,
       "operation_id": 6,
-      "order": 3,
+      "order": 2,
       "stage": 0
     },
     {
       "group_id": 1,
       "operation_id": 7,
-      "order": 1,
+      "order": 3,
       "stage": 0
     },
     {
@@ -191,26 +191,26 @@
     {
       "group_id": 1,
       "operation_id": 13,
-      "order": 12,
-      "stage": 1
-    },
-    {
-      "group_id": 1,
-      "operation_id": 14,
-      "order": 13,
-      "stage": 1
-    },
-    {
-      "group_id": 1,
-      "operation_id": 15,
       "order": 9,
       "stage": 0
     },
     {
       "group_id": 1,
-      "operation_id": 16,
+      "operation_id": 14,
       "order": 10,
       "stage": 0
+    },
+    {
+      "group_id": 1,
+      "operation_id": 15,
+      "order": 11,
+      "stage": 1
+    },
+    {
+      "group_id": 1,
+      "operation_id": 16,
+      "order": 12,
+      "stage": 1
     },
     {
       "group_id": 0,
@@ -221,8 +221,8 @@
     {
       "group_id": 1,
       "operation_id": 18,
-      "order": 11,
-      "stage": 0
+      "order": 13,
+      "stage": 1
     },
     {
       "group_id": 1,

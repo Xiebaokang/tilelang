@@ -70,7 +70,7 @@
       "buffer_id": 11,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 2
+      "version_count": 1
     },
     {
       "buffer_id": 12,
@@ -100,7 +100,7 @@
       "buffer_id": 16,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 2
+      "version_count": 1
     },
     {
       "buffer_id": 17,
@@ -128,7 +128,7 @@
     },
     {
       "buffer_id": 21,
-      "byte_offset": 60416,
+      "byte_offset": 1024,
       "communication": 2,
       "version_count": 1
     },
@@ -221,7 +221,7 @@
     {
       "group_id": 1,
       "operation_id": 9,
-      "order": 7,
+      "order": 3,
       "stage": 0
     },
     {
@@ -233,13 +233,13 @@
     {
       "group_id": 1,
       "operation_id": 11,
-      "order": 8,
+      "order": 4,
       "stage": 0
     },
     {
       "group_id": 1,
       "operation_id": 12,
-      "order": 10,
+      "order": 6,
       "stage": 0
     },
     {
@@ -251,41 +251,41 @@
     {
       "group_id": 1,
       "operation_id": 14,
-      "order": 9,
+      "order": 5,
       "stage": 0
     },
     {
       "group_id": 1,
       "operation_id": 15,
-      "order": 4,
-      "stage": 2
+      "order": 7,
+      "stage": 0
     },
     {
       "group_id": 1,
       "operation_id": 16,
-      "order": 5,
-      "stage": 2
+      "order": 8,
+      "stage": 0
     },
     {
-      "group_id": 1,
+      "group_id": 0,
       "operation_id": 17,
-      "order": 3,
-      "stage": 1
+      "order": 0,
+      "stage": 0
     },
     {
       "group_id": 1,
       "operation_id": 18,
-      "order": 6,
-      "stage": 2
+      "order": 9,
+      "stage": 0
     },
     {
       "group_id": 1,
       "operation_id": 19,
-      "order": 1,
+      "order": 2,
       "stage": null
     },
     {
-      "group_id": 0,
+      "group_id": 1,
       "operation_id": 20,
       "order": 0,
       "stage": null
@@ -293,29 +293,29 @@
     {
       "group_id": 1,
       "operation_id": 21,
-      "order": 0,
+      "order": 1,
       "stage": null
     },
     {
       "group_id": 1,
       "operation_id": 22,
-      "order": 2,
-      "stage": null
-    },
-    {
-      "group_id": 1,
-      "operation_id": 23,
       "order": 3,
       "stage": null
     },
     {
       "group_id": 1,
-      "operation_id": 24,
+      "operation_id": 23,
       "order": 4,
+      "stage": null
+    },
+    {
+      "group_id": 1,
+      "operation_id": 24,
+      "order": 5,
       "stage": null
     }
   ],
-  "shared_arena_bytes": 64512,
+  "shared_arena_bytes": 59648,
   "sync_edges": [
     {
       "buffer_id": 6,

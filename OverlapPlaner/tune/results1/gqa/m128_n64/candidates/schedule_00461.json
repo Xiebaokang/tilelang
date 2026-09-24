@@ -46,7 +46,7 @@
       "buffer_id": 7,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 2
+      "version_count": 1
     },
     {
       "buffer_id": 8,
@@ -58,7 +58,7 @@
       "buffer_id": 9,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 2
+      "version_count": 3
     },
     {
       "buffer_id": 10,
@@ -70,7 +70,7 @@
       "buffer_id": 11,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 1
+      "version_count": 3
     },
     {
       "buffer_id": 12,
@@ -86,7 +86,7 @@
     },
     {
       "buffer_id": 14,
-      "byte_offset": 0,
+      "byte_offset": 98304,
       "communication": 2,
       "version_count": 1
     },
@@ -204,25 +204,25 @@
       "group_id": 1,
       "operation_id": 15,
       "order": 11,
-      "stage": 1
+      "stage": 0
     },
     {
       "group_id": 1,
       "operation_id": 16,
       "order": 12,
-      "stage": 1
+      "stage": 2
     },
     {
       "group_id": 0,
       "operation_id": 17,
       "order": 0,
-      "stage": 0
+      "stage": 1
     },
     {
       "group_id": 1,
       "operation_id": 18,
       "order": 13,
-      "stage": 1
+      "stage": 2
     },
     {
       "group_id": 1,
@@ -237,13 +237,13 @@
       "stage": null
     },
     {
-      "group_id": 1,
+      "group_id": 0,
       "operation_id": 21,
-      "order": 2,
+      "order": 0,
       "stage": null
     }
   ],
-  "shared_arena_bytes": 98304,
+  "shared_arena_bytes": 131072,
   "sync_edges": [
     {
       "buffer_id": 1,
@@ -280,6 +280,18 @@
       "producer_id": 17,
       "scope": 1,
       "slot_count": 3
+    },
+    {
+      "buffer_id": 14,
+      "byte_offset": null,
+      "completion_mode": 0,
+      "consumer_id": 21,
+      "dependency_kind": 1,
+      "iteration_distance": 0,
+      "kind": 0,
+      "producer_id": 20,
+      "scope": 0,
+      "slot_count": 1
     },
     {
       "buffer_id": 6,

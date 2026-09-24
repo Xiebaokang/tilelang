@@ -6,7 +6,13 @@ import tilelang
 import tilelang.language as T
 import torch
 
-from .workloads import OperatorSpec, Options, SearchWorkload, TileConfig
+from .workloads import (
+    OperatorSpec,
+    Options,
+    SearchWorkload,
+    TileConfig,
+    threads_from_tile_extent,
+)
 
 
 def add_arguments(parser) -> None:
@@ -311,6 +317,7 @@ def build(options: Options, config: TileConfig) -> SearchWorkload:
         config["block_n"],
         config["block_k"],
         config["block_dstate"],
+        threads=threads_from_tile_extent(config["block_m"]),
     )
     total_flops = (
         batch * seq_len * chunk_size * heads * dim

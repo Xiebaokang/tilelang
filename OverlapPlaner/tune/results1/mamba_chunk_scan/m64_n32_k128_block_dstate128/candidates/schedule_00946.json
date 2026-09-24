@@ -62,7 +62,7 @@
     },
     {
       "buffer_id": 10,
-      "byte_offset": 50176,
+      "byte_offset": 25600,
       "communication": 2,
       "version_count": 1
     },
@@ -74,7 +74,7 @@
     },
     {
       "buffer_id": 12,
-      "byte_offset": 67584,
+      "byte_offset": 51200,
       "communication": 2,
       "version_count": 1
     },
@@ -92,7 +92,7 @@
     },
     {
       "buffer_id": 15,
-      "byte_offset": 66560,
+      "byte_offset": 50176,
       "communication": 2,
       "version_count": 2
     },
@@ -110,9 +110,9 @@
     },
     {
       "buffer_id": 18,
-      "byte_offset": 25600,
+      "byte_offset": 41984,
       "communication": 2,
-      "version_count": 3
+      "version_count": 1
     },
     {
       "buffer_id": 19,
@@ -128,7 +128,7 @@
     },
     {
       "buffer_id": 21,
-      "byte_offset": 72704,
+      "byte_offset": 56320,
       "communication": 2,
       "version_count": 1
     },
@@ -140,7 +140,7 @@
     },
     {
       "buffer_id": 23,
-      "byte_offset": 68608,
+      "byte_offset": 52224,
       "communication": 2,
       "version_count": 1
     },
@@ -160,6 +160,11 @@
     {
       "register_count": 240,
       "register_increase": 1,
+      "warp_count": 4
+    },
+    {
+      "register_count": 24,
+      "register_increase": 0,
       "warp_count": 4
     }
   ],
@@ -270,7 +275,7 @@
       "group_id": 1,
       "operation_id": 17,
       "order": 3,
-      "stage": 0
+      "stage": 2
     },
     {
       "group_id": 1,
@@ -309,13 +314,13 @@
       "stage": null
     },
     {
-      "group_id": 0,
+      "group_id": 2,
       "operation_id": 24,
-      "order": 1,
+      "order": 0,
       "stage": null
     }
   ],
-  "shared_arena_bytes": 76800,
+  "shared_arena_bytes": 60416,
   "sync_edges": [
     {
       "buffer_id": 6,
@@ -387,7 +392,7 @@
       "kind": 0,
       "producer_id": 17,
       "scope": 1,
-      "slot_count": 3
+      "slot_count": 1
     },
     {
       "buffer_id": 21,
@@ -455,11 +460,11 @@
       "completion_mode": 0,
       "consumer_id": 17,
       "dependency_kind": 8,
-      "iteration_distance": 3,
+      "iteration_distance": 1,
       "kind": 1,
       "producer_id": 18,
       "scope": 1,
-      "slot_count": 3
+      "slot_count": 1
     }
   ]
 }

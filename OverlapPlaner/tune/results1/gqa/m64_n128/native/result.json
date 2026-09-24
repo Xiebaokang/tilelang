@@ -1,8 +1,8 @@
 {
   "backend": "native",
-  "latency_ms": 0.42774081230163574,
+  "latency_ms": 0.42396003007888794,
   "source_file": "native/source.cu",
-  "tflops": 321.313630870183,
+  "tflops": 324.17903510013946,
   "tile": {
     "block_m": 64,
     "block_n": 128

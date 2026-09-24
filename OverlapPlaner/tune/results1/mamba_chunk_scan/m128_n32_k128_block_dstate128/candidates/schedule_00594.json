@@ -70,7 +70,7 @@
       "buffer_id": 11,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 2
+      "version_count": 1
     },
     {
       "buffer_id": 12,
@@ -100,7 +100,7 @@
       "buffer_id": 16,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 2
+      "version_count": 1
     },
     {
       "buffer_id": 17,
@@ -159,11 +159,6 @@
     },
     {
       "register_count": 72,
-      "register_increase": 0,
-      "warp_count": 4
-    },
-    {
-      "register_count": 24,
       "register_increase": 0,
       "warp_count": 4
     }
@@ -263,25 +258,25 @@
       "group_id": 0,
       "operation_id": 15,
       "order": 9,
-      "stage": 1
+      "stage": 0
     },
     {
       "group_id": 0,
       "operation_id": 16,
       "order": 10,
-      "stage": 1
+      "stage": 0
     },
     {
       "group_id": 0,
       "operation_id": 17,
       "order": 3,
-      "stage": 1
+      "stage": 0
     },
     {
       "group_id": 0,
       "operation_id": 18,
       "order": 4,
-      "stage": 2
+      "stage": 1
     },
     {
       "group_id": 1,
@@ -314,9 +309,9 @@
       "stage": null
     },
     {
-      "group_id": 2,
+      "group_id": 1,
       "operation_id": 24,
-      "order": 0,
+      "order": 4,
       "stage": null
     }
   ],
@@ -415,18 +410,6 @@
       "iteration_distance": 0,
       "kind": 0,
       "producer_id": 20,
-      "scope": 0,
-      "slot_count": 1
-    },
-    {
-      "buffer_id": 23,
-      "byte_offset": null,
-      "completion_mode": 0,
-      "consumer_id": 24,
-      "dependency_kind": 1,
-      "iteration_distance": 0,
-      "kind": 0,
-      "producer_id": 23,
       "scope": 0,
       "slot_count": 1
     },

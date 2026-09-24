@@ -55,14 +55,13 @@ from OverlapPlaner.tune.dynamic import (
     plan_fingerprint,
     producer_copy_count,
     should_stop,
+    workload_plan_fingerprint,
 )
 from OverlapPlaner.tune.copy_search import classified_for_plan
 from OverlapPlaner.tune.operators import OPERATOR_NAMES, get_operator
-from OverlapPlaner.tune.operators.block_causal_bwd import OPERATOR as BLOCK_CAUSAL_BWD
 from OverlapPlaner.tune.operators.convolution import OPERATOR as CONVOLUTION
 from OverlapPlaner.tune.operators.dequant_gemm_fp4 import OPERATOR as DEQUANT_GEMM_FP4
 from OverlapPlaner.tune.operators.fa3 import OPERATOR as FA3
-from OverlapPlaner.tune.operators.flash_decode import OPERATOR as FLASH_DECODE
 from OverlapPlaner.tune.operators.fused_moe import OPERATOR as FUSED_MOE
 from OverlapPlaner.tune.operators.gemm import OPERATOR as GEMM
 from OverlapPlaner.tune.operators.gemm_fp8 import OPERATOR as GEMM_FP8
@@ -95,31 +94,29 @@ from OverlapPlaner.tune.search import (
 
 
 SEARCH_OPERATORS: list[OperatorSpec] = [
-    FA3,
-    MLA,
-    BLOCK_CAUSAL_BWD,
+    # FA3,
+    # MLA,
     DEQUANT_GEMM_FP4,
     GDN_CHUNK_O_BWD,
     GDN_CHUNK_DELTA_BWD,
     KDA_WY_FAST_BWD,
     KDA_CHUNK_BWD_INTRA,
-    FLASH_DECODE,
     FUSED_MOE,
     GQA_BWD,
     MHA_BWD,
     LINEAR_ATTN_FWD,
     MAMBA_CHUNK_SCAN,
     MAMBA_CHUNK_STATE,
-    GEMM,
-    GQA,
-    CONVOLUTION,
-    GEMM_FP8,
+    # GEMM,
+    # GQA,
+    # CONVOLUTION,
+    # GEMM_FP8,
 ]
 
 # Bump whenever generated-code semantics or correctness validation changes.
 # Results are measurements of a plan *and* its implementation, so a plan-only
 # fingerprint must not reuse rows produced by an older lowering.
-_EVALUATION_CACHE_VERSION = "overlap-plan-lowering-v4-production-workloads"
+_EVALUATION_CACHE_VERSION = "overlap-plan-lowering-v6-gdn-kda-contracts"
 
 
 def _workload_fingerprint(
@@ -138,11 +135,8 @@ def _workload_fingerprint(
 
 
 def _evaluation_fingerprint(path: Path, workload_fingerprint: str) -> str:
-    return plan_fingerprint(
-        {
-            "plan": file_fingerprint(path),
-            "workload": workload_fingerprint,
-        }
+    return workload_plan_fingerprint(
+        file_fingerprint(path), workload_fingerprint
     )
 
 
@@ -1220,7 +1214,8 @@ def _supervise_dynamic_config(
         batches = [
             [int(index) for index in batch]
             for batch in previous_state.get("batches", [])
-        ]
+        ][-evaluation_budget:]
+        best_history = best_history[-evaluation_budget:]
     else:
         best_history = []
         batches = []
@@ -1307,7 +1302,19 @@ def _supervise_dynamic_config(
             for row in payload["failures"]
             if int(row["schedule_index"]) in selected
         }
-        previous = best_history[-1] if best_history else math.inf
+        newly_completed = (
+            set(batch_successes) | batch_failures
+        ) - (set(measured_latency) | unavailable)
+        if not newly_completed:
+            raise RuntimeError(
+                "dynamic search made no progress: none of the selected "
+                f"candidates {selected} produced a current result or failure"
+            )
+        previous = (
+            best_history[-1]
+            if best_history
+            else min(measured_latency.values(), default=math.inf)
+        )
         best_history.append(min([previous, *batch_successes.values()]))
         _write_json(
             config_dir / "dynamic_state.json",
@@ -1329,6 +1336,27 @@ def _supervise_dynamic_config(
         ):
             stopped_early = True
             break
+
+    fingerprints = {item.index: item.fingerprint for item in candidates}
+    final_successes = _read_jsonl(config_dir / "results.jsonl")
+    final_failures = _read_jsonl(config_dir / "failures.jsonl")
+    final_completed = {
+        int(row["schedule_index"])
+        for row in (*final_successes, *final_failures)
+        if isinstance(row.get("schedule_index"), int)
+        and fingerprints.get(int(row["schedule_index"]))
+        == row.get("candidate_fingerprint")
+    }
+    _write_json(
+        config_dir / "dynamic_state.json",
+        {
+            "evaluation_budget": evaluation_budget,
+            "candidate_pool_fingerprint": pool_fingerprint,
+            "attempted": len(final_completed),
+            "batches": batches,
+            "best_latency_history_ms": best_history,
+        },
+    )
 
     payload = _supervise_config(
         operator,
@@ -1604,8 +1632,8 @@ def main() -> None:
     )
     parser.add_argument("--candidate-pool", type=int, default=4096)
     parser.add_argument("--stage-beam", type=int, default=256)
-    parser.add_argument("--evaluation-budget", type=int, default=128)
-    parser.add_argument("--initial-samples", type=int, default=32)
+    parser.add_argument("--evaluation-budget", type=int, default=48)
+    parser.add_argument("--initial-samples", type=int, default=16)
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--patience", type=int, default=3)
     parser.add_argument("--minimum-improvement", type=float, default=0.01)

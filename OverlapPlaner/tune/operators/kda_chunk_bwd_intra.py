@@ -3,7 +3,7 @@
 import tilelang
 
 from .example_loader import NativeKernelReference, load_example_factory, mark_for_overlap
-from .workloads import OperatorSpec, SearchWorkload
+from .workloads import OperatorSpec, SearchWorkload, threads_from_tile_extent
 
 
 def add_arguments(parser):
@@ -27,8 +27,9 @@ def build(options, config):
     b, s, h = options["kda_intra_batch"], options["kda_intra_seq"], options["kda_intra_heads"]
     dk, chunk = options["kda_intra_dk"], options["kda_intra_chunk"]
     native = factory(
-        b, s, h, dk, "float16", "float32", "float32", "float32", "float32", chunk,
-        config["block_dk"], block_BC=16, threads=128, num_stages=0,
+        b, s, h, dk, "float16", "float16", "float32", "float32", "float32", chunk,
+        config["block_dk"], block_BC=16,
+        threads=threads_from_tile_extent(config["block_dk"]), num_stages=0,
     )
     passes = {tilelang.PassConfigKey.TL_ENABLE_FAST_MATH: True}
     outputs = (10, 11, 12, 13)

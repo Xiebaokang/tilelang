@@ -28,7 +28,7 @@
       "buffer_id": 4,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 1
+      "version_count": 2
     },
     {
       "buffer_id": 5,
@@ -150,26 +150,26 @@
     {
       "group_id": 0,
       "operation_id": 7,
-      "order": 6,
+      "order": 3,
       "stage": 0
     },
     {
       "group_id": 0,
       "operation_id": 8,
-      "order": 3,
-      "stage": 1
+      "order": 4,
+      "stage": 0
     },
     {
       "group_id": 0,
       "operation_id": 9,
-      "order": 4,
-      "stage": 1
+      "order": 5,
+      "stage": 0
     },
     {
       "group_id": 0,
       "operation_id": 10,
-      "order": 5,
-      "stage": 1
+      "order": 6,
+      "stage": 0
     },
     {
       "group_id": 0,

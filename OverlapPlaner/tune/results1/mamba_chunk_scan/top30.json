@@ -9,77 +9,189 @@
           2,
           5,
           4,
-          1024,
-          502,
-          500,
+          2048,
+          520,
+          518,
           7,
           6,
-          1025,
+          2049,
           9,
           8,
-          1086,
-          11
-        ],
-        [
-          2048,
-          2049,
+          2110,
+          11,
+          10,
+          13,
+          12,
+          15,
+          14,
+          17,
+          16,
+          19,
+          18,
           21,
-          20
+          20,
+          2802,
+          521,
+          519,
+          23,
+          22
         ],
         [
-          2050,
-          2051,
+          3556,
+          3557,
           37,
           36
         ],
         [
-          2052,
-          2053,
+          3558,
+          3559,
           53,
           52
         ],
         [
-          2054,
-          2055,
+          3560,
+          3561,
           69,
           68
         ],
         [
-          2056,
-          2057,
+          3562,
+          3563,
           85,
           84
         ],
         [
-          2058,
-          2059,
+          3564,
+          3565,
           101,
           100
         ],
         [
-          2060,
-          2061,
+          3566,
+          3567,
           117,
           116
         ],
         [
-          2062,
-          2063,
+          3568,
+          3569,
           133,
           132
+        ],
+        [
+          3570,
+          3571,
+          27,
+          26
+        ],
+        [
+          3572,
+          3573,
+          43,
+          42
+        ],
+        [
+          3574,
+          3575,
+          59,
+          58
+        ],
+        [
+          3576,
+          3577,
+          75,
+          74
+        ],
+        [
+          3578,
+          3579,
+          91,
+          90
+        ],
+        [
+          3580,
+          3581,
+          107,
+          106
+        ],
+        [
+          3582,
+          3583,
+          123,
+          122
+        ],
+        [
+          3584,
+          3585,
+          139,
+          138
+        ],
+        [
+          3586,
+          3587,
+          155,
+          154
+        ],
+        [
+          3588,
+          3589,
+          171,
+          170
+        ],
+        [
+          3590,
+          3591,
+          187,
+          186
+        ],
+        [
+          3592,
+          3593,
+          203,
+          202
+        ],
+        [
+          3594,
+          3595,
+          219,
+          218
+        ],
+        [
+          3596,
+          3597,
+          237,
+          236
+        ],
+        [
+          3598,
+          3599,
+          255,
+          254
+        ],
+        [
+          3600,
+          3601,
+          273,
+          272
+        ],
+        [
+          3602,
+          3603,
+          291,
+          290
         ]
       ],
-      "candidate_pool": 2064,
-      "enumerated_schedules": 2064,
-      "evaluation_budget": 48,
-      "examined_schedules": 48,
-      "failed_schedules": 17,
+      "candidate_pool": 3604,
+      "enumerated_schedules": 3604,
+      "evaluation_budget": 128,
+      "examined_schedules": 128,
+      "failed_schedules": 57,
       "native": {
         "backend": "native",
-        "latency_ms": 1.2289056777954102,
+        "latency_ms": 1.2386287450790405,
         "result_file": "m64_n32_k64_block_dstate128/native/result.json",
         "source_file": "m64_n32_k64_block_dstate128/native/source.cu",
-        "tflops": 69.89905529128872,
+        "tflops": 69.35035720854235,
         "tile": {
           "block_dstate": 128,
           "block_k": 64,
@@ -90,7 +202,7 @@
       "native_failure": null,
       "search_policy": "dynamic",
       "stopped_early": false,
-      "successful_schedules": 31,
+      "successful_schedules": 71,
       "tile": {
         "block_dstate": 128,
         "block_k": 64,
@@ -107,77 +219,189 @@
           2,
           5,
           4,
-          1024,
-          502,
-          500,
+          2048,
+          520,
+          518,
           7,
           6,
-          1025,
+          2049,
           9,
           8,
-          1086,
-          11
-        ],
-        [
-          2048,
-          2049,
+          2110,
+          11,
+          10,
+          13,
+          12,
+          15,
+          14,
+          17,
+          16,
+          19,
+          18,
           21,
-          20
+          20,
+          2802,
+          521,
+          519,
+          23,
+          22
         ],
         [
-          2050,
-          2051,
+          3556,
+          3557,
           37,
           36
         ],
         [
-          2052,
-          2053,
+          3558,
+          3559,
           53,
           52
         ],
         [
-          2054,
-          2055,
+          3560,
+          3561,
           69,
           68
         ],
         [
-          2056,
-          2057,
+          3562,
+          3563,
           85,
           84
         ],
         [
-          2058,
-          2059,
+          3564,
+          3565,
           101,
           100
         ],
         [
-          2060,
-          2061,
+          3566,
+          3567,
           117,
           116
         ],
         [
-          2062,
-          2063,
+          3568,
+          3569,
           133,
           132
+        ],
+        [
+          3570,
+          3571,
+          27,
+          26
+        ],
+        [
+          3572,
+          3573,
+          43,
+          42
+        ],
+        [
+          3574,
+          3575,
+          59,
+          58
+        ],
+        [
+          3576,
+          3577,
+          75,
+          74
+        ],
+        [
+          3578,
+          3579,
+          91,
+          90
+        ],
+        [
+          3580,
+          3581,
+          107,
+          106
+        ],
+        [
+          3582,
+          3583,
+          123,
+          122
+        ],
+        [
+          3584,
+          3585,
+          139,
+          138
+        ],
+        [
+          3586,
+          3587,
+          155,
+          154
+        ],
+        [
+          3588,
+          3589,
+          171,
+          170
+        ],
+        [
+          3590,
+          3591,
+          187,
+          186
+        ],
+        [
+          3592,
+          3593,
+          203,
+          202
+        ],
+        [
+          3594,
+          3595,
+          219,
+          218
+        ],
+        [
+          3596,
+          3597,
+          237,
+          236
+        ],
+        [
+          3598,
+          3599,
+          255,
+          254
+        ],
+        [
+          3600,
+          3601,
+          273,
+          272
+        ],
+        [
+          3602,
+          3603,
+          291,
+          290
         ]
       ],
-      "candidate_pool": 2064,
-      "enumerated_schedules": 2064,
-      "evaluation_budget": 48,
-      "examined_schedules": 48,
-      "failed_schedules": 17,
+      "candidate_pool": 3604,
+      "enumerated_schedules": 3604,
+      "evaluation_budget": 128,
+      "examined_schedules": 128,
+      "failed_schedules": 56,
       "native": {
         "backend": "native",
-        "latency_ms": 1.5570528507232666,
+        "latency_ms": 1.553473711013794,
         "result_file": "m64_n32_k128_block_dstate128/native/result.json",
         "source_file": "m64_n32_k128_block_dstate128/native/source.cu",
-        "tflops": 55.16790639450607,
+        "tflops": 55.29501098795052,
         "tile": {
           "block_dstate": 128,
           "block_k": 128,
@@ -188,7 +412,7 @@
       "native_failure": null,
       "search_policy": "dynamic",
       "stopped_early": false,
-      "successful_schedules": 31,
+      "successful_schedules": 72,
       "tile": {
         "block_dstate": 128,
         "block_k": 128,
@@ -205,77 +429,189 @@
           2,
           5,
           4,
-          1024,
-          502,
-          500,
+          2048,
+          520,
+          518,
           7,
           6,
-          1025,
+          2049,
           9,
           8,
-          1086,
-          11
-        ],
-        [
-          2048,
-          2049,
+          2110,
+          11,
+          10,
+          13,
+          12,
+          15,
+          14,
+          17,
+          16,
+          19,
+          18,
           21,
-          20
+          20,
+          2802,
+          521,
+          519,
+          23,
+          22
         ],
         [
-          2050,
-          2051,
+          3556,
+          3557,
           37,
           36
         ],
         [
-          2052,
-          2053,
+          3558,
+          3559,
           53,
           52
         ],
         [
-          2054,
-          2055,
+          3560,
+          3561,
           69,
           68
         ],
         [
-          2056,
-          2057,
+          3562,
+          3563,
           85,
           84
         ],
         [
-          2058,
-          2059,
+          3564,
+          3565,
           101,
           100
         ],
         [
-          2060,
-          2061,
+          3566,
+          3567,
           117,
           116
         ],
         [
-          2062,
-          2063,
+          3568,
+          3569,
           133,
           132
+        ],
+        [
+          3570,
+          3571,
+          27,
+          26
+        ],
+        [
+          3572,
+          3573,
+          43,
+          42
+        ],
+        [
+          3574,
+          3575,
+          59,
+          58
+        ],
+        [
+          3576,
+          3577,
+          75,
+          74
+        ],
+        [
+          3578,
+          3579,
+          91,
+          90
+        ],
+        [
+          3580,
+          3581,
+          107,
+          106
+        ],
+        [
+          3582,
+          3583,
+          123,
+          122
+        ],
+        [
+          3584,
+          3585,
+          139,
+          138
+        ],
+        [
+          3586,
+          3587,
+          155,
+          154
+        ],
+        [
+          3588,
+          3589,
+          171,
+          170
+        ],
+        [
+          3590,
+          3591,
+          187,
+          186
+        ],
+        [
+          3592,
+          3593,
+          203,
+          202
+        ],
+        [
+          3594,
+          3595,
+          219,
+          218
+        ],
+        [
+          3596,
+          3597,
+          237,
+          236
+        ],
+        [
+          3598,
+          3599,
+          255,
+          254
+        ],
+        [
+          3600,
+          3601,
+          273,
+          272
+        ],
+        [
+          3602,
+          3603,
+          291,
+          290
         ]
       ],
-      "candidate_pool": 2064,
-      "enumerated_schedules": 2064,
-      "evaluation_budget": 48,
-      "examined_schedules": 48,
-      "failed_schedules": 17,
+      "candidate_pool": 3604,
+      "enumerated_schedules": 3604,
+      "evaluation_budget": 128,
+      "examined_schedules": 128,
+      "failed_schedules": 58,
       "native": {
         "backend": "native",
-        "latency_ms": 0.9212320446968079,
+        "latency_ms": 0.9210400581359863,
         "result_file": "m64_n64_k64_block_dstate128/native/result.json",
         "source_file": "m64_n64_k64_block_dstate128/native/source.cu",
-        "tflops": 93.24398387408554,
+        "tflops": 93.2634201533474,
         "tile": {
           "block_dstate": 128,
           "block_k": 64,
@@ -286,7 +622,7 @@
       "native_failure": null,
       "search_policy": "dynamic",
       "stopped_early": false,
-      "successful_schedules": 31,
+      "successful_schedules": 70,
       "tile": {
         "block_dstate": 128,
         "block_k": 64,
@@ -303,77 +639,189 @@
           2,
           5,
           4,
-          1024,
-          502,
-          500,
+          2048,
+          520,
+          518,
           7,
           6,
-          1025,
+          2049,
           9,
           8,
-          1086,
-          11
-        ],
-        [
-          2048,
-          2049,
+          2110,
+          11,
+          10,
+          13,
+          12,
+          15,
+          14,
+          17,
+          16,
+          19,
+          18,
           21,
-          20
+          20,
+          2802,
+          521,
+          519,
+          23,
+          22
         ],
         [
-          2050,
-          2051,
+          3556,
+          3557,
           37,
           36
         ],
         [
-          2052,
-          2053,
+          3558,
+          3559,
           53,
           52
         ],
         [
-          2054,
-          2055,
+          3560,
+          3561,
           69,
           68
         ],
         [
-          2056,
-          2057,
+          3562,
+          3563,
           85,
           84
         ],
         [
-          2058,
-          2059,
+          3564,
+          3565,
           101,
           100
         ],
         [
-          2060,
-          2061,
+          3566,
+          3567,
           117,
           116
         ],
         [
-          2062,
-          2063,
+          3568,
+          3569,
           133,
           132
+        ],
+        [
+          3570,
+          3571,
+          27,
+          26
+        ],
+        [
+          3572,
+          3573,
+          43,
+          42
+        ],
+        [
+          3574,
+          3575,
+          59,
+          58
+        ],
+        [
+          3576,
+          3577,
+          75,
+          74
+        ],
+        [
+          3578,
+          3579,
+          91,
+          90
+        ],
+        [
+          3580,
+          3581,
+          107,
+          106
+        ],
+        [
+          3582,
+          3583,
+          123,
+          122
+        ],
+        [
+          3584,
+          3585,
+          139,
+          138
+        ],
+        [
+          3586,
+          3587,
+          155,
+          154
+        ],
+        [
+          3588,
+          3589,
+          171,
+          170
+        ],
+        [
+          3590,
+          3591,
+          187,
+          186
+        ],
+        [
+          3592,
+          3593,
+          203,
+          202
+        ],
+        [
+          3594,
+          3595,
+          219,
+          218
+        ],
+        [
+          3596,
+          3597,
+          237,
+          236
+        ],
+        [
+          3598,
+          3599,
+          255,
+          254
+        ],
+        [
+          3600,
+          3601,
+          273,
+          272
+        ],
+        [
+          3602,
+          3603,
+          291,
+          290
         ]
       ],
-      "candidate_pool": 2064,
-      "enumerated_schedules": 2064,
-      "evaluation_budget": 48,
-      "examined_schedules": 48,
-      "failed_schedules": 17,
+      "candidate_pool": 3604,
+      "enumerated_schedules": 3604,
+      "evaluation_budget": 128,
+      "examined_schedules": 128,
+      "failed_schedules": 57,
       "native": {
         "backend": "native",
-        "latency_ms": 0.9743136167526245,
+        "latency_ms": 0.9729599952697754,
         "result_file": "m64_n64_k128_block_dstate128/native/result.json",
         "source_file": "m64_n64_k128_block_dstate128/native/source.cu",
-        "tflops": 88.16395916368437,
+        "tflops": 88.28661644632413,
         "tile": {
           "block_dstate": 128,
           "block_k": 128,
@@ -384,7 +832,7 @@
       "native_failure": null,
       "search_policy": "dynamic",
       "stopped_early": false,
-      "successful_schedules": 31,
+      "successful_schedules": 71,
       "tile": {
         "block_dstate": 128,
         "block_k": 128,
@@ -401,53 +849,63 @@
           2,
           5,
           4,
-          1024,
-          502,
-          500,
+          2048,
+          520,
+          518,
           7,
           6,
-          1025,
+          2049,
           9,
           8,
-          1086,
-          11
-        ],
-        [
-          2048,
-          2049,
+          2110,
+          11,
           10,
-          13
-        ],
-        [
-          2050,
-          2051,
+          13,
           12,
-          15
-        ],
-        [
-          2052,
-          2053,
+          15,
           14,
-          17
+          17,
+          16,
+          19,
+          18,
+          21,
+          20,
+          2802,
+          521,
+          519,
+          23,
+          22
         ],
         [
-          2054,
-          2055,
-          16,
-          32
+          3556,
+          3557,
+          1975,
+          1995
+        ],
+        [
+          3558,
+          3559,
+          3073,
+          2950
+        ],
+        [
+          3560,
+          3561,
+          426,
+          462
         ]
       ],
-      "candidate_pool": 2056,
-      "enumerated_schedules": 2056,
-      "evaluation_budget": 48,
-      "examined_schedules": 32,
+      "candidate_pool": 3562,
+      "enumerated_schedules": 3562,
+      "evaluation_budget": 128,
+      "examined_schedules": 44,
       "failed_schedules": 0,
       "native": {
         "backend": "native",
-        "latency_ms": 1.2723184823989868,
+        "latency_ms": 1.2723904848098755,
         "result_file": "m128_n32_k64_block_dstate128/native/result.json",
         "source_file": "m128_n32_k64_block_dstate128/native/source.cu",
-        "tflops": 67.51402821566715,
+        "tflops": 67.51020771177438,
         "tile": {
           "block_dstate": 128,
           "block_k": 64,
@@ -458,7 +916,7 @@
       "native_failure": null,
       "search_policy": "dynamic",
       "stopped_early": true,
-      "successful_schedules": 32,
+      "successful_schedules": 44,
       "tile": {
         "block_dstate": 128,
         "block_k": 64,
@@ -475,77 +933,189 @@
           2,
           5,
           4,
-          1024,
-          472,
-          470,
+          2048,
+          490,
+          488,
           7,
           6,
-          1025,
+          2049,
           9,
           8,
-          1086,
-          11
-        ],
-        [
-          2048,
-          2049,
+          2110,
+          11,
+          10,
+          13,
+          12,
+          15,
+          14,
+          16,
+          18,
+          17,
           20,
-          19
+          19,
+          2802,
+          491,
+          489,
+          22,
+          21,
+          2050
         ],
         [
-          2050,
-          2051,
+          3556,
+          3557,
           35,
           34
         ],
         [
-          2052,
-          2053,
+          3558,
+          3559,
           50,
           49
         ],
         [
-          2054,
-          2055,
+          3560,
+          3561,
           65,
           64
         ],
         [
-          2056,
-          2057,
+          3562,
+          3563,
           80,
           79
         ],
         [
-          2058,
-          2059,
+          3564,
+          3565,
           95,
           94
         ],
         [
-          2060,
-          2061,
+          3566,
+          3567,
           110,
           109
         ],
         [
-          2062,
-          2063,
+          3568,
+          3569,
           125,
           124
+        ],
+        [
+          3570,
+          3571,
+          26,
+          25
+        ],
+        [
+          3572,
+          3573,
+          41,
+          40
+        ],
+        [
+          3574,
+          3575,
+          56,
+          55
+        ],
+        [
+          3576,
+          3577,
+          71,
+          70
+        ],
+        [
+          3578,
+          3579,
+          86,
+          85
+        ],
+        [
+          3580,
+          3581,
+          101,
+          100
+        ],
+        [
+          3582,
+          3583,
+          116,
+          115
+        ],
+        [
+          3584,
+          3585,
+          131,
+          130
+        ],
+        [
+          3586,
+          3587,
+          146,
+          145
+        ],
+        [
+          3588,
+          3589,
+          161,
+          160
+        ],
+        [
+          3590,
+          3591,
+          176,
+          175
+        ],
+        [
+          3592,
+          3593,
+          191,
+          190
+        ],
+        [
+          3594,
+          3595,
+          206,
+          205
+        ],
+        [
+          3596,
+          3597,
+          223,
+          222
+        ],
+        [
+          3598,
+          3599,
+          240,
+          239
+        ],
+        [
+          3600,
+          3601,
+          257,
+          256
+        ],
+        [
+          3602,
+          3603,
+          274,
+          273
         ]
       ],
-      "candidate_pool": 2064,
-      "enumerated_schedules": 2064,
-      "evaluation_budget": 48,
-      "examined_schedules": 48,
-      "failed_schedules": 17,
+      "candidate_pool": 3604,
+      "enumerated_schedules": 3604,
+      "evaluation_budget": 128,
+      "examined_schedules": 128,
+      "failed_schedules": 57,
       "native": {
         "backend": "native",
-        "latency_ms": 2.0943679809570312,
+        "latency_ms": 2.089926242828369,
         "result_file": "m128_n32_k128_block_dstate128/native/result.json",
         "source_file": "m128_n32_k128_block_dstate128/native/source.cu",
-        "tflops": 41.01444765248364,
+        "tflops": 41.10161600906521,
         "tile": {
           "block_dstate": 128,
           "block_k": 128,
@@ -556,7 +1126,7 @@
       "native_failure": null,
       "search_policy": "dynamic",
       "stopped_early": false,
-      "successful_schedules": 31,
+      "successful_schedules": 71,
       "tile": {
         "block_dstate": 128,
         "block_k": 128,
@@ -573,53 +1143,81 @@
           2,
           5,
           4,
-          1024,
-          502,
-          500,
+          2048,
+          520,
+          518,
           7,
           6,
-          1025,
+          2049,
           9,
           8,
-          1086,
-          11
-        ],
-        [
-          2048,
-          2049,
+          2110,
+          11,
           10,
-          13
-        ],
-        [
-          2050,
-          2051,
+          13,
           12,
-          15
-        ],
-        [
-          2052,
-          2053,
+          15,
           14,
-          17
+          17,
+          16,
+          19,
+          18,
+          21,
+          20,
+          2802,
+          521,
+          519,
+          23,
+          22
         ],
         [
-          2054,
-          2055,
+          3556,
+          3557,
           30,
-          16
+          46
+        ],
+        [
+          3558,
+          3559,
+          3433,
+          3187
+        ],
+        [
+          3560,
+          3561,
+          586,
+          550
+        ],
+        [
+          3562,
+          3563,
+          483,
+          501
+        ],
+        [
+          3564,
+          3565,
+          786,
+          806
+        ],
+        [
+          3566,
+          3567,
+          879,
+          915
         ]
       ],
-      "candidate_pool": 2056,
-      "enumerated_schedules": 2056,
-      "evaluation_budget": 48,
-      "examined_schedules": 32,
-      "failed_schedules": 1,
+      "candidate_pool": 3568,
+      "enumerated_schedules": 3568,
+      "evaluation_budget": 128,
+      "examined_schedules": 56,
+      "failed_schedules": 3,
       "native": {
         "backend": "native",
-        "latency_ms": 1.121819257736206,
+        "latency_ms": 1.1217920780181885,
         "result_file": "m128_n64_k64_block_dstate128/native/result.json",
         "source_file": "m128_n64_k64_block_dstate128/native/source.cu",
-        "tflops": 76.57146668469753,
+        "tflops": 76.57332192232441,
         "tile": {
           "block_dstate": 128,
           "block_k": 64,
@@ -630,7 +1228,7 @@
       "native_failure": null,
       "search_policy": "dynamic",
       "stopped_early": true,
-      "successful_schedules": 31,
+      "successful_schedules": 53,
       "tile": {
         "block_dstate": 128,
         "block_k": 64,
@@ -646,78 +1244,190 @@
           3,
           2,
           4,
-          1024,
-          320,
-          318,
+          1439,
+          1435,
+          329,
+          327,
           6,
           5,
-          1025,
+          2049,
           8,
           7,
-          1086,
+          2110,
           9,
-          11
+          1350,
+          1348,
+          11,
+          10,
+          12,
+          14,
+          13,
+          15,
+          1440,
+          1436,
+          330,
+          328,
+          17,
+          16,
+          2050,
+          19
         ],
         [
-          2048,
-          2049,
-          15,
+          3556,
+          3557,
+          26,
           20
         ],
         [
-          2050,
-          2051,
-          26,
+          3558,
+          3559,
+          37,
           31
         ],
         [
-          2052,
-          2053,
-          37,
+          3560,
+          3561,
+          48,
           42
         ],
         [
-          2054,
-          2055,
-          48,
+          3562,
+          3563,
+          59,
           53
         ],
         [
-          2056,
-          2057,
-          59,
+          3564,
+          3565,
+          70,
           64
         ],
         [
-          2058,
-          2059,
-          70,
+          3566,
+          3567,
+          81,
           75
         ],
         [
-          2060,
-          2061,
-          81,
+          3568,
+          3569,
+          92,
           86
         ],
         [
-          2062,
-          2063,
-          92,
-          97
+          3570,
+          3571,
+          97,
+          108
+        ],
+        [
+          3572,
+          3573,
+          119,
+          130
+        ],
+        [
+          3574,
+          3575,
+          141,
+          152
+        ],
+        [
+          3576,
+          3577,
+          163,
+          174
+        ],
+        [
+          3578,
+          3579,
+          183,
+          192
+        ],
+        [
+          3580,
+          3581,
+          201,
+          210
+        ],
+        [
+          3582,
+          3583,
+          219,
+          228
+        ],
+        [
+          3584,
+          3585,
+          239,
+          250
+        ],
+        [
+          3586,
+          3587,
+          261,
+          272
+        ],
+        [
+          3588,
+          3589,
+          283,
+          294
+        ],
+        [
+          3590,
+          3591,
+          307,
+          320
+        ],
+        [
+          3592,
+          3593,
+          333,
+          346
+        ],
+        [
+          3594,
+          3595,
+          359,
+          372
+        ],
+        [
+          3596,
+          3597,
+          385,
+          398
+        ],
+        [
+          3598,
+          3599,
+          411,
+          422
+        ],
+        [
+          3600,
+          3601,
+          433,
+          444
+        ],
+        [
+          3602,
+          3603,
+          455,
+          466
         ]
       ],
-      "candidate_pool": 2064,
-      "enumerated_schedules": 2064,
-      "evaluation_budget": 48,
-      "examined_schedules": 48,
-      "failed_schedules": 17,
+      "candidate_pool": 3604,
+      "enumerated_schedules": 3604,
+      "evaluation_budget": 128,
+      "examined_schedules": 128,
+      "failed_schedules": 50,
       "native": {
         "backend": "native",
-        "latency_ms": 1.235307216644287,
+        "latency_ms": 1.2349008321762085,
         "result_file": "m128_n64_k128_block_dstate128/native/result.json",
         "source_file": "m128_n64_k128_block_dstate128/native/source.cu",
-        "tflops": 69.53682837970106,
+        "tflops": 69.55971174513144,
         "tile": {
           "block_dstate": 128,
           "block_k": 128,
@@ -728,7 +1438,7 @@
       "native_failure": null,
       "search_policy": "dynamic",
       "stopped_early": false,
-      "successful_schedules": 31,
+      "successful_schedules": 78,
       "tile": {
         "block_dstate": 128,
         "block_k": 128,
@@ -741,14 +1451,14 @@
   "operator": "mamba_chunk_scan",
   "top_results": [
     {
-      "latency_ms": 0.7321504354476929,
-      "native_latency_ms": 0.9212320446968079,
+      "latency_ms": 0.732702374458313,
+      "native_latency_ms": 0.9210400581359863,
       "rank": 1,
-      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_02052.json",
-      "schedule_index": 2052,
-      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_02052.cu",
-      "speedup_vs_native": 1.2582551345933382,
-      "tflops": 117.32472147950655,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03583.json",
+      "schedule_index": 3583,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03583.cu",
+      "speedup_vs_native": 1.257045275466606,
+      "tflops": 117.23634167762238,
       "tile": {
         "block_dstate": 128,
         "block_k": 64,
@@ -757,14 +1467,14 @@
       }
     },
     {
-      "latency_ms": 0.7325199842453003,
-      "native_latency_ms": 0.9212320446968079,
+      "latency_ms": 0.7327839732170105,
+      "native_latency_ms": 0.9210400581359863,
       "rank": 2,
-      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_02055.json",
-      "schedule_index": 2055,
-      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_02055.cu",
-      "speedup_vs_native": 1.2576203578199079,
-      "tflops": 117.26553236428119,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03578.json",
+      "schedule_index": 3578,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03578.cu",
+      "speedup_vs_native": 1.2569052978772295,
+      "tflops": 117.22328688889232,
       "tile": {
         "block_dstate": 128,
         "block_k": 64,
@@ -773,14 +1483,14 @@
       }
     },
     {
-      "latency_ms": 0.7327119708061218,
-      "native_latency_ms": 0.9212320446968079,
+      "latency_ms": 0.7330590486526489,
+      "native_latency_ms": 0.9210400581359863,
       "rank": 3,
-      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_02050.json",
-      "schedule_index": 2050,
-      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_02050.cu",
-      "speedup_vs_native": 1.2572908337818998,
-      "tflops": 117.23480623019503,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03588.json",
+      "schedule_index": 3588,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03588.cu",
+      "speedup_vs_native": 1.2564336526898394,
+      "tflops": 117.17929964561743,
       "tile": {
         "block_dstate": 128,
         "block_k": 64,
@@ -789,14 +1499,14 @@
       }
     },
     {
-      "latency_ms": 0.7336576581001282,
-      "native_latency_ms": 0.9212320446968079,
+      "latency_ms": 0.733092725276947,
+      "native_latency_ms": 0.9210400581359863,
       "rank": 4,
-      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_02060.json",
-      "schedule_index": 2060,
-      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_02060.cu",
-      "speedup_vs_native": 1.2556701814882165,
-      "tflops": 117.08369015385733,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03573.json",
+      "schedule_index": 3573,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03573.cu",
+      "speedup_vs_native": 1.2563759349651666,
+      "tflops": 117.17391669321098,
       "tile": {
         "block_dstate": 128,
         "block_k": 64,
@@ -805,14 +1515,14 @@
       }
     },
     {
-      "latency_ms": 0.7360864281654358,
-      "native_latency_ms": 0.9212320446968079,
+      "latency_ms": 0.7332752346992493,
+      "native_latency_ms": 0.9210400581359863,
       "rank": 5,
-      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_02058.json",
-      "schedule_index": 2058,
-      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_02058.cu",
-      "speedup_vs_native": 1.251527007491246,
-      "tflops": 116.69736410449629,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03603.json",
+      "schedule_index": 3603,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03603.cu",
+      "speedup_vs_native": 1.2560632277643309,
+      "tflops": 117.1447525501545,
       "tile": {
         "block_dstate": 128,
         "block_k": 64,
@@ -821,14 +1531,110 @@
       }
     },
     {
-      "latency_ms": 0.7382960319519043,
-      "native_latency_ms": 0.9212320446968079,
+      "latency_ms": 0.7335295677185059,
+      "native_latency_ms": 0.9210400581359863,
       "rank": 6,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03584.json",
+      "schedule_index": 3584,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03584.cu",
+      "speedup_vs_native": 1.2556277192761207,
+      "tflops": 117.1041355390382,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.7335407733917236,
+      "native_latency_ms": 0.9210400581359863,
+      "rank": 7,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03565.json",
+      "schedule_index": 3565,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03565.cu",
+      "speedup_vs_native": 1.2556085381284385,
+      "tflops": 117.10234663960289,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.7335919737815857,
+      "native_latency_ms": 0.9210400581359863,
+      "rank": 8,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03580.json",
+      "schedule_index": 3580,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03580.cu",
+      "speedup_vs_native": 1.2555209040635034,
+      "tflops": 117.09417358698508,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.7340416312217712,
+      "native_latency_ms": 0.9210400581359863,
+      "rank": 9,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03598.json",
+      "schedule_index": 3598,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03598.cu",
+      "speedup_vs_native": 1.254751800116523,
+      "tflops": 117.02244432243624,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.7344687581062317,
+      "native_latency_ms": 0.9210400581359863,
+      "rank": 10,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03575.json",
+      "schedule_index": 3575,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03575.cu",
+      "speedup_vs_native": 1.2540221050529279,
+      "tflops": 116.95439046513636,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.7349727749824524,
+      "native_latency_ms": 0.9210400581359863,
+      "rank": 11,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03558.json",
+      "schedule_index": 3558,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03558.cu",
+      "speedup_vs_native": 1.2531621435337879,
+      "tflops": 116.8741875126611,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.7360016107559204,
+      "native_latency_ms": 0.9210400581359863,
+      "rank": 12,
       "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_00000.json",
       "schedule_index": 0,
       "source_file": "m64_n64_k64_block_dstate128/sources/schedule_00000.cu",
-      "speedup_vs_native": 1.2477813841979593,
-      "tflops": 116.34810726653865,
+      "speedup_vs_native": 1.2514103837218775,
+      "tflops": 116.71081240131517,
       "tile": {
         "block_dstate": 128,
         "block_k": 64,
@@ -837,14 +1643,14 @@
       }
     },
     {
-      "latency_ms": 0.7962096333503723,
-      "native_latency_ms": 0.9212320446968079,
-      "rank": 7,
-      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_02063.json",
-      "schedule_index": 2063,
-      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_02063.cu",
-      "speedup_vs_native": 1.1570219777677815,
-      "tflops": 107.88533863694157,
+      "latency_ms": 0.7948943972587585,
+      "native_latency_ms": 0.9210400581359863,
+      "rank": 13,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03568.json",
+      "schedule_index": 3568,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03568.cu",
+      "speedup_vs_native": 1.158694867283313,
+      "tflops": 108.06384623697072,
       "tile": {
         "block_dstate": 128,
         "block_k": 64,
@@ -853,14 +1659,110 @@
       }
     },
     {
-      "latency_ms": 0.8325727581977844,
-      "native_latency_ms": 0.9212320446968079,
-      "rank": 8,
+      "latency_ms": 0.7951183915138245,
+      "native_latency_ms": 0.9210400581359863,
+      "rank": 14,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_00018.json",
+      "schedule_index": 18,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_00018.cu",
+      "speedup_vs_native": 1.1583684492348616,
+      "tflops": 108.03340337337235,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.7951391935348511,
+      "native_latency_ms": 0.9210400581359863,
+      "rank": 15,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03593.json",
+      "schedule_index": 3593,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03593.cu",
+      "speedup_vs_native": 1.1583381445975935,
+      "tflops": 108.03057705925424,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.7954512238502502,
+      "native_latency_ms": 0.9210400581359863,
+      "rank": 16,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03570.json",
+      "schedule_index": 3570,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03570.cu",
+      "speedup_vs_native": 1.1578837652393619,
+      "tflops": 107.98820008625847,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.8242415189743042,
+      "native_latency_ms": 1.1217920780181885,
+      "rank": 17,
+      "schedule_file": "m128_n64_k64_block_dstate128/candidates/schedule_03563.json",
+      "schedule_index": 3563,
+      "source_file": "m128_n64_k64_block_dstate128/sources/schedule_03563.cu",
+      "speedup_vs_native": 1.360999236503106,
+      "tflops": 104.21623267279007,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 64,
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.8245824575424194,
+      "native_latency_ms": 1.1217920780181885,
+      "rank": 18,
+      "schedule_file": "m128_n64_k64_block_dstate128/candidates/schedule_00550.json",
+      "schedule_index": 550,
+      "source_file": "m128_n64_k64_block_dstate128/sources/schedule_00550.cu",
+      "speedup_vs_native": 1.3604365066916058,
+      "tflops": 104.17314258177879,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 64,
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.8288623690605164,
+      "native_latency_ms": 1.1217920780181885,
+      "rank": 19,
+      "schedule_file": "m128_n64_k64_block_dstate128/candidates/schedule_00586.json",
+      "schedule_index": 586,
+      "source_file": "m128_n64_k64_block_dstate128/sources/schedule_00586.cu",
+      "speedup_vs_native": 1.3534117603742786,
+      "tflops": 103.63523442059942,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 64,
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.8318592309951782,
+      "native_latency_ms": 0.9210400581359863,
+      "rank": 20,
       "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_00002.json",
       "schedule_index": 2,
       "source_file": "m64_n64_k64_block_dstate128/sources/schedule_00002.cu",
-      "speedup_vs_native": 1.106488334654305,
-      "tflops": 103.17338043336979,
+      "speedup_vs_native": 1.1072066328267085,
+      "tflops": 103.26187739389036,
       "tile": {
         "block_dstate": 128,
         "block_k": 64,
@@ -869,14 +1771,14 @@
       }
     },
     {
-      "latency_ms": 0.8326112031936646,
-      "native_latency_ms": 1.235307216644287,
-      "rank": 9,
-      "schedule_file": "m128_n64_k128_block_dstate128/candidates/schedule_02060.json",
-      "schedule_index": 2060,
-      "source_file": "m128_n64_k128_block_dstate128/sources/schedule_02060.cu",
-      "speedup_vs_native": 1.4836543297832083,
-      "tflops": 103.16861650493539,
+      "latency_ms": 0.8325983881950378,
+      "native_latency_ms": 1.2349008321762085,
+      "rank": 21,
+      "schedule_file": "m128_n64_k128_block_dstate128/candidates/schedule_03593.json",
+      "schedule_index": 3593,
+      "source_file": "m128_n64_k128_block_dstate128/sources/schedule_03593.cu",
+      "speedup_vs_native": 1.4831890737301434,
+      "tflops": 103.17020443219728,
       "tile": {
         "block_dstate": 128,
         "block_k": 128,
@@ -885,14 +1787,62 @@
       }
     },
     {
-      "latency_ms": 0.8332864046096802,
-      "native_latency_ms": 1.235307216644287,
-      "rank": 10,
+      "latency_ms": 0.8328975439071655,
+      "native_latency_ms": 1.2349008321762085,
+      "rank": 22,
+      "schedule_file": "m128_n64_k128_block_dstate128/candidates/schedule_03597.json",
+      "schedule_index": 3597,
+      "source_file": "m128_n64_k128_block_dstate128/sources/schedule_03597.cu",
+      "speedup_vs_native": 1.482656349763291,
+      "tflops": 103.13314830662331,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 128,
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.8331248164176941,
+      "native_latency_ms": 1.2349008321762085,
+      "rank": 23,
+      "schedule_file": "m128_n64_k128_block_dstate128/candidates/schedule_03588.json",
+      "schedule_index": 3588,
+      "source_file": "m128_n64_k128_block_dstate128/sources/schedule_03588.cu",
+      "speedup_vs_native": 1.4822518881217441,
+      "tflops": 103.10501407142534,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 128,
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.833284854888916,
+      "native_latency_ms": 1.2349008321762085,
+      "rank": 24,
+      "schedule_file": "m128_n64_k128_block_dstate128/candidates/schedule_03583.json",
+      "schedule_index": 3583,
+      "source_file": "m128_n64_k128_block_dstate128/sources/schedule_03583.cu",
+      "speedup_vs_native": 1.481967210769517,
+      "tflops": 103.08521199686405,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 128,
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.8334528207778931,
+      "native_latency_ms": 1.2349008321762085,
+      "rank": 25,
       "schedule_file": "m128_n64_k128_block_dstate128/candidates/schedule_00000.json",
       "schedule_index": 0,
       "source_file": "m128_n64_k128_block_dstate128/sources/schedule_00000.cu",
-      "speedup_vs_native": 1.4824521434775089,
-      "tflops": 103.08502028211554,
+      "speedup_vs_native": 1.4816685496650295,
+      "tflops": 103.06443721652641,
       "tile": {
         "block_dstate": 128,
         "block_k": 128,
@@ -901,254 +1851,14 @@
       }
     },
     {
-      "latency_ms": 0.8401552438735962,
-      "native_latency_ms": 1.235307216644287,
-      "rank": 11,
-      "schedule_file": "m128_n64_k128_block_dstate128/candidates/schedule_02055.json",
-      "schedule_index": 2055,
-      "source_file": "m128_n64_k128_block_dstate128/sources/schedule_02055.cu",
-      "speedup_vs_native": 1.4703320911844986,
-      "tflops": 102.24223028586347,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 128,
-        "block_m": 128,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.8419152498245239,
-      "native_latency_ms": 1.235307216644287,
-      "rank": 12,
-      "schedule_file": "m128_n64_k128_block_dstate128/candidates/schedule_02050.json",
-      "schedule_index": 2050,
-      "source_file": "m128_n64_k128_block_dstate128/sources/schedule_02050.cu",
-      "speedup_vs_native": 1.467258393171707,
-      "tflops": 102.02849507465695,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 128,
-        "block_m": 128,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.850271999835968,
-      "native_latency_ms": 1.121819257736206,
-      "rank": 13,
-      "schedule_file": "m128_n64_k64_block_dstate128/candidates/schedule_00001.json",
-      "schedule_index": 1,
-      "source_file": "m128_n64_k64_block_dstate128/sources/schedule_00001.cu",
-      "speedup_vs_native": 1.3193651654442626,
-      "tflops": 101.0257258107658,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 64,
-        "block_m": 128,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.852348804473877,
-      "native_latency_ms": 0.9212320446968079,
-      "rank": 14,
-      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_00132.json",
-      "schedule_index": 132,
-      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_00132.cu",
-      "speedup_vs_native": 1.080815787927866,
-      "tflops": 100.77956990040299,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 64,
-        "block_m": 64,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.855246365070343,
-      "native_latency_ms": 0.9743136167526245,
-      "rank": 15,
-      "schedule_file": "m64_n64_k128_block_dstate128/candidates/schedule_02050.json",
-      "schedule_index": 2050,
-      "source_file": "m64_n64_k128_block_dstate128/sources/schedule_02050.cu",
-      "speedup_vs_native": 1.1392198278124086,
-      "tflops": 100.43813037771272,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 128,
-        "block_m": 64,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.8555232286453247,
-      "native_latency_ms": 0.9743136167526245,
-      "rank": 16,
-      "schedule_file": "m64_n64_k128_block_dstate128/candidates/schedule_02052.json",
-      "schedule_index": 2052,
-      "source_file": "m64_n64_k128_block_dstate128/sources/schedule_02052.cu",
-      "speedup_vs_native": 1.1388511546266231,
-      "tflops": 100.40562669001638,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 128,
-        "block_m": 64,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.8556176424026489,
-      "native_latency_ms": 0.9743136167526245,
-      "rank": 17,
-      "schedule_file": "m64_n64_k128_block_dstate128/candidates/schedule_02055.json",
-      "schedule_index": 2055,
-      "source_file": "m64_n64_k128_block_dstate128/sources/schedule_02055.cu",
-      "speedup_vs_native": 1.138725487259317,
-      "tflops": 100.39454735737701,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 128,
-        "block_m": 64,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.8559247851371765,
-      "native_latency_ms": 0.9743136167526245,
-      "rank": 18,
-      "schedule_file": "m64_n64_k128_block_dstate128/candidates/schedule_00000.json",
-      "schedule_index": 0,
-      "source_file": "m64_n64_k128_block_dstate128/sources/schedule_00000.cu",
-      "speedup_vs_native": 1.1383168634338288,
-      "tflops": 100.35852146311335,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 128,
-        "block_m": 64,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.8594096302986145,
-      "native_latency_ms": 0.9743136167526245,
-      "rank": 19,
-      "schedule_file": "m64_n64_k128_block_dstate128/candidates/schedule_02060.json",
-      "schedule_index": 2060,
-      "source_file": "m64_n64_k128_block_dstate128/sources/schedule_02060.cu",
-      "speedup_vs_native": 1.133701069202686,
-      "tflops": 99.95157476901093,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 128,
-        "block_m": 64,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.8620864152908325,
-      "native_latency_ms": 1.121819257736206,
-      "rank": 20,
-      "schedule_file": "m128_n64_k64_block_dstate128/candidates/schedule_02055.json",
-      "schedule_index": 2055,
-      "source_file": "m128_n64_k64_block_dstate128/sources/schedule_02055.cu",
-      "speedup_vs_native": 1.3012839987250586,
-      "tflops": 99.6412243557058,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 64,
-        "block_m": 128,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.8696239590644836,
-      "native_latency_ms": 1.121819257736206,
-      "rank": 21,
-      "schedule_file": "m128_n64_k64_block_dstate128/candidates/schedule_00002.json",
-      "schedule_index": 2,
-      "source_file": "m128_n64_k64_block_dstate128/sources/schedule_00002.cu",
-      "speedup_vs_native": 1.2900050027865226,
-      "tflops": 98.77757509396136,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 64,
-        "block_m": 128,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.8770143389701843,
-      "native_latency_ms": 1.121819257736206,
-      "rank": 22,
-      "schedule_file": "m128_n64_k64_block_dstate128/candidates/schedule_02052.json",
-      "schedule_index": 2052,
-      "source_file": "m128_n64_k64_block_dstate128/sources/schedule_02052.cu",
-      "speedup_vs_native": 1.2791344541224705,
-      "tflops": 97.9452012390875,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 64,
-        "block_m": 128,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.8804912567138672,
-      "native_latency_ms": 1.121819257736206,
-      "rank": 23,
-      "schedule_file": "m128_n64_k64_block_dstate128/candidates/schedule_00000.json",
-      "schedule_index": 0,
-      "source_file": "m128_n64_k64_block_dstate128/sources/schedule_00000.cu",
-      "speedup_vs_native": 1.2740833587865632,
-      "tflops": 97.55843146085284,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 64,
-        "block_m": 128,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.8808256387710571,
-      "native_latency_ms": 1.121819257736206,
-      "rank": 24,
-      "schedule_file": "m128_n64_k64_block_dstate128/candidates/schedule_02050.json",
-      "schedule_index": 2050,
-      "source_file": "m128_n64_k64_block_dstate128/sources/schedule_02050.cu",
-      "speedup_vs_native": 1.2735996868817163,
-      "tflops": 97.52139599370453,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 64,
-        "block_m": 128,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.8941454887390137,
-      "native_latency_ms": 0.9212320446968079,
-      "rank": 25,
-      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_00001.json",
-      "schedule_index": 1,
-      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_00001.cu",
-      "speedup_vs_native": 1.0302932311339998,
-      "tflops": 96.06864542943818,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 64,
-        "block_m": 64,
-        "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 0.9363952875137329,
-      "native_latency_ms": 1.121819257736206,
+      "latency_ms": 0.8340848088264465,
+      "native_latency_ms": 1.1217920780181885,
       "rank": 26,
-      "schedule_file": "m128_n64_k64_block_dstate128/candidates/schedule_00004.json",
-      "schedule_index": 4,
-      "source_file": "m128_n64_k64_block_dstate128/sources/schedule_00004.cu",
-      "speedup_vs_native": 1.1980189057922332,
-      "tflops": 91.73406473250778,
+      "schedule_file": "m128_n64_k64_block_dstate128/candidates/schedule_03565.json",
+      "schedule_index": 3565,
+      "source_file": "m128_n64_k64_block_dstate128/sources/schedule_03565.cu",
+      "speedup_vs_native": 1.344937668384759,
+      "tflops": 102.98634504668655,
       "tile": {
         "block_dstate": 128,
         "block_k": 64,
@@ -1157,14 +1867,46 @@
       }
     },
     {
-      "latency_ms": 0.9628353118896484,
-      "native_latency_ms": 1.235307216644287,
+      "latency_ms": 0.8343823552131653,
+      "native_latency_ms": 0.9210400581359863,
       "rank": 27,
-      "schedule_file": "m128_n64_k128_block_dstate128/candidates/schedule_00001.json",
-      "schedule_index": 1,
-      "source_file": "m128_n64_k128_block_dstate128/sources/schedule_00001.cu",
-      "speedup_vs_native": 1.2829891066416008,
-      "tflops": 89.214993321563,
+      "schedule_file": "m64_n64_k64_block_dstate128/candidates/schedule_03566.json",
+      "schedule_index": 3566,
+      "source_file": "m64_n64_k64_block_dstate128/sources/schedule_03566.cu",
+      "speedup_vs_native": 1.1038585036960447,
+      "tflops": 102.9496194200496,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.8360575437545776,
+      "native_latency_ms": 1.1217920780181885,
+      "rank": 28,
+      "schedule_file": "m128_n64_k64_block_dstate128/candidates/schedule_03566.json",
+      "schedule_index": 3566,
+      "source_file": "m128_n64_k64_block_dstate128/sources/schedule_03566.cu",
+      "speedup_vs_native": 1.3417641960150621,
+      "tflops": 102.74334172531015,
+      "tile": {
+        "block_dstate": 128,
+        "block_k": 64,
+        "block_m": 128,
+        "block_n": 64
+      }
+    },
+    {
+      "latency_ms": 0.8408752679824829,
+      "native_latency_ms": 1.2349008321762085,
+      "rank": 29,
+      "schedule_file": "m128_n64_k128_block_dstate128/candidates/schedule_03598.json",
+      "schedule_index": 3598,
+      "source_file": "m128_n64_k128_block_dstate128/sources/schedule_03598.cu",
+      "speedup_vs_native": 1.4685897887556063,
+      "tflops": 102.15468237768346,
       "tile": {
         "block_dstate": 128,
         "block_k": 128,
@@ -1173,51 +1915,19 @@
       }
     },
     {
-      "latency_ms": 1.0130239725112915,
-      "native_latency_ms": 1.2289056777954102,
-      "rank": 28,
-      "schedule_file": "m64_n32_k64_block_dstate128/candidates/schedule_00000.json",
-      "schedule_index": 0,
-      "source_file": "m64_n32_k64_block_dstate128/sources/schedule_00000.cu",
-      "speedup_vs_native": 1.2131062157877142,
-      "tflops": 84.79497845155144,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 64,
-        "block_m": 64,
-        "block_n": 32
-      }
-    },
-    {
-      "latency_ms": 1.0148128271102905,
-      "native_latency_ms": 0.9743136167526245,
-      "rank": 29,
-      "schedule_file": "m64_n64_k128_block_dstate128/candidates/schedule_02062.json",
-      "schedule_index": 2062,
-      "source_file": "m64_n64_k128_block_dstate128/sources/schedule_02062.cu",
-      "speedup_vs_native": 0.9600919408232268,
-      "tflops": 84.64550666412144,
+      "latency_ms": 0.8422752618789673,
+      "native_latency_ms": 1.2349008321762085,
+      "rank": 30,
+      "schedule_file": "m128_n64_k128_block_dstate128/candidates/schedule_03603.json",
+      "schedule_index": 3603,
+      "source_file": "m128_n64_k128_block_dstate128/sources/schedule_03603.cu",
+      "speedup_vs_native": 1.4661487616546673,
+      "tflops": 101.98488523618009,
       "tile": {
         "block_dstate": 128,
         "block_k": 128,
-        "block_m": 64,
+        "block_m": 128,
         "block_n": 64
-      }
-    },
-    {
-      "latency_ms": 1.0182191133499146,
-      "native_latency_ms": 1.2289056777954102,
-      "rank": 30,
-      "schedule_file": "m64_n32_k64_block_dstate128/candidates/schedule_02057.json",
-      "schedule_index": 2057,
-      "source_file": "m64_n32_k64_block_dstate128/sources/schedule_02057.cu",
-      "speedup_vs_native": 1.2069167251755295,
-      "tflops": 84.36233890502544,
-      "tile": {
-        "block_dstate": 128,
-        "block_k": 64,
-        "block_m": 64,
-        "block_n": 32
       }
     }
   ]

@@ -1,6 +1,0 @@
-{"fingerprint": "f400c1f207a3c7dbf5a3422615b555d050a85ae07b2a85bd497aea441a6084ab", "move": ["stage", 1, 16, 1, 1], "parent_fingerprint": "81be5ee0e72cb7c1438b8963c2a24a6d57b22b10836915457d8964b6f1195160"}
-{"fingerprint": "2e8084c9e929a4d62f2321a5a7b2c96364936ca9789fe2309a1e5dd9022e74fb", "move": ["group", 3, 1, 0, 1], "parent_fingerprint": "8a22cc2c01318ee6106edb893b137dba1f1dc6c5425a0b458d4ad7421294a241"}
-{"fingerprint": "0dc9fab06cd21515589ed97a9516aceb6de9d5164e25ba1487da6f5207b67a2b", "move": ["order", 0, 0, 0, 1], "parent_fingerprint": "8a22cc2c01318ee6106edb893b137dba1f1dc6c5425a0b458d4ad7421294a241"}
-{"fingerprint": "33094f955e1e9be95a5b2225dd4569e0bafc14dcfa5e9a543152eeefd7ebd541", "move": ["version", 6, 3, 0, 0], "parent_fingerprint": "f400c1f207a3c7dbf5a3422615b555d050a85ae07b2a85bd497aea441a6084ab"}
-{"fingerprint": "6836e53e5edfda3f98360b76be361dfb8560582f79a66f93c5fbc17f80f54940", "move": ["stage", 1, 18, 1, 0], "parent_fingerprint": "b8ed755f346bde28cac770a7cf1601672f3abb3ba6f048f616ee071ff53dedb0"}
-{"fingerprint": "e6aba0bf57e93b354825f1a5d8ba458af5428164cc9a146e7f39d12d972a3a0d", "move": ["group", 0, 1, 0, 0], "parent_fingerprint": "81be5ee0e72cb7c1438b8963c2a24a6d57b22b10836915457d8964b6f1195160"}

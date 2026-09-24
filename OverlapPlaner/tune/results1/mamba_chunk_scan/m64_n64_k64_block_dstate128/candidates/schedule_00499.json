@@ -62,19 +62,19 @@
     },
     {
       "buffer_id": 10,
-      "byte_offset": 32768,
+      "byte_offset": 49152,
       "communication": 2,
-      "version_count": 2
+      "version_count": 1
     },
     {
       "buffer_id": 11,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 1
+      "version_count": 3
     },
     {
       "buffer_id": 12,
-      "byte_offset": 65536,
+      "byte_offset": 58368,
       "communication": 2,
       "version_count": 1
     },
@@ -92,9 +92,9 @@
     },
     {
       "buffer_id": 15,
-      "byte_offset": 66560,
+      "byte_offset": 57344,
       "communication": 2,
-      "version_count": 1
+      "version_count": 2
     },
     {
       "buffer_id": 16,
@@ -110,7 +110,7 @@
     },
     {
       "buffer_id": 18,
-      "byte_offset": 49152,
+      "byte_offset": 32768,
       "communication": 2,
       "version_count": 2
     },
@@ -217,7 +217,7 @@
       "group_id": 0,
       "operation_id": 9,
       "order": 1,
-      "stage": 1
+      "stage": 0
     },
     {
       "group_id": 0,
@@ -241,7 +241,7 @@
       "group_id": 0,
       "operation_id": 13,
       "order": 5,
-      "stage": 1
+      "stage": 0
     },
     {
       "group_id": 0,
@@ -265,13 +265,13 @@
       "group_id": 0,
       "operation_id": 17,
       "order": 9,
-      "stage": 0
+      "stage": 1
     },
     {
       "group_id": 0,
       "operation_id": 18,
       "order": 10,
-      "stage": 1
+      "stage": 2
     },
     {
       "group_id": 0,
@@ -310,7 +310,7 @@
       "stage": null
     }
   ],
-  "shared_arena_bytes": 66688,
+  "shared_arena_bytes": 58496,
   "sync_edges": [
     {
       "buffer_id": 6,
@@ -346,7 +346,7 @@
       "kind": 0,
       "producer_id": 8,
       "scope": 1,
-      "slot_count": 2
+      "slot_count": 1
     },
     {
       "buffer_id": 12,
@@ -370,7 +370,7 @@
       "kind": 0,
       "producer_id": 13,
       "scope": 1,
-      "slot_count": 1
+      "slot_count": 2
     },
     {
       "buffer_id": 18,
@@ -402,11 +402,11 @@
       "completion_mode": 0,
       "consumer_id": 8,
       "dependency_kind": 8,
-      "iteration_distance": 2,
+      "iteration_distance": 1,
       "kind": 1,
       "producer_id": 9,
       "scope": 1,
-      "slot_count": 2
+      "slot_count": 1
     },
     {
       "buffer_id": 12,
@@ -426,11 +426,11 @@
       "completion_mode": 0,
       "consumer_id": 13,
       "dependency_kind": 8,
-      "iteration_distance": 1,
+      "iteration_distance": 2,
       "kind": 1,
       "producer_id": 14,
       "scope": 1,
-      "slot_count": 1
+      "slot_count": 2
     },
     {
       "buffer_id": 18,

@@ -62,7 +62,7 @@
     },
     {
       "buffer_id": 10,
-      "byte_offset": 221184,
+      "byte_offset": 204800,
       "communication": 2,
       "version_count": 1
     },
@@ -70,7 +70,7 @@
       "buffer_id": 11,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 3
+      "version_count": 2
     },
     {
       "buffer_id": 12,
@@ -82,7 +82,7 @@
       "buffer_id": 13,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 3
+      "version_count": 2
     },
     {
       "buffer_id": 14,
@@ -92,9 +92,9 @@
     },
     {
       "buffer_id": 15,
-      "byte_offset": 204800,
+      "byte_offset": 212992,
       "communication": 2,
-      "version_count": 2
+      "version_count": 1
     },
     {
       "buffer_id": 16,
@@ -211,19 +211,19 @@
       "group_id": 0,
       "operation_id": 15,
       "order": 10,
-      "stage": 2
+      "stage": 1
     },
     {
       "group_id": 0,
       "operation_id": 16,
       "order": 11,
-      "stage": 0
+      "stage": 1
     },
     {
       "group_id": 0,
       "operation_id": 17,
       "order": 12,
-      "stage": 2
+      "stage": 1
     },
     {
       "group_id": 0,
@@ -256,7 +256,7 @@
       "stage": null
     }
   ],
-  "shared_arena_bytes": 229376,
+  "shared_arena_bytes": 221184,
   "sync_edges": [
     {
       "buffer_id": 1,

@@ -142,7 +142,7 @@ extern "C" __global__ void __launch_bounds__(256, 1) main_kernel(__grid_constant
       scores_max_clear[i_1] = max(scores_max_clear[i_1], acc_s[((((rv & 3) * 4) + (i_1 * 2)) + (rv >> 2))]);
     }
     __syncthreads();
-    scores_max_clear[i_1] = tl::AllReduce<tl::MaxOp, 256, 128, 0, tl::NamedBarrier<256>>::run(scores_max_clear[i_1], (&(((float*)workspace_3)[0])));
+    scores_max_clear[i_1] = tl::AllReduce<tl::MaxOp, 256, 128, 0, tl::NamedBarrier<256>>::run(scores_max_clear[i_1], (&(((float*)workspace)[0])));
     scores_max_clear[i_1] = tl::AllReduce<tl::MaxOp, 4, 1, 0, tl::NamedBarrier<256>>::run(scores_max_clear[i_1]);
     scores_max[i_1] = max(scores_max[i_1], scores_max_clear[i_1]);
   }
@@ -170,7 +170,7 @@ extern "C" __global__ void __launch_bounds__(256, 1) main_kernel(__grid_constant
       scores_sum[i_6] = (scores_sum[i_6] + acc_s[((((rv_1 & 3) * 4) + (i_6 * 2)) + (rv_1 >> 2))]);
     }
     __syncthreads();
-    scores_sum[i_6] = tl::AllReduce<tl::SumOp, 256, 128, 0, tl::NamedBarrier<256>>::run(scores_sum[i_6], (&(((float*)workspace_2)[0])));
+    scores_sum[i_6] = tl::AllReduce<tl::SumOp, 256, 128, 0, tl::NamedBarrier<256>>::run(scores_sum[i_6], (&(((float*)workspace_3)[0])));
     scores_sum[i_6] = tl::AllReduce<tl::SumOp, 4, 1, 0, tl::NamedBarrier<256>>::run(scores_sum[i_6]);
   }
   #pragma unroll
@@ -268,7 +268,7 @@ extern "C" __global__ void __launch_bounds__(256, 1) main_kernel(__grid_constant
         scores_max_clear_1[i_9] = max(scores_max_clear_1[i_9], acc_s[((((rv_2 & 3) * 4) + (i_9 * 2)) + (rv_2 >> 2))]);
       }
       __syncthreads();
-      scores_max_clear_1[i_9] = tl::AllReduce<tl::MaxOp, 256, 128, 0, tl::NamedBarrier<256>>::run(scores_max_clear_1[i_9], (&(((float*)workspace)[0])));
+      scores_max_clear_1[i_9] = tl::AllReduce<tl::MaxOp, 256, 128, 0, tl::NamedBarrier<256>>::run(scores_max_clear_1[i_9], (&(((float*)workspace_1)[0])));
       scores_max_clear_1[i_9] = tl::AllReduce<tl::MaxOp, 4, 1, 0, tl::NamedBarrier<256>>::run(scores_max_clear_1[i_9]);
       scores_max[i_9] = max(scores_max[i_9], scores_max_clear_1[i_9]);
     }
@@ -296,7 +296,7 @@ extern "C" __global__ void __launch_bounds__(256, 1) main_kernel(__grid_constant
         scores_sum[i_14] = (scores_sum[i_14] + acc_s[((((rv_3 & 3) * 4) + (i_14 * 2)) + (rv_3 >> 2))]);
       }
       __syncthreads();
-      scores_sum[i_14] = tl::AllReduce<tl::SumOp, 256, 128, 0, tl::NamedBarrier<256>>::run(scores_sum[i_14], (&(((float*)workspace_1)[0])));
+      scores_sum[i_14] = tl::AllReduce<tl::SumOp, 256, 128, 0, tl::NamedBarrier<256>>::run(scores_sum[i_14], (&(((float*)workspace_2)[0])));
       scores_sum[i_14] = tl::AllReduce<tl::SumOp, 4, 1, 0, tl::NamedBarrier<256>>::run(scores_sum[i_14]);
     }
     #pragma unroll

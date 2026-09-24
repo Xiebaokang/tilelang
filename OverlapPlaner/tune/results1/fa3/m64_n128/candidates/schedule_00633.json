@@ -46,7 +46,7 @@
       "buffer_id": 7,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 2
+      "version_count": 1
     },
     {
       "buffer_id": 8,
@@ -58,7 +58,7 @@
       "buffer_id": 9,
       "byte_offset": null,
       "communication": 1,
-      "version_count": 2
+      "version_count": 1
     },
     {
       "buffer_id": 10,
@@ -86,7 +86,7 @@
     },
     {
       "buffer_id": 14,
-      "byte_offset": 0,
+      "byte_offset": 181248,
       "communication": 2,
       "version_count": 1
     },
@@ -99,7 +99,7 @@
   ],
   "groups": [
     {
-      "register_count": 24,
+      "register_count": 72,
       "register_increase": 0,
       "warp_count": 4
     },
@@ -123,15 +123,15 @@
       "stage": null
     },
     {
-      "group_id": 1,
+      "group_id": 0,
       "operation_id": 2,
-      "order": 2,
+      "order": 0,
       "stage": null
     },
     {
       "group_id": 1,
       "operation_id": 3,
-      "order": 3,
+      "order": 2,
       "stage": null
     },
     {
@@ -143,19 +143,19 @@
     {
       "group_id": 1,
       "operation_id": 5,
-      "order": 1,
-      "stage": 0
-    },
-    {
-      "group_id": 1,
-      "operation_id": 6,
       "order": 2,
       "stage": 0
     },
     {
       "group_id": 1,
-      "operation_id": 7,
+      "operation_id": 6,
       "order": 3,
+      "stage": 0
+    },
+    {
+      "group_id": 1,
+      "operation_id": 7,
+      "order": 1,
       "stage": 0
     },
     {
@@ -189,27 +189,27 @@
       "stage": 0
     },
     {
-      "group_id": 1,
+      "group_id": 0,
       "operation_id": 13,
-      "order": 9,
-      "stage": 1
+      "order": 1,
+      "stage": 0
     },
     {
-      "group_id": 1,
+      "group_id": 0,
       "operation_id": 14,
-      "order": 10,
-      "stage": 1
+      "order": 2,
+      "stage": 0
     },
     {
       "group_id": 1,
       "operation_id": 15,
-      "order": 11,
+      "order": 9,
       "stage": 0
     },
     {
       "group_id": 1,
       "operation_id": 16,
-      "order": 12,
+      "order": 10,
       "stage": 0
     },
     {
@@ -221,17 +221,17 @@
     {
       "group_id": 1,
       "operation_id": 18,
-      "order": 13,
+      "order": 11,
       "stage": 0
     },
     {
-      "group_id": 1,
+      "group_id": 0,
       "operation_id": 19,
       "order": 0,
       "stage": null
     },
     {
-      "group_id": 1,
+      "group_id": 0,
       "operation_id": 20,
       "order": 1,
       "stage": null
@@ -239,11 +239,11 @@
     {
       "group_id": 1,
       "operation_id": 21,
-      "order": 2,
+      "order": 0,
       "stage": null
     }
   ],
-  "shared_arena_bytes": 114688,
+  "shared_arena_bytes": 197632,
   "sync_edges": [
     {
       "buffer_id": 1,
@@ -270,6 +270,30 @@
       "slot_count": 1
     },
     {
+      "buffer_id": 9,
+      "byte_offset": 180224,
+      "completion_mode": 0,
+      "consumer_id": 14,
+      "dependency_kind": 1,
+      "iteration_distance": 0,
+      "kind": 0,
+      "producer_id": 11,
+      "scope": 1,
+      "slot_count": 1
+    },
+    {
+      "buffer_id": 7,
+      "byte_offset": 147456,
+      "completion_mode": 0,
+      "consumer_id": 13,
+      "dependency_kind": 1,
+      "iteration_distance": 0,
+      "kind": 0,
+      "producer_id": 12,
+      "scope": 1,
+      "slot_count": 1
+    },
+    {
       "buffer_id": 13,
       "byte_offset": null,
       "completion_mode": 1,
@@ -280,6 +304,30 @@
       "producer_id": 17,
       "scope": 1,
       "slot_count": 2
+    },
+    {
+      "buffer_id": 2,
+      "byte_offset": 114688,
+      "completion_mode": 0,
+      "consumer_id": 19,
+      "dependency_kind": 5,
+      "iteration_distance": 0,
+      "kind": 0,
+      "producer_id": 18,
+      "scope": 2,
+      "slot_count": 1
+    },
+    {
+      "buffer_id": 14,
+      "byte_offset": null,
+      "completion_mode": 0,
+      "consumer_id": 21,
+      "dependency_kind": 1,
+      "iteration_distance": 0,
+      "kind": 0,
+      "producer_id": 20,
+      "scope": 0,
+      "slot_count": 1
     },
     {
       "buffer_id": 6,

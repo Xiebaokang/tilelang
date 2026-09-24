@@ -74,7 +74,7 @@
     },
     {
       "buffer_id": 12,
-      "byte_offset": 148480,
+      "byte_offset": 132096,
       "communication": 2,
       "version_count": 1
     },
@@ -92,7 +92,7 @@
     },
     {
       "buffer_id": 15,
-      "byte_offset": 149504,
+      "byte_offset": 133120,
       "communication": 2,
       "version_count": 1
     },
@@ -112,7 +112,7 @@
       "buffer_id": 18,
       "byte_offset": 115712,
       "communication": 2,
-      "version_count": 2
+      "version_count": 1
     },
     {
       "buffer_id": 19,
@@ -128,7 +128,7 @@
     },
     {
       "buffer_id": 21,
-      "byte_offset": 166912,
+      "byte_offset": 150528,
       "communication": 2,
       "version_count": 1
     },
@@ -140,7 +140,7 @@
     },
     {
       "buffer_id": 23,
-      "byte_offset": 150528,
+      "byte_offset": 134144,
       "communication": 2,
       "version_count": 1
     },
@@ -221,7 +221,7 @@
     {
       "group_id": 0,
       "operation_id": 9,
-      "order": 8,
+      "order": 7,
       "stage": 0
     },
     {
@@ -233,7 +233,7 @@
     {
       "group_id": 0,
       "operation_id": 11,
-      "order": 9,
+      "order": 8,
       "stage": 0
     },
     {
@@ -245,37 +245,37 @@
     {
       "group_id": 0,
       "operation_id": 13,
-      "order": 3,
-      "stage": 1
-    },
-    {
-      "group_id": 0,
-      "operation_id": 14,
-      "order": 4,
-      "stage": 1
-    },
-    {
-      "group_id": 0,
-      "operation_id": 15,
-      "order": 5,
-      "stage": 1
-    },
-    {
-      "group_id": 0,
-      "operation_id": 16,
-      "order": 6,
-      "stage": 1
-    },
-    {
-      "group_id": 0,
-      "operation_id": 17,
       "order": 2,
       "stage": 0
     },
     {
       "group_id": 0,
+      "operation_id": 14,
+      "order": 9,
+      "stage": 0
+    },
+    {
+      "group_id": 0,
+      "operation_id": 15,
+      "order": 4,
+      "stage": 1
+    },
+    {
+      "group_id": 0,
+      "operation_id": 16,
+      "order": 5,
+      "stage": 1
+    },
+    {
+      "group_id": 0,
+      "operation_id": 17,
+      "order": 3,
+      "stage": 1
+    },
+    {
+      "group_id": 0,
       "operation_id": 18,
-      "order": 7,
+      "order": 6,
       "stage": 1
     },
     {
@@ -309,13 +309,13 @@
       "stage": null
     },
     {
-      "group_id": 0,
+      "group_id": 1,
       "operation_id": 24,
-      "order": 1,
+      "order": 4,
       "stage": null
     }
   ],
-  "shared_arena_bytes": 183296,
+  "shared_arena_bytes": 166912,
   "sync_edges": [
     {
       "buffer_id": 6,
@@ -387,7 +387,7 @@
       "kind": 0,
       "producer_id": 17,
       "scope": 1,
-      "slot_count": 2
+      "slot_count": 1
     },
     {
       "buffer_id": 3,
@@ -410,18 +410,6 @@
       "iteration_distance": 0,
       "kind": 0,
       "producer_id": 20,
-      "scope": 0,
-      "slot_count": 1
-    },
-    {
-      "buffer_id": 23,
-      "byte_offset": null,
-      "completion_mode": 0,
-      "consumer_id": 24,
-      "dependency_kind": 1,
-      "iteration_distance": 0,
-      "kind": 0,
-      "producer_id": 23,
       "scope": 0,
       "slot_count": 1
     },
@@ -467,11 +455,11 @@
       "completion_mode": 0,
       "consumer_id": 17,
       "dependency_kind": 8,
-      "iteration_distance": 2,
+      "iteration_distance": 1,
       "kind": 1,
       "producer_id": 18,
       "scope": 1,
-      "slot_count": 2
+      "slot_count": 1
     }
   ]
 }

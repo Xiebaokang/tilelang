@@ -1,5 +1,5 @@
 {
-  "base_schedule_count": 1125,
+  "base_schedule_count": 2182,
   "candidate_features": "features.jsonl",
   "operator": "fa3",
   "options": {
@@ -18,8 +18,8 @@
     "fa3_seq_kv": 8192,
     "fa3_seq_q": 8192
   },
-  "schedule_count": 1137,
-  "stage_beam": 64,
+  "schedule_count": 2190,
+  "stage_beam": 256,
   "tile": {
     "block_m": 128,
     "block_n": 64

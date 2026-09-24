@@ -62,6 +62,7 @@ def flashattn_bwd_split(
     block_M,
     block_N,
     groups=1,
+    threads=256,
 ):
     sm_scale = (1.0 / dim_qk) ** 0.5
     scale = sm_scale * 1.44269504
@@ -90,7 +91,7 @@ def flashattn_bwd_split(
             heads,
             T.ceildiv(seq_len, block_M),
             batch,
-            threads=256,
+            threads=threads,
         ) as (bx, by, bz):
             K_shared = T.alloc_shared([block_M, dim_qk], dtype)
             dsT_shared = T.alloc_shared([block_M, block_N], dtype)
@@ -286,6 +287,7 @@ def build(options: Options, config: TileConfig) -> SearchWorkload:
         block_m,
         block_n,
         groups,
+        threads=block_m // 64 * 128,
     )
     total_flops = (
         2.0

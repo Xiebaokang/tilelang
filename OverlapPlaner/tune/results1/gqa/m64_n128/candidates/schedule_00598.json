@@ -237,9 +237,9 @@
       "stage": null
     },
     {
-      "group_id": 0,
+      "group_id": 1,
       "operation_id": 21,
-      "order": 2,
+      "order": 0,
       "stage": null
     }
   ],
@@ -315,6 +315,18 @@
       "kind": 0,
       "producer_id": 18,
       "scope": 2,
+      "slot_count": 1
+    },
+    {
+      "buffer_id": 14,
+      "byte_offset": null,
+      "completion_mode": 0,
+      "consumer_id": 21,
+      "dependency_kind": 1,
+      "iteration_distance": 0,
+      "kind": 0,
+      "producer_id": 20,
+      "scope": 0,
       "slot_count": 1
     },
     {

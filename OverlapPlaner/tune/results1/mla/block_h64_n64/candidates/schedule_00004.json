@@ -98,7 +98,7 @@
     },
     {
       "buffer_id": 16,
-      "byte_offset": 155648,
+      "byte_offset": 0,
       "communication": 2,
       "version_count": 1
     },
@@ -261,7 +261,7 @@
       "stage": null
     }
   ],
-  "shared_arena_bytes": 221184,
+  "shared_arena_bytes": 155648,
   "sync_edges": [
     {
       "buffer_id": 1,

@@ -6,7 +6,7 @@ import tilelang
 import tilelang.language as T
 import torch.nn.functional as F
 
-from .workloads import OperatorSpec, SearchWorkload
+from .workloads import OperatorSpec, SearchWorkload, threads_from_tile_extent
 
 
 def add_arguments(parser):
@@ -30,7 +30,15 @@ def configurations(options):
     ]
 
 
-def kernel(tokens, hidden, expert, block_token, block_hidden, block_expert):
+def kernel(
+    tokens,
+    hidden,
+    expert,
+    block_token,
+    block_hidden,
+    block_expert,
+    threads,
+):
     dtype = T.float16
 
     @T.prim_func(auto_overlap=True)
@@ -43,7 +51,7 @@ def kernel(tokens, hidden, expert, block_token, block_hidden, block_expert):
         with T.Kernel(
             T.ceildiv(tokens, block_token),
             T.ceildiv(expert, block_expert),
-            threads=256,
+            threads=threads,
         ) as (bx, by):
             input_shared = T.alloc_shared([block_token, block_hidden], dtype)
             gate_shared = T.alloc_shared([block_expert, block_hidden], dtype)
@@ -71,7 +79,15 @@ def reference(x, gate, up):
 
 def build(options, config):
     tokens, hidden, expert = options["fused_moe_tokens"], options["fused_moe_hidden"], options["fused_moe_expert"]
-    prim = kernel(tokens, hidden, expert, config["block_token"], config["block_hidden"], config["block_expert"])
+    prim = kernel(
+        tokens,
+        hidden,
+        expert,
+        config["block_token"],
+        config["block_hidden"],
+        config["block_expert"],
+        threads_from_tile_extent(config["block_token"]),
+    )
     return SearchWorkload(
         prim_func=prim, out_idx=(3,),
         total_flops=4.0 * tokens * hidden * expert,

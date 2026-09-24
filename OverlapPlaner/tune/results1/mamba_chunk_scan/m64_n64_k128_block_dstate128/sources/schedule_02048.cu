@@ -21,15 +21,15 @@
 extern "C" __global__ void main_kernel(__grid_constant__ const CUtensorMap CB_desc, __grid_constant__ const CUtensorMap C_desc, const half_t* __restrict__ D, const half_t* __restrict__ DA, const half_t* __restrict__ Dt, __grid_constant__ const CUtensorMap Output_desc, __grid_constant__ const CUtensorMap Prev_desc, __grid_constant__ const CUtensorMap X_desc, __grid_constant__ const CUtensorMap X_desc_1);
 extern "C" __global__ void __launch_bounds__(256, 1) main_kernel(__grid_constant__ const CUtensorMap CB_desc, __grid_constant__ const CUtensorMap C_desc, const half_t* __restrict__ D, const half_t* __restrict__ DA, const half_t* __restrict__ Dt, __grid_constant__ const CUtensorMap Output_desc, __grid_constant__ const CUtensorMap Prev_desc, __grid_constant__ const CUtensorMap X_desc, __grid_constant__ const CUtensorMap X_desc_1) {
   extern __shared__ __align__(1024) uchar buf_dyn_shmem[];
-  void* acc_shared = ((void*)((char*)buf_dyn_shmem + 0));
-  void* c_shared = ((void*)((char*)buf_dyn_shmem + 0));
   void* da_m_shared = ((void*)((char*)buf_dyn_shmem + 0));
-  void* residual_shared = ((void*)((char*)buf_dyn_shmem + 0));
-  void* prev_shared = ((void*)((char*)buf_dyn_shmem + 16384));
-  void* cb_shared = ((void*)((char*)buf_dyn_shmem + 32768));
-  void* x_shared = ((void*)((char*)buf_dyn_shmem + 65536));
-  void* da_k_shared = ((void*)((char*)buf_dyn_shmem + 98304));
-  void* dt_shared = ((void*)((char*)buf_dyn_shmem + 99328));
+  void* acc_shared = ((void*)((char*)buf_dyn_shmem + 1024));
+  void* c_shared = ((void*)((char*)buf_dyn_shmem + 1024));
+  void* residual_shared = ((void*)((char*)buf_dyn_shmem + 1024));
+  void* prev_shared = ((void*)((char*)buf_dyn_shmem + 17408));
+  void* cb_shared = ((void*)((char*)buf_dyn_shmem + 33792));
+  void* x_shared = ((void*)((char*)buf_dyn_shmem + 66560));
+  void* da_k_shared = ((void*)((char*)buf_dyn_shmem + 99328));
+  void* dt_shared = ((void*)((char*)buf_dyn_shmem + 100352));
   __shared__ __align__(16) uint64_t overlap_plan_mbar_mem[19];
   auto overlap_plan_mbar = reinterpret_cast<Barrier*>(overlap_plan_mbar_mem);
   float da_m_local[2];
@@ -90,7 +90,6 @@ extern "C" __global__ void __launch_bounds__(256, 1) main_kernel(__grid_constant
     for (int i_2 = 0; i_2 < 2; ++i_2) {
       scale_m[i_2] = exp2f((da_m_local[i_2] * 0x1.7154764ee6c2fp+0f/*1.442695e+00*/));
     }
-    tl::__sync_thread_partial(3, 128);
     if (tl::tl_shuffle_elect<128>() && ((((int)threadIdx.x) >> 5) == 0)) {
       overlap_plan_mbar[0].arrive_and_expect_tx(16384);
       tl::fence_proxy_async();
@@ -140,42 +139,42 @@ extern "C" __global__ void __launch_bounds__(256, 1) main_kernel(__grid_constant
         *(float2*)(da_k_local + (i_5 * 2)) = __1;
       }
       overlap_plan_mbar[(ik + 13)].arrive();
-      #pragma unroll
-      for (int i_6 = 0; i_6 < 32; ++i_6) {
-        float broadcast_var_1 = 0x1.7154764ee6c2fp+0f/*1.442695e+00*/;
-        uint1 __2;
-        float2 __3;
-          float2 __4;
-          uint1 v__1 = *(uint1*)(cb_local + (i_6 * 2));
-          ((float2*)(&__4))[0] = __half22float2(((half2*)(&v__1))[0]);
-          float2 __5;
-          float2 __6;
-            float2 __7;
-              float2 v__2 = make_float2(da_m_local[(i_6 & 1)], da_m_local[(i_6 & 1)]);
-              float2 v__3 = *(float2*)(da_k_local + ((i_6 >> 1) * 2));
-              __7.x = (v__2.x-v__3.x);
-              __7.y = (v__2.y-v__3.y);
-            float2 v__4 = make_float2(broadcast_var_1, broadcast_var_1);
-            __6.x = (__7.x*v__4.x);
-            __6.y = (__7.y*v__4.y);
-          __5.x = exp2f(__6.x);
-          __5.y = exp2f(__6.y);
-          __3.x = (__4.x*__5.x);
-          __3.y = (__4.y*__5.y);
-        ((half2*)(&__2))[0] = __float22half2_rn(((float2*)(&__3))[0]);
-        *(uint1*)(cb_local + (i_6 * 2)) = __2;
-      }
       overlap_plan_mbar[(ik + 6)].wait(0);
       #pragma unroll
-      for (int i_7 = 0; i_7 < 16; ++i_7) {
+      for (int i_6 = 0; i_6 < 16; ++i_6) {
         half_t dt_shared_local_cast_1[2];
-        *(uint1*)(dt_shared_local_cast_1 + 0) = *(uint1*)(((half_t*)dt_shared) + (((ik * 128) + (i_7 * 8)) + ((((int)threadIdx.x) & 3) * 2)));
-        float2 __8;
-        uint1 v__5 = *(uint1*)(dt_shared_local_cast_1 + 0);
-        ((float2*)(&__8))[0] = __half22float2(((half2*)(&v__5))[0]);
-        *(float2*)(dt_local + (i_7 * 2)) = __8;
+        *(uint1*)(dt_shared_local_cast_1 + 0) = *(uint1*)(((half_t*)dt_shared) + (((ik * 128) + (i_6 * 8)) + ((((int)threadIdx.x) & 3) * 2)));
+        float2 __2;
+        uint1 v__1 = *(uint1*)(dt_shared_local_cast_1 + 0);
+        ((float2*)(&__2))[0] = __half22float2(((half2*)(&v__1))[0]);
+        *(float2*)(dt_local + (i_6 * 2)) = __2;
       }
       overlap_plan_mbar[(ik + 15)].arrive();
+      #pragma unroll
+      for (int i_7 = 0; i_7 < 32; ++i_7) {
+        float broadcast_var_1 = 0x1.7154764ee6c2fp+0f/*1.442695e+00*/;
+        uint1 __3;
+        float2 __4;
+          float2 __5;
+          uint1 v__2 = *(uint1*)(cb_local + (i_7 * 2));
+          ((float2*)(&__5))[0] = __half22float2(((half2*)(&v__2))[0]);
+          float2 __6;
+          float2 __7;
+            float2 __8;
+              float2 v__3 = make_float2(da_m_local[(i_7 & 1)], da_m_local[(i_7 & 1)]);
+              float2 v__4 = *(float2*)(da_k_local + ((i_7 >> 1) * 2));
+              __8.x = (v__3.x-v__4.x);
+              __8.y = (v__3.y-v__4.y);
+            float2 v__5 = make_float2(broadcast_var_1, broadcast_var_1);
+            __7.x = (__8.x*v__5.x);
+            __7.y = (__8.y*v__5.y);
+          __6.x = exp2f(__7.x);
+          __6.y = exp2f(__7.y);
+          __4.x = (__5.x*__6.x);
+          __4.y = (__5.y*__6.y);
+        ((half2*)(&__3))[0] = __float22half2_rn(((float2*)(&__4))[0]);
+        *(uint1*)(cb_local + (i_7 * 2)) = __3;
+      }
       #pragma unroll
       for (int i_8 = 0; i_8 < 32; ++i_8) {
         uint1 __9;

@@ -38,7 +38,7 @@
     },
     {
       "buffer_id": 6,
-      "byte_offset": 0,
+      "byte_offset": 1024,
       "communication": 2,
       "version_count": 1
     },
@@ -50,7 +50,7 @@
     },
     {
       "buffer_id": 8,
-      "byte_offset": 16384,
+      "byte_offset": 17408,
       "communication": 2,
       "version_count": 1
     },
@@ -62,7 +62,7 @@
     },
     {
       "buffer_id": 10,
-      "byte_offset": 73728,
+      "byte_offset": 74752,
       "communication": 2,
       "version_count": 1
     },
@@ -74,7 +74,7 @@
     },
     {
       "buffer_id": 12,
-      "byte_offset": 90112,
+      "byte_offset": 91136,
       "communication": 2,
       "version_count": 1
     },
@@ -92,7 +92,7 @@
     },
     {
       "buffer_id": 15,
-      "byte_offset": 91136,
+      "byte_offset": 92160,
       "communication": 2,
       "version_count": 1
     },
@@ -110,7 +110,7 @@
     },
     {
       "buffer_id": 18,
-      "byte_offset": 32768,
+      "byte_offset": 33792,
       "communication": 2,
       "version_count": 3
     },
@@ -128,7 +128,7 @@
     },
     {
       "buffer_id": 21,
-      "byte_offset": 96256,
+      "byte_offset": 97280,
       "communication": 2,
       "version_count": 1
     },
@@ -140,7 +140,7 @@
     },
     {
       "buffer_id": 23,
-      "byte_offset": 92160,
+      "byte_offset": 93184,
       "communication": 2,
       "version_count": 1
     },
@@ -173,37 +173,37 @@
     {
       "group_id": 0,
       "operation_id": 1,
-      "order": 1,
-      "stage": null
-    },
-    {
-      "group_id": 0,
-      "operation_id": 2,
-      "order": 2,
-      "stage": null
-    },
-    {
-      "group_id": 0,
-      "operation_id": 3,
       "order": 3,
       "stage": null
     },
     {
       "group_id": 0,
-      "operation_id": 4,
+      "operation_id": 2,
       "order": 4,
       "stage": null
     },
     {
       "group_id": 0,
+      "operation_id": 3,
+      "order": 6,
+      "stage": null
+    },
+    {
+      "group_id": 0,
+      "operation_id": 4,
+      "order": 1,
+      "stage": null
+    },
+    {
+      "group_id": 0,
       "operation_id": 5,
-      "order": 5,
+      "order": 2,
       "stage": null
     },
     {
       "group_id": 0,
       "operation_id": 6,
-      "order": 6,
+      "order": 5,
       "stage": null
     },
     {
@@ -221,31 +221,31 @@
     {
       "group_id": 0,
       "operation_id": 9,
-      "order": 1,
-      "stage": 0
-    },
-    {
-      "group_id": 0,
-      "operation_id": 10,
-      "order": 2,
-      "stage": 0
-    },
-    {
-      "group_id": 0,
-      "operation_id": 11,
-      "order": 3,
-      "stage": 0
-    },
-    {
-      "group_id": 0,
-      "operation_id": 12,
       "order": 4,
       "stage": 0
     },
     {
       "group_id": 0,
-      "operation_id": 13,
+      "operation_id": 10,
+      "order": 1,
+      "stage": 0
+    },
+    {
+      "group_id": 0,
+      "operation_id": 11,
       "order": 5,
+      "stage": 0
+    },
+    {
+      "group_id": 0,
+      "operation_id": 12,
+      "order": 7,
+      "stage": 0
+    },
+    {
+      "group_id": 0,
+      "operation_id": 13,
+      "order": 2,
       "stage": 0
     },
     {
@@ -257,19 +257,19 @@
     {
       "group_id": 0,
       "operation_id": 15,
-      "order": 7,
-      "stage": 0
-    },
-    {
-      "group_id": 0,
-      "operation_id": 16,
       "order": 8,
       "stage": 0
     },
     {
       "group_id": 0,
-      "operation_id": 17,
+      "operation_id": 16,
       "order": 9,
+      "stage": 0
+    },
+    {
+      "group_id": 0,
+      "operation_id": 17,
+      "order": 3,
       "stage": 0
     },
     {
@@ -281,7 +281,7 @@
     {
       "group_id": 1,
       "operation_id": 19,
-      "order": 0,
+      "order": 1,
       "stage": null
     },
     {
@@ -293,7 +293,7 @@
     {
       "group_id": 1,
       "operation_id": 21,
-      "order": 1,
+      "order": 0,
       "stage": null
     },
     {
@@ -315,7 +315,7 @@
       "stage": null
     }
   ],
-  "shared_arena_bytes": 100352,
+  "shared_arena_bytes": 101376,
   "sync_edges": [
     {
       "buffer_id": 6,
@@ -343,7 +343,7 @@
     },
     {
       "buffer_id": 3,
-      "byte_offset": 24576,
+      "byte_offset": 25600,
       "completion_mode": 0,
       "consumer_id": 18,
       "dependency_kind": 5,
@@ -391,7 +391,7 @@
     },
     {
       "buffer_id": 11,
-      "byte_offset": 57344,
+      "byte_offset": 58368,
       "completion_mode": 0,
       "consumer_id": 18,
       "dependency_kind": 1,

@@ -170,7 +170,7 @@ def tilelang_chunk_bwd_intra(
             dAkk_prev_shared = T.alloc_shared((BC, BC), dtype=input_dtype)
 
             # Temporary fragment for b_kg computation
-            kg_fragment = T.alloc_fragment((BC, block_DK), dtype=accum_dtype)
+            kg_fragment = T.alloc_fragment((BC, block_DK), dtype=input_dtype)
 
             kj_shared = T.alloc_shared((block_DK,), dtype=T.float32)
             gkj_shared = T.alloc_shared((block_DK,), dtype=T.float32)
@@ -184,32 +184,31 @@ def tilelang_chunk_bwd_intra(
             T.copy(g[bb, i_ti : i_ti + BC, bh, i_k * block_DK : (i_k + 1) * block_DK], g_current_shared)
             T.copy(beta[bb, i_ti : i_ti + BC, bh], beta_shared)
 
-            if i_i > 0:
-                chunk_first_idx = i_ti  # chunk first token idx
+            chunk_first_idx = i_ti  # chunk first token idx
 
-                T.copy(g[bb, chunk_first_idx, bh, i_k * block_DK : (i_k + 1) * block_DK], gn_shared)  # Get the first token's g value (b_gn)
+            T.copy(g[bb, chunk_first_idx, bh, i_k * block_DK : (i_k + 1) * block_DK], gn_shared)  # Get the first token's g value (b_gn)
 
-                # Loop over previous sub-chunks (i_j from 0 to i_i-1)
-                # Since i_i is computed from i_kc % NC and NC is small, we can use conditional blocks
-                # Process each possible previous sub-chunk with conditional execution
-                for i_j in T.Pipelined(i_i, num_stages=num_stages):  # i_j is index ofprevious sub_chunks
-                    prev_ti = i_t * BT + i_j * BC
-                    T.copy(k[bb, prev_ti : prev_ti + BC, bh, i_k * block_DK : (i_k + 1) * block_DK], k_prev_shared)
-                    T.copy(g[bb, prev_ti : prev_ti + BC, bh, i_k * block_DK : (i_k + 1) * block_DK], g_prev_shared)
+            # Loop over previous sub-chunks (i_j from 0 to i_i-1)
+            # Since i_i is computed from i_kc % NC and NC is small, we can use conditional blocks
+            # Process each possible previous sub-chunk with conditional execution
+            for i_j in T.Pipelined(i_i, num_stages=num_stages):  # i_j is index ofprevious sub_chunks
+                prev_ti = i_t * BT + i_j * BC
+                T.copy(k[bb, prev_ti : prev_ti + BC, bh, i_k * block_DK : (i_k + 1) * block_DK], k_prev_shared)
+                T.copy(g[bb, prev_ti : prev_ti + BC, bh, i_k * block_DK : (i_k + 1) * block_DK], g_prev_shared)
 
-                    T.copy(dAqk[bb, i_ti : i_ti + BC, bh, i_j * BC : (i_j + 1) * BC], dAqk_prev_shared)
-                    T.copy(dAkk[bb, i_ti : i_ti + BC, bh, i_j * BC : (i_j + 1) * BC], dAkk_prev_shared)
-
-                    for i_bc, i_k2 in T.Parallel(BC, block_DK):
-                        kg_fragment[i_bc, i_k2] = k_prev_shared[i_bc, i_k2] * T.exp2(gn_shared[i_k2] - g_prev_shared[i_bc, i_k2])
-
-                    T.gemm(dAqk_prev_shared, kg_fragment, dq2_fragment, clear_accum=False)
-                    T.gemm(dAkk_prev_shared, kg_fragment, dk2_fragment, clear_accum=False)
+                T.copy(dAqk[bb, i_ti : i_ti + BC, bh, i_j * BC : (i_j + 1) * BC], dAqk_prev_shared)
+                T.copy(dAkk[bb, i_ti : i_ti + BC, bh, i_j * BC : (i_j + 1) * BC], dAkk_prev_shared)
 
                 for i_bc, i_k2 in T.Parallel(BC, block_DK):
-                    gqn = T.exp2(g_current_shared[i_bc, i_k2] - gn_shared[i_k2])
-                    dq2_fragment[i_bc, i_k2] = dq2_fragment[i_bc, i_k2] * gqn
-                    dk2_fragment[i_bc, i_k2] = dk2_fragment[i_bc, i_k2] * gqn
+                    kg_fragment[i_bc, i_k2] = k_prev_shared[i_bc, i_k2] * T.exp2(gn_shared[i_k2] - g_prev_shared[i_bc, i_k2])
+
+                T.gemm(dAqk_prev_shared, kg_fragment, dq2_fragment, clear_accum=False)
+                T.gemm(dAkk_prev_shared, kg_fragment, dk2_fragment, clear_accum=False)
+
+            for i_bc, i_k2 in T.Parallel(BC, block_DK):
+                gqn = T.exp2(g_current_shared[i_bc, i_k2] - gn_shared[i_k2])
+                dq2_fragment[i_bc, i_k2] = dq2_fragment[i_bc, i_k2] * gqn
+                dk2_fragment[i_bc, i_k2] = dk2_fragment[i_bc, i_k2] * gqn
 
             # Process current sub-chunk diagonal
             loop_length = T.min(BC, S - i_t * BT - i_i * BC)
@@ -263,55 +262,54 @@ def tilelang_chunk_bwd_intra(
 
             # Temporary fragments for computation
             gkn_shared = T.alloc_shared((BC, block_DK), dtype=accum_dtype)
-            qg_shared = T.alloc_shared((BC, block_DK), dtype=accum_dtype)
+            qg_shared = T.alloc_shared((BC, block_DK), dtype=input_dtype)
             kbg_fragment = T.alloc_fragment((BC, block_DK), dtype=accum_dtype)
-            kbg_shared = T.alloc_shared((BC, block_DK), dtype=accum_dtype)
+            kbg_shared = T.alloc_shared((BC, block_DK), dtype=input_dtype)
             dkt_temp_fragment = T.alloc_fragment((BC, block_DK), dtype=accum_dtype)
             # T.use_swizzle(10)
 
             NC_actual = T.min(NC, T.ceildiv(S - i_t * BT, BC))  # Process subsequent sub-chunks (i_j from i_i+1 to NC-1)
-            if i_i < NC_actual - 1:
-                # Get the last token's g value in current sub-chunk
-                chunk_last_idx = T.min(S, i_ti + BC) - 1
-                gn_last_shared = T.alloc_shared((block_DK,), dtype=gate_dtype)
-                T.copy(g[bb, chunk_last_idx, bh, i_k * block_DK : (i_k + 1) * block_DK], gn_last_shared)
+            # Get the last token's g value in current sub-chunk
+            chunk_last_idx = T.min(S, i_ti + BC) - 1
+            gn_last_shared = T.alloc_shared((block_DK,), dtype=gate_dtype)
+            T.copy(g[bb, chunk_last_idx, bh, i_k * block_DK : (i_k + 1) * block_DK], gn_last_shared)
 
-                # Loop over subsequent sub-chunks
-                for i_j in T.Pipelined(i_i + 1, NC_actual, num_stages=num_stages):
-                    i_tj = i_t * BT + i_j * BC
+            # Loop over subsequent sub-chunks
+            for i_j in T.Pipelined(i_i + 1, NC_actual, num_stages=num_stages):
+                i_tj = i_t * BT + i_j * BC
 
-                    T.copy(q[bb, i_tj : i_tj + BC, bh, i_k * block_DK : (i_k + 1) * block_DK], q_next_shared)
-                    T.copy(k[bb, i_tj : i_tj + BC, bh, i_k * block_DK : (i_k + 1) * block_DK], k_next_shared)
-                    T.copy(g[bb, i_tj : i_tj + BC, bh, i_k * block_DK : (i_k + 1) * block_DK], g_next_shared)
-                    T.copy(beta[bb, i_tj : i_tj + BC, bh], beta_next_shared)
+                T.copy(q[bb, i_tj : i_tj + BC, bh, i_k * block_DK : (i_k + 1) * block_DK], q_next_shared)
+                T.copy(k[bb, i_tj : i_tj + BC, bh, i_k * block_DK : (i_k + 1) * block_DK], k_next_shared)
+                T.copy(g[bb, i_tj : i_tj + BC, bh, i_k * block_DK : (i_k + 1) * block_DK], g_next_shared)
+                T.copy(beta[bb, i_tj : i_tj + BC, bh], beta_next_shared)
 
-                    T.copy(dAqk[bb, i_tj : i_tj + BC, bh, i_i * BC : (i_i + 1) * BC], dAqk_next_shared)  # [BC, BC] need transpose
-                    T.copy(dAkk[bb, i_tj : i_tj + BC, bh, i_i * BC : (i_i + 1) * BC], dAkk_next_shared)  # [BC, BC] need transpose
+                T.copy(dAqk[bb, i_tj : i_tj + BC, bh, i_i * BC : (i_i + 1) * BC], dAqk_next_shared)  # [BC, BC] need transpose
+                T.copy(dAkk[bb, i_tj : i_tj + BC, bh, i_i * BC : (i_i + 1) * BC], dAkk_next_shared)  # [BC, BC] need transpose
 
-                    for i_bc, i_k2 in T.Parallel(BC, block_DK):
-                        # kbg = k * beta
-                        kbg_fragment[i_bc, i_k2] = k_next_shared[i_bc, i_k2] * beta_next_shared[i_bc]
-                        gkn_shared[i_bc, i_k2] = T.if_then_else(
-                            i_tj + i_bc < S, T.exp2(g_next_shared[i_bc, i_k2] - gn_last_shared[i_k2]), 0.0
-                        )
-
-                    # Compute qg and kbg
-                    for i_bc, i_k2 in T.Parallel(BC, block_DK):
-                        qg_shared[i_bc, i_k2] = q_next_shared[i_bc, i_k2] * gkn_shared[i_bc, i_k2]
-                        kbg_shared[i_bc, i_k2] = kbg_fragment[i_bc, i_k2] * gkn_shared[i_bc, i_k2]
-
-                    # Accumulate: dkt += dAqk^T @ qg + dAkk^T @ kbg
-                    # Use transpose_A=True because dAqk/dAkk are loaded in (T, BT) layout but we need (BT, T) for gemm
-                    T.gemm(dAqk_next_shared, qg_shared, dkt_temp_fragment, transpose_A=True, clear_accum=True)
-                    T.gemm(dAkk_next_shared, kbg_shared, dkt_temp_fragment, transpose_A=True, clear_accum=False)
-
-                    for i_bc, i_k2 in T.Parallel(BC, block_DK):
-                        dkt_fragment[i_bc, i_k2] = dkt_fragment[i_bc, i_k2] + dkt_temp_fragment[i_bc, i_k2]
-
-                # Scale dkt by exp2(gn_last - g_current)
                 for i_bc, i_k2 in T.Parallel(BC, block_DK):
-                    g_scale = T.exp2(gn_last_shared[i_k2] - g_current_shared[i_bc, i_k2])
-                    dkt_fragment[i_bc, i_k2] = dkt_fragment[i_bc, i_k2] * g_scale
+                    # kbg = k * beta
+                    kbg_fragment[i_bc, i_k2] = k_next_shared[i_bc, i_k2] * beta_next_shared[i_bc]
+                    gkn_shared[i_bc, i_k2] = T.if_then_else(
+                        i_tj + i_bc < S, T.exp2(g_next_shared[i_bc, i_k2] - gn_last_shared[i_k2]), 0.0
+                    )
+
+                # Compute qg and kbg
+                for i_bc, i_k2 in T.Parallel(BC, block_DK):
+                    qg_shared[i_bc, i_k2] = q_next_shared[i_bc, i_k2] * gkn_shared[i_bc, i_k2]
+                    kbg_shared[i_bc, i_k2] = kbg_fragment[i_bc, i_k2] * gkn_shared[i_bc, i_k2]
+
+                # Accumulate: dkt += dAqk^T @ qg + dAkk^T @ kbg
+                # Use transpose_A=True because dAqk/dAkk are loaded in (T, BT) layout but we need (BT, T) for gemm
+                T.gemm(dAqk_next_shared, qg_shared, dkt_temp_fragment, transpose_A=True, clear_accum=True)
+                T.gemm(dAkk_next_shared, kbg_shared, dkt_temp_fragment, transpose_A=True, clear_accum=False)
+
+                for i_bc, i_k2 in T.Parallel(BC, block_DK):
+                    dkt_fragment[i_bc, i_k2] = dkt_fragment[i_bc, i_k2] + dkt_temp_fragment[i_bc, i_k2]
+
+            # Scale dkt by exp2(gn_last - g_current)
+            for i_bc, i_k2 in T.Parallel(BC, block_DK):
+                g_scale = T.exp2(gn_last_shared[i_k2] - g_current_shared[i_bc, i_k2])
+                dkt_fragment[i_bc, i_k2] = dkt_fragment[i_bc, i_k2] * g_scale
 
             # Process lower triangular part of current sub-chunk diagonal
             # This corresponds to j <= i_bc in the diagonal block

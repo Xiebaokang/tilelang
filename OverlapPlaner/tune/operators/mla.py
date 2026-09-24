@@ -13,7 +13,13 @@ import tilelang.language as T
 import torch
 import torch.nn.functional as F
 
-from .workloads import OperatorSpec, Options, SearchWorkload, TileConfig
+from .workloads import (
+    OperatorSpec,
+    Options,
+    SearchWorkload,
+    TileConfig,
+    threads_from_tile_extent,
+)
 
 
 def add_arguments(parser) -> None:
@@ -51,6 +57,7 @@ def flashattn(
     pe_dim,
     block_N=64,
     block_H=64,
+    threads=256,
 ):
     scale = ((1.0 / (dim + pe_dim)) ** 0.5) * 1.44269504
     dtype = T.float16
@@ -69,7 +76,7 @@ def flashattn(
         with T.Kernel(
             heads // min(block_H, kv_group_num),
             batch,
-            threads=256,
+            threads=threads,
         ) as (hid, bid):
             Q_shared = T.alloc_shared([block_H, dim], dtype)
             S_shared = T.alloc_shared([block_H, block_N], dtype)
@@ -203,6 +210,12 @@ def build(options: Options, config: TileConfig) -> SearchWorkload:
         pe_dim,
         block_N=config["block_n"],
         block_H=config["block_h"],
+        # acc_o is [block_h, dim]; include its wide N axis so the 64x512
+        # native tile retains 256 threads while 16/32-row tiles use 128.
+        threads=threads_from_tile_extent(
+            config["block_h"] * dim,
+            tile_unit=32 * dim,
+        ),
     )
     total_flops = 2.0 * batch * heads * seqlen_kv * (dim + pe_dim) + (
         2.0 * batch * heads * seqlen_kv * dim

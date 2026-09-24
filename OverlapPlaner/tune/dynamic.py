@@ -52,6 +52,16 @@ def plan_fingerprint(payload: dict[str, Any]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def workload_plan_fingerprint(
+    plan_identity: str, workload_fingerprint: str
+) -> str:
+    """Combine a semantic plan identity with its concrete workload."""
+
+    return plan_fingerprint(
+        {"plan": plan_identity, "workload": workload_fingerprint}
+    )
+
+
 def plan_features(payload: dict[str, Any]) -> tuple[float, ...]:
     """Extract latency-agnostic structural and resource features."""
 
@@ -316,9 +326,7 @@ def load_candidates(
         fingerprint = (
             plan_identity
             if fingerprint_salt is None
-            else plan_fingerprint(
-                {"plan": plan_identity, "evaluation": fingerprint_salt}
-            )
+            else workload_plan_fingerprint(plan_identity, fingerprint_salt)
         )
         row = feature_rows.get(index, {})
         stored_features = (

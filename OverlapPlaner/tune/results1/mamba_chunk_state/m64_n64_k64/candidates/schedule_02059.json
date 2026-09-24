@@ -28,11 +28,11 @@
       "buffer_id": 4,
       "byte_offset": 16384,
       "communication": 2,
-      "version_count": 1
+      "version_count": 2
     },
     {
       "buffer_id": 5,
-      "byte_offset": 24576,
+      "byte_offset": 32768,
       "communication": 2,
       "version_count": 2
     },
@@ -44,9 +44,9 @@
     },
     {
       "buffer_id": 7,
-      "byte_offset": 25600,
+      "byte_offset": 33792,
       "communication": 2,
-      "version_count": 1
+      "version_count": 2
     },
     {
       "buffer_id": 8,
@@ -92,7 +92,7 @@
     },
     {
       "buffer_id": 15,
-      "byte_offset": 26624,
+      "byte_offset": 34816,
       "communication": 2,
       "version_count": 1
     },
@@ -129,7 +129,7 @@
       "stage": null
     },
     {
-      "group_id": 0,
+      "group_id": 1,
       "operation_id": 2,
       "order": 0,
       "stage": 0
@@ -137,13 +137,13 @@
     {
       "group_id": 1,
       "operation_id": 3,
-      "order": 0,
+      "order": 1,
       "stage": 0
     },
     {
-      "group_id": 0,
+      "group_id": 1,
       "operation_id": 4,
-      "order": 1,
+      "order": 2,
       "stage": 0
     },
     {
@@ -155,31 +155,31 @@
     {
       "group_id": 0,
       "operation_id": 6,
+      "order": 0,
+      "stage": 1
+    },
+    {
+      "group_id": 0,
+      "operation_id": 7,
+      "order": 1,
+      "stage": 1
+    },
+    {
+      "group_id": 0,
+      "operation_id": 8,
       "order": 5,
       "stage": 0
     },
     {
       "group_id": 0,
-      "operation_id": 7,
-      "order": 7,
-      "stage": 0
-    },
-    {
-      "group_id": 0,
-      "operation_id": 8,
-      "order": 6,
-      "stage": 0
-    },
-    {
-      "group_id": 0,
       "operation_id": 9,
-      "order": 8,
-      "stage": 0
+      "order": 2,
+      "stage": 1
     },
     {
-      "group_id": 0,
+      "group_id": 1,
       "operation_id": 10,
-      "order": 2,
+      "order": 3,
       "stage": 0
     },
     {
@@ -201,7 +201,7 @@
       "stage": null
     }
   ],
-  "shared_arena_bytes": 34816,
+  "shared_arena_bytes": 43008,
   "sync_edges": [
     {
       "buffer_id": 4,
@@ -213,7 +213,7 @@
       "kind": 0,
       "producer_id": 2,
       "scope": 1,
-      "slot_count": 1
+      "slot_count": 2
     },
     {
       "buffer_id": 5,
@@ -237,7 +237,7 @@
       "kind": 0,
       "producer_id": 4,
       "scope": 1,
-      "slot_count": 1
+      "slot_count": 2
     },
     {
       "buffer_id": 14,
@@ -257,11 +257,11 @@
       "completion_mode": 0,
       "consumer_id": 2,
       "dependency_kind": 8,
-      "iteration_distance": 1,
+      "iteration_distance": 2,
       "kind": 1,
       "producer_id": 8,
       "scope": 1,
-      "slot_count": 1
+      "slot_count": 2
     },
     {
       "buffer_id": 5,
@@ -281,11 +281,11 @@
       "completion_mode": 0,
       "consumer_id": 4,
       "dependency_kind": 8,
-      "iteration_distance": 1,
+      "iteration_distance": 2,
       "kind": 1,
       "producer_id": 6,
       "scope": 1,
-      "slot_count": 1
+      "slot_count": 2
     },
     {
       "buffer_id": 14,
