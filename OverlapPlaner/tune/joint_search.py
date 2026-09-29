@@ -25,6 +25,7 @@ from OverlapPlaner.structure.version import (
 from OverlapPlaner.tune.copy_search import (
     classified_for_plan,
     realize_copy_move,
+    realize_copy_configuration,
     selected_optional_tma_copies,
 )
 from OverlapPlaner.tune.order_search import (
@@ -78,6 +79,10 @@ def adjacent_joint_moves(
     for node_id in optional_tma_copy_ids(classified):
         yield "copy", node_id, int(node_id not in selected_copies), 0, 0
 
+    copy_ids = optional_tma_copy_ids(classified)
+    for left, right in zip(copy_ids, copy_ids[1:]):
+        yield "copy_pair", left, right, 0, 0
+
     minimum = analyze_buffer_versions(graph, stages, groups, orders)
     counts = {
         int(buffer["buffer_id"]): int(buffer["version_count"])
@@ -100,6 +105,12 @@ def realize_joint_move(
     """Recompute versions, synchronization, and resources after a move."""
 
     dimension, first, second, value, variant = move
+    if dimension == "copy_pair":
+        eligible = set(optional_tma_copy_ids(classified))
+        if first == second or not {first, second} <= eligible or value or variant:
+            return None
+        selected = set(selected_optional_tma_copies(classified, payload))
+        return realize_copy_configuration(classified, payload, selected ^ {first, second})
     if dimension == "copy":
         if value != 0 or variant != 0 or second not in (0, 1):
             return None

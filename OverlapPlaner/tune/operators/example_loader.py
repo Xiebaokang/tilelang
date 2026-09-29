@@ -82,16 +82,24 @@ class NativeKernelReference:
     operator self-contained.
     """
 
-    def __init__(self, prim_func, out_idx, pass_configs=None):
+    def __init__(
+        self, prim_func, out_idx, pass_configs=None, *, prim_func_factory=None
+    ):
         self.prim_func = prim_func.without_attr("tl.auto_overlap")
+        self.prim_func_factory = prim_func_factory
         self.out_idx = tuple(out_idx)
         self.pass_configs = dict(pass_configs or {})
         self.compiled = None
 
     def __call__(self, *inputs):
         if self.compiled is None:
+            prim_func = (
+                self.prim_func_factory()
+                if self.prim_func_factory is not None
+                else self.prim_func
+            )
             self.compiled = tilelang.compile(
-                self.prim_func,
+                prim_func.without_attr("tl.auto_overlap"),
                 out_idx=list(self.out_idx),
                 target=HOPPER_CUDA_TARGET,
                 execution_backend="cython",

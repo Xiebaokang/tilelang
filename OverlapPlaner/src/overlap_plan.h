@@ -84,6 +84,8 @@ public:
   int64_t group_id{0};
   ffi::Optional<Integer> stage;
   int64_t order{0};
+  // Unset for legacy plans and non-copy operations.
+  ffi::Optional<ffi::String> copy_backend;
 
   static void RegisterReflection();
   TVM_FFI_DECLARE_OBJECT_INFO_FINAL("tl.overlap_plan.OperationPlacement",
@@ -95,7 +97,8 @@ public:
   TVM_DLL OperationPlacement(int64_t operation_id,
                              ffi::Optional<tirx::Stmt> statement,
                              int64_t group_id, ffi::Optional<Integer> stage,
-                             int64_t order);
+                             int64_t order,
+                             ffi::Optional<ffi::String> copy_backend = std::nullopt);
   TVM_FFI_DEFINE_OBJECT_REF_METHODS_NULLABLE(OperationPlacement, ffi::ObjectRef,
                                              OperationPlacementNode);
 };
@@ -219,6 +222,7 @@ struct LoweringView {
   std::vector<int64_t> operation_regions;
   std::vector<int64_t> operation_stages;
   std::vector<int64_t> operation_local_orders;
+  std::vector<ffi::Optional<ffi::String>> operation_copy_backends;
   std::vector<int64_t> region_num_stages;
 
   std::vector<int64_t> group_first_warps;

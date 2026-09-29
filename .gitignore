@@ -129,5 +129,14 @@ maint/host_checks/logs/*
 uv.lock
 
 # 
+OverlapPlaner/tune/results
 OverlapPlaner/tune/results*
 history/results*
+OverlapPlaner/tune/triton_bench
+OverlapPlaner/tune/log
+
+# doc
+OverlapPlaner/doc/*.py
+OverlapPlaner/doc/*.json
+OverlapPlaner/doc/*.md
+OverlapPlaner/doc/*.pptx

@@ -18,6 +18,12 @@ def _integer(value: Any, field: str, *, optional: bool = False) -> int | None:
     return value
 
 
+def _copy_backend(value: Any) -> str | None:
+    if value is not None and value not in ("simt", "tma"):
+        raise ValueError("copy_backend must be simt, tma, or null")
+    return value
+
+
 def _objects(value: Any, field: str) -> list[Mapping[str, Any]]:
     if not isinstance(value, list):
         raise ValueError(f"{field} must be an array")
@@ -60,6 +66,7 @@ def plan_from_dict(payload: Mapping[str, Any]) -> OverlapPlan:
                 optional=True,
             ),
             _integer(item.get("order"), f"operations[{index}].order"),
+            _copy_backend(item.get("copy_backend")),
         )
         for index, item in enumerate(
             _objects(payload.get("operations"), "operations")
@@ -165,6 +172,8 @@ def plan_to_dict(plan: OverlapPlan) -> dict[str, Any]:
                     None if operation.stage is None else int(operation.stage)
                 ),
                 "order": int(operation.order),
+                "copy_backend": (None if operation.copy_backend is None
+                                 else str(operation.copy_backend)),
             }
             for operation in plan.operations
         ],

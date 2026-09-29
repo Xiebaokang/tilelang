@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 
 from OverlapPlaner.tune.dynamic import (
     Candidate,
     DynamicSearchPolicy,
+    _native_role_seed_priority,
     file_fingerprint,
     should_stop,
 )
@@ -82,6 +84,63 @@ def test_initial_selection_covers_physical_group_permutations() -> None:
     assert policy.has_uncovered_bucket({0})
 
 
+def test_native_seed_keeps_output_store_with_compute_group() -> None:
+    from OverlapPlaner.arch import HOPPER
+    from OverlapPlaner.contract import layout_reduced_prim_func
+    from OverlapPlaner.facts import OpKind, extract_fact_graph
+    from OverlapPlaner.tune.operators.mla import OPERATOR as MLA
+
+    options = {
+        "mla_batch": 1, "mla_heads": 64, "mla_kv_heads": 1,
+        "mla_seq": 256, "mla_dim": 512, "mla_pe_dim": 64,
+    }
+    classified = HOPPER.classify(
+        extract_fact_graph(
+            layout_reduced_prim_func(
+                MLA.build(options, {"block_h": 16, "block_n": 64}).prim_func
+            )
+        )
+    )
+    graph = classified.graph
+    placements = [
+        {"operation_id": node.node_id, "group_id": 1}
+        for node in graph.nodes
+    ]
+    input_loads = []
+    output_stores = []
+    for node in graph.nodes:
+        if node.kind != OpKind.COPY:
+            continue
+        read_scopes = {graph.buffer_for_id(i).scope for i in node.reads}
+        write_scopes = {graph.buffer_for_id(i).scope for i in node.writes}
+        if any(s in ("", "global") for s in read_scopes) and any(
+            s.startswith("shared") for s in write_scopes
+        ):
+            input_loads.append(node.node_id)
+        if any(s.startswith("shared") for s in read_scopes) and any(
+            s in ("", "global") for s in write_scopes
+        ):
+            output_stores.append(node.node_id)
+    assert input_loads and output_stores
+    for item in placements:
+        if item["operation_id"] in input_loads:
+            item["group_id"] = 0
+    good = {
+        "groups": [
+            {"register_increase": 0},
+            {"register_increase": 1},
+        ],
+        "operations": placements,
+    }
+    bad = json.loads(json.dumps(good))
+    for item in bad["operations"]:
+        if item["operation_id"] in output_stores:
+            item["group_id"] = 0
+    assert _native_role_seed_priority(good, classified) > _native_role_seed_priority(
+        bad, classified
+    )
+
+
 def test_failed_candidate_does_not_cover_structure_bucket() -> None:
     candidates = (
         _candidate(0, 1, 1, 0.0),
@@ -106,6 +165,22 @@ def test_feedback_selection_is_deterministic_and_skips_completed() -> None:
     assert first == second
     assert len(first) == 3
     assert not (set(first) & ({0, 1, 2, 3, 4}))
+
+
+def test_feedback_recovers_a_hidden_optimum_from_candidate_features() -> None:
+    candidates = tuple(
+        _candidate(index, 1, 1, float(index)) for index in range(40)
+    )
+    policy = DynamicSearchPolicy(candidates, seed=11, exploration=0.0)
+    measured = {
+        index: math.exp(0.01 * (index - 27) ** 2)
+        for index in (0, 5, 10, 15, 20, 30, 35, 39)
+    }
+
+    selected = policy.next_batch(measured, set(), 4)
+
+    assert 27 in selected
+    assert policy.last_selection_roles[27] == "exploit"
 
 
 def test_feedback_uses_soft_coverage_instead_of_filling_the_batch() -> None:
@@ -239,21 +314,27 @@ def test_joint_expansion_samples_stage_group_and_order_and_replays(tmp_path):
     classified = HOPPER.classify(
         extract_fact_graph(layout_reduced_prim_func(OPERATOR.build(options, tile).prim_func))
     )
-    assert optional_tma_copy_ids(classified) == (0,)
+    assert 0 in optional_tma_copy_ids(classified)
     parent = json.loads((plan_dir / "schedule_00000.json").read_text())
     dimensions = {
         move[0]
         for move in adjacent_joint_moves(classified, parent)
         if realize_joint_move(classified, parent, move) is not None
     }
-    assert dimensions == {"stage", "group", "order", "copy"}
+    assert dimensions == {"stage", "group", "order", "copy", "copy_pair"}
     copy_move = next(
         move for move in adjacent_joint_moves(classified, parent)
         if move[0] == "copy"
     )
     copy_plan = realize_joint_move(classified, parent, copy_move)
     assert copy_plan is not None
-    assert copy_plan["operations"] == parent["operations"]
+    assert [
+        {k: v for k, v in op.items() if k != "copy_backend"}
+        for op in copy_plan["operations"]
+    ] == [
+        {k: v for k, v in op.items() if k != "copy_backend"}
+        for op in parent["operations"]
+    ]
     assert copy_plan["groups"] == parent["groups"]
     assert copy_plan["buffers"] == parent["buffers"]
     assert any(

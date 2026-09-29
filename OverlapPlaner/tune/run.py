@@ -19,17 +19,19 @@ import argparse
 import json
 import math
 import os
+import random
 import signal
 import statistics
 import subprocess
 import sys
 import time
 from collections.abc import Mapping, Sequence
-from dataclasses import replace
+from dataclasses import asdict, replace
 from pathlib import Path
 from typing import Any
 
 from OverlapPlaner.arch import HOPPER
+from OverlapPlaner.arch.hopper import optional_tma_copy_ids
 from OverlapPlaner.contract import (
     enumerate_overlap_plans,
     layout_reduced_prim_func,
@@ -45,8 +47,11 @@ from OverlapPlaner.structure.stage import (
 )
 from OverlapPlaner.structure.sync import build_synchronizations
 from OverlapPlaner.structure.version import analyze_buffer_versions
+from OverlapPlaner.tune.global_search import sample_global_plan
 from OverlapPlaner.tune.dynamic import (
     Candidate,
+    _copy_backend_bucket,
+    _physical_group_signature,
     DynamicSearchPolicy,
     classified_plan_features,
     file_fingerprint,
@@ -59,7 +64,10 @@ from OverlapPlaner.tune.dynamic import (
     should_stop,
     workload_plan_fingerprint,
 )
-from OverlapPlaner.tune.copy_search import classified_for_plan
+from OverlapPlaner.tune.copy_search import (
+    classified_for_plan,
+    realize_copy_configuration,
+)
 from OverlapPlaner.tune.operators import OPERATOR_NAMES, get_operator
 from OverlapPlaner.tune.operators.convolution import OPERATOR as CONVOLUTION
 from OverlapPlaner.tune.operators.dequant_gemm_fp4 import OPERATOR as DEQUANT_GEMM_FP4
@@ -118,7 +126,9 @@ SEARCH_OPERATORS: list[OperatorSpec] = [
 # Bump whenever generated-code semantics or correctness validation changes.
 # Results are measurements of a plan *and* its implementation, so a plan-only
 # fingerprint must not reuse rows produced by an older lowering.
-_EVALUATION_CACHE_VERSION = "overlap-plan-lowering-v6-gdn-kda-contracts"
+_EVALUATION_CACHE_VERSION = (
+    "overlap-plan-lowering-v8-copy-backends-reference-and-thread-mapping"
+)
 
 
 def _workload_fingerprint(
@@ -172,6 +182,13 @@ def generate_plans(
         )
         joint_seed_budget = 0
     plan_dir.mkdir(parents=True, exist_ok=True)
+    search_context = plan_fingerprint({
+        "workload": _workload_fingerprint(operator, tile, options),
+        "budget": asdict(budget), "joint_seed_budget": joint_seed_budget,
+        "generator_version": 1,
+    })
+    previous_manifest = _read_json(plan_dir / "manifest.json") or {}
+    resume_global = replay_order_mutations and previous_manifest.get("search_context") == search_context
     for path in plan_dir.iterdir():
         if (
             path.is_file()
@@ -184,8 +201,14 @@ def generate_plans(
     feature_path.unlink(missing_ok=True)
     count = 0
     known: dict[str, dict[str, Any]] = {}
+    searchable_copies = frozenset(optional_tma_copy_ids(classified))
+    # Reserve a share of the SAME pool budget for backend exploration.
+    copy_budget = budget.max_structures // 4 if searchable_copies else 0
+    enumeration_budget = replace(
+        budget, max_structures=budget.max_structures - copy_budget
+    )
     for plan in enumerate_overlap_plans(
-        workload.prim_func, budget=budget
+        workload.prim_func, budget=enumeration_budget
     ):
         payload = plan_to_dict(plan)
         _write_candidate(plan_dir, count, payload, classified)
@@ -199,7 +222,68 @@ def generate_plans(
             _write_candidate(plan_dir, count, payload, classified)
             known[fingerprint] = payload
             count += 1
+    if copy_budget:
+        # Group structurally similar parents, then round-robin across them.
+        # Do not spend all backend seeds on the first enumerated partition.
+        buckets = {}
+        for parent in known.values():
+            key = (
+                tuple((op["group_id"], op["stage"], op["order"]) for op in parent["operations"]),
+                tuple((g["warp_count"], g.get("register_count")) for g in parent["groups"]),
+            )
+            buckets.setdefault(key, parent)
+        parents = list(buckets.values())
+        # Stratify by group count and stage depth before shuffling inside each
+        # stratum; fixed RNG makes replay reproducible.
+        rng = random.Random(0)
+        strata = {}
+        for parent in parents:
+            key = (len(parent["groups"]), max((op["stage"] or 0) for op in parent["operations"]))
+            strata.setdefault(key, []).append(parent)
+        for items in strata.values():
+            rng.shuffle(items)
+        parents = []
+        while strata:
+            for key in list(sorted(strata)):
+                parents.append(strata[key].pop())
+                if not strata[key]:
+                    del strata[key]
+        emitted = 0
+        for round_index in range(3):
+            for index, parent in enumerate(parents):
+                mode = (index + round_index) % 3
+                selected = (
+                    frozenset() if mode == 0 else searchable_copies if mode == 1
+                    else frozenset(i for i in sorted(searchable_copies) if rng.random() < 0.5)
+                )
+                proposal = realize_copy_configuration(classified, parent, selected)
+                if proposal is None:
+                    continue
+                fingerprint = plan_fingerprint(proposal)
+                if fingerprint in known:
+                    continue
+                _write_candidate(plan_dir, count, proposal, classified)
+                known[fingerprint] = proposal
+                count += 1
+                emitted += 1
+                if emitted >= copy_budget:
+                    break
+            if emitted >= copy_budget:
+                break
     base_count = count
+    # Replay the chronological journal before legacy mutation logs. This keeps
+    # global proposals and their local descendants at stable schedule indices.
+    if replay_order_mutations:
+        for record in _read_jsonl(plan_dir / "dynamic_candidates.jsonl"):
+            if record.get("search_context") != search_context:
+                continue
+            proposal = record["payload"]
+            fingerprint = plan_fingerprint(proposal)
+            if fingerprint != record.get("fingerprint") or fingerprint in known:
+                continue
+            _write_candidate(plan_dir, count, proposal, classified)
+            known[fingerprint] = proposal
+            count += 1
     mutations = (
         _read_jsonl(plan_dir / "order_mutations.jsonl")
         if replay_order_mutations else []
@@ -244,6 +328,10 @@ def generate_plans(
             "schedule_count": count,
             "base_schedule_count": base_count,
             "stage_beam": budget.stage_beam,
+            "search_budget": asdict(budget),
+            "search_context": search_context,
+            "global_cursor": int(previous_manifest.get("global_cursor", 0)) if resume_global else 0,
+            "global_round": int(previous_manifest.get("global_round", 0)) if resume_global else 0,
             "candidate_features": "features.jsonl",
         },
     )
@@ -923,7 +1011,7 @@ def _expand_order_candidates(
     remaining = min(limit, max(0, max_extra - (next_index - base_count)))
     if remaining < 1:
         return []
-    candidates = load_candidates(plan_dir)
+    candidates = load_candidates(plan_dir, classified=classified)
     by_index = {candidate.index: candidate for candidate in candidates}
     known = {candidate.fingerprint for candidate in candidates}
     ranked = sorted(measured_latency, key=lambda index: measured_latency[index])
@@ -972,6 +1060,8 @@ def _expand_order_candidates(
                     fingerprint=fingerprint,
                     bucket=(int(features[0]), int(features[1])),
                     features=features,
+                    physical_bucket=_physical_group_signature(proposal),
+                    async_copy_bucket=_copy_backend_bucket(proposal, classified),
                     producer_copies=producer_copy_count(
                         proposal, proposal_classified
                     ),
@@ -1035,7 +1125,7 @@ def _expand_joint_candidates(
     remaining = min(limit, max(0, max_extra - (next_index - base_count)))
     if remaining < 1 or not measured_latency:
         return []
-    candidates = load_candidates(plan_dir)
+    candidates = load_candidates(plan_dir, classified=classified)
     by_index = {candidate.index: candidate for candidate in candidates}
     known = {candidate.fingerprint for candidate in candidates}
     ranked = sorted(measured_latency, key=lambda index: measured_latency[index])
@@ -1056,12 +1146,16 @@ def _expand_joint_candidates(
     proposals: dict[int, tuple[dict[str, Any], str, tuple]] = {}
     proposal_candidates: list[Candidate] = []
     per_dimension = {
-        "stage": 0, "group": 0, "order": 0, "version": 0, "copy": 0
+        "stage": 0, "group": 0, "order": 0, "version": 0, "copy": 0, "copy_pair": 0
     }
     for parent_index in parents[:8]:
         parent = by_index[parent_index]
         payload = json.loads(parent.path.read_text(encoding="utf-8"))
-        for move in adjacent_joint_moves(classified, payload):
+        search_budget = SearchBudget(**manifest.get("search_budget", {}))
+        for move in adjacent_joint_moves(
+            classified, payload, max_stages=search_budget.max_stages,
+            max_groups=search_budget.max_groups,
+        ):
             dimension = move[0]
             if per_dimension[dimension] >= max(remaining * 12, 24):
                 continue
@@ -1085,6 +1179,8 @@ def _expand_joint_candidates(
                     fingerprint=fingerprint,
                     bucket=(int(features[0]), int(features[1])),
                     features=features,
+                    physical_bucket=_physical_group_signature(proposal),
+                    async_copy_bucket=_copy_backend_bucket(proposal, classified),
                     producer_copies=producer_copy_count(
                         proposal, proposal_classified
                     ),
@@ -1111,6 +1207,7 @@ def _expand_joint_candidates(
     added: list[int] = []
     for temporary_index in chosen[:remaining]:
         proposal, parent_fingerprint, move = proposals[temporary_index]
+        _journal_candidate(plan_dir, manifest, proposal, "local_mutation")
         fingerprint = plan_fingerprint(proposal)
         _write_candidate(plan_dir, next_index, proposal, classified)
         _append_jsonl(
@@ -1126,6 +1223,71 @@ def _expand_joint_candidates(
     manifest["schedule_count"] = next_index
     _write_json(plan_dir / "manifest.json", manifest)
     return added
+
+
+def _journal_candidate(plan_dir, manifest, payload, source):
+    _append_jsonl(plan_dir / "dynamic_candidates.jsonl", {
+        "search_context": manifest.get("search_context"),
+        "fingerprint": plan_fingerprint(payload), "payload": payload,
+        "source": source,
+    })
+
+
+def _expand_global_candidates(plan_dir, classified, limit, *, max_attempts=128, seconds=3.0):
+    """Continue a seeded global stream, with bounded CPU work and durable progress."""
+    if limit < 1:
+        return []
+    manifest = _read_json(plan_dir / "manifest.json") or {}
+    budget = SearchBudget(**manifest.get("search_budget", {}))
+    known = {candidate.fingerprint for candidate in load_candidates(plan_dir)}
+    index = int(manifest.get("schedule_count", 0))
+    cursor = int(manifest.get("global_cursor", 0))
+    started = time.monotonic()
+    added = []
+    attempts = 0
+    for _ in range(max_attempts):
+        if time.monotonic() - started >= seconds:
+            break
+        proposal = sample_global_plan(classified, budget, cursor)
+        cursor += 1
+        attempts += 1
+        if proposal is None or plan_fingerprint(proposal) in known:
+            continue
+        _journal_candidate(plan_dir, manifest, proposal, "global_exploration")
+        _write_candidate(plan_dir, index, proposal, classified)
+        known.add(plan_fingerprint(proposal))
+        added.append(index)
+        index += 1
+        if len(added) >= limit:
+            break
+    manifest.update(schedule_count=index, global_cursor=cursor,
+                    global_round=int(manifest.get("global_round", 0)) + 1)
+    _write_json(plan_dir / "manifest.json", manifest)
+    _append_jsonl(plan_dir / "global_generation.jsonl", {
+        "cursor": cursor, "attempts": attempts, "accepted": len(added),
+        "elapsed_s": time.monotonic() - started,
+    })
+    return added
+
+
+def _fresh_quotas(slots, round_index):
+    """Reserve global exploration; rotate sources when batches are small."""
+    if slots <= 0:
+        return 0, 0
+    if slots == 1:
+        return ((1, 0), (0, 1), (0, 0))[round_index % 3]
+    return 1, int(slots >= 3 or round_index % 2 == 0)
+
+
+def _proposal_limits(slots, global_quota, local_quota):
+    """Build a small unmeasured reservoir for feedback-ranked batch slots."""
+
+    feedback_slots = max(0, slots - global_quota - local_quota)
+    # Each feedback slot gets alternatives from both independent global
+    # sampling and mutations around measured winners.  The reserved quota is
+    # still evaluated directly, so model error cannot starve either source.
+    alternatives = 2 * feedback_slots
+    return global_quota + alternatives, local_quota + alternatives
 
 
 def _supervise_dynamic_config(
@@ -1207,16 +1369,42 @@ def _supervise_dynamic_config(
         remaining_budget = evaluation_budget - attempted
         if remaining_budget <= 0:
             break
+        cached_unmeasured = any(
+            item.index not in measured_latency and item.index not in unavailable
+            for item in candidates
+        )
+        warming_up = attempted < initial_samples and cached_unmeasured
         fresh: list[int] = []
-        if attempted >= initial_samples and measured_latency:
-            fresh = _expand_joint_candidates(
-                plan_dir,
-                classified,
-                measured_latency,
-                min(1, remaining_budget),
-                max_extra=evaluation_budget * 2,
+        fresh_roles = {}
+        if not warming_up:
+            slots = min(batch_size, remaining_budget)
+            global_quota, local_quota = _fresh_quotas(slots, len(batches))
+            if attempted < initial_samples:
+                # Warmup refills from independent structures, not model-guided
+                # local descendants of the first few successful seeds.
+                global_quota = min(slots, initial_samples - attempted)
+                local_quota = 0
+            elif not cached_unmeasured:
+                global_quota = 1
+                local_quota = min(local_quota, slots - 1)
+            global_limit, local_limit = _proposal_limits(
+                slots, global_quota, local_quota
             )
-            if fresh:
+            global_proposals = _expand_global_candidates(
+                plan_dir, classified, global_limit
+            )
+            local_proposals = _expand_joint_candidates(
+                plan_dir, classified, measured_latency, local_limit,
+                max_extra=evaluation_budget * 4,
+            ) if local_limit and measured_latency else []
+            global_ids = global_proposals[:global_quota]
+            local_ids = local_proposals[:local_quota]
+            fresh = global_ids + local_ids
+            fresh_roles = {
+                **{index: "global_exploration" for index in global_ids},
+                **{index: "local_mutation" for index in local_ids},
+            }
+            if global_proposals or local_proposals:
                 candidates = load_candidates(
                     plan_dir,
                     fingerprint_salt=workload_fingerprint,
@@ -1226,10 +1414,10 @@ def _supervise_dynamic_config(
                 pool_fingerprint = plan_fingerprint(
                     {"candidate_fingerprints": [item.fingerprint for item in candidates]}
                 )
-        if attempted < initial_samples:
+        if warming_up:
             selected = policy.initial(
                 set(measured_latency) | unavailable,
-                min(initial_samples - attempted, remaining_budget),
+                min(initial_samples - attempted, remaining_budget, batch_size),
             )
             selection_roles = {index: "coverage" for index in selected}
         else:
@@ -1240,7 +1428,7 @@ def _supervise_dynamic_config(
             )
             selected = fresh + feedback_selected
             selection_roles = {
-                **{index: "local_mutation" for index in fresh},
+                **fresh_roles,
                 **policy.last_selection_roles,
             }
         if not selected:
@@ -1315,7 +1503,9 @@ def _supervise_dynamic_config(
                 "batch_diagnostics": batch_diagnostics,
             },
         )
-        if attempted + len(selected) >= initial_samples and should_stop(
+        # A stagnant initial pool is not evidence that global exploration failed.
+        # Spend at least half the measurement budget before patience can stop.
+        if attempted + len(selected) >= max(initial_samples, (evaluation_budget + 1) // 2) and should_stop(
             best_history,
             patience=patience,
             minimum_improvement=minimum_improvement,
@@ -1365,6 +1555,19 @@ def _supervise_dynamic_config(
     return payload
 
 
+def _generation_options(search_mode, max_candidates, initial_samples, evaluation_budget, stage_beam):
+    """Dynamic seeds are small; only exhaustive enumeration has a pool cap."""
+    if search_mode == "exhaustive":
+        return {"budget": SearchBudget(max_structures=max_candidates, stage_beam=stage_beam)}
+    seed_count = min(8, initial_samples, evaluation_budget)
+    joint_count = seed_count // 2
+    return {
+        "budget": SearchBudget(max_structures=seed_count - joint_count, stage_beam=stage_beam),
+        "joint_seed_budget": joint_count,
+        "replay_order_mutations": True,
+    }
+
+
 def run(
     output: str | Path,
     warmup: int = 100,
@@ -1374,7 +1577,7 @@ def run(
     rank_n: int = 30,
     kill_grace: float = 2.0,
     search_mode: str = "dynamic",
-    candidate_pool: int = 2048,
+    max_candidates: int = 4096,
     evaluation_budget: int = 48,
     initial_samples: int = 12,
     batch_size: int = 4,
@@ -1456,20 +1659,9 @@ def run(
                     f"{native_failure['error']}",
                     flush=True,
                 )
-            base_pool = candidate_pool
-            seed_pool = 0
-            if search_mode == "dynamic" and candidate_pool >= 2:
-                seed_pool = candidate_pool // 2
-                base_pool -= seed_pool
-            generation_options: dict[str, Any] = {
-                "budget": SearchBudget(
-                    max_structures=base_pool,
-                    stage_beam=stage_beam,
-                ),
-            }
-            if search_mode == "dynamic":
-                generation_options["replay_order_mutations"] = True
-                generation_options["joint_seed_budget"] = seed_pool
+            generation_options = _generation_options(
+                search_mode, max_candidates, initial_samples, evaluation_budget, stage_beam
+            )
             generate_plans(
                 operator,
                 plan_dir,
@@ -1530,6 +1722,7 @@ def run(
             for item in payload["successful"]:
                 row = {
                     "tile": dict(tile),
+                    "workload": dict(options),
                     "schedule_index": item["schedule_index"],
                     "latency_ms": item["latency_ms"],
                     "tflops": item["tflops"],
@@ -1550,6 +1743,7 @@ def run(
             config_summaries.append(
                 {
                     "tile": dict(tile),
+                    "workload": dict(options),
                     "native": native_summary,
                     "native_failure": native_failure,
                     "search_policy": payload["search_policy"],
@@ -1617,12 +1811,15 @@ def main() -> None:
         default="dynamic",
         help="measurement-driven selection or evaluation of the whole pool",
     )
-    parser.add_argument("--candidate-pool", type=int, default=4096)
+    parser.add_argument(
+        "--max-candidates", type=int, default=None,
+        help="exhaustive mode only: maximum generated candidates (default: 4096)",
+    )
     parser.add_argument("--stage-beam", type=int, default=256)
-    parser.add_argument("--evaluation-budget", type=int, default=64)
-    parser.add_argument("--initial-samples", type=int, default=24)
+    parser.add_argument("--evaluation-budget", type=int, default=48)
+    parser.add_argument("--initial-samples", type=int, default=16)
     parser.add_argument("--batch-size", type=int, default=4)
-    parser.add_argument("--patience", type=int, default=3)
+    parser.add_argument("--patience", type=int, default=4)
     parser.add_argument("--minimum-improvement", type=float, default=0.01)
     parser.add_argument(
         "--operators",
@@ -1643,7 +1840,6 @@ def main() -> None:
     if min(args.compile_timeout, args.execution_timeout, args.kill_grace) <= 0:
         parser.error("timeouts and kill grace must be positive")
     if min(
-        args.candidate_pool,
         args.stage_beam,
         args.evaluation_budget,
         args.initial_samples,
@@ -1651,6 +1847,11 @@ def main() -> None:
         args.patience,
     ) < 1:
         parser.error("dynamic search budgets must be positive")
+    if args.max_candidates is not None:
+        if args.search_mode != "exhaustive":
+            parser.error("--max-candidates applies only to --search-mode exhaustive")
+        if args.max_candidates < 1:
+            parser.error("--max-candidates must be positive")
     if args.minimum_improvement < 0:
         parser.error("minimum improvement must be non-negative")
     run(
@@ -1662,7 +1863,7 @@ def main() -> None:
         args.rank_n,
         args.kill_grace,
         args.search_mode,
-        args.candidate_pool,
+        args.max_candidates if args.max_candidates is not None else 4096,
         args.evaluation_budget,
         args.initial_samples,
         args.batch_size,

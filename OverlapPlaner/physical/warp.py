@@ -308,17 +308,6 @@ def enumerate_warp_allocations(
             warp_counts,
             resource,
         )
-        # ptxas applies launch_bounds to the whole CTA before runtime
-        # setmaxnreg redistributes registers between warp groups.  A kernel
-        # that needs more static registers in any group than the uniform CTA
-        # budget cannot compile, even if its summed per-group usage fits.
-        static_limit = min(
-            resource.max_registers_per_thread,
-            resource.register_file_capacity
-            // (sum(warp_counts) * resource.warp_size),
-        )
-        if max(estimates, default=0) > static_limit:
-            continue
         # Hopper setmaxnreg is a warpgroup collective. MMA-only partitions may
         # legally use a one-warp granularity, but those allocations must use
         # the ordinary register limit rather than executing setmaxnreg on an
@@ -341,7 +330,11 @@ def enumerate_warp_allocations(
             register_receivers,
             setmaxnreg,
         )
-        if assignment is None:
-            continue
-        registers, actions = assignment
-        yield _make_allocation(warp_counts, resource, registers, actions)
+        if assignment is not None:
+            registers, actions = assignment
+            yield _make_allocation(warp_counts, resource, registers, actions)
+        # Ordinary allocation is a separate compiler-managed choice for ANY
+        # partition width. It does not promise per-group register quotas;
+        # ptxas determines occupancy/spilling and runtime measurement decides.
+        # No uniform CTA-average estimate is used to reject redistribution.
+        yield _make_allocation(warp_counts, resource)

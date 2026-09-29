@@ -18,10 +18,10 @@ from .workloads import (
 
 def add_arguments(parser) -> None:
     group = parser.add_argument_group("Mamba chunk state")
-    group.add_argument("--mamba-state-block-m", type=int, nargs="+", default=[64, 128])
+    group.add_argument("--mamba-state-block-m", type=int, nargs="+", default=[64, 128, 32])
     group.add_argument("--mamba-state-block-n", type=int, nargs="+", default=[32, 64, 128])
-    group.add_argument("--mamba-state-block-k", type=int, nargs="+", default=[32, 64])
-    group.add_argument("--mamba-state-batch", type=int, default=4)
+    group.add_argument("--mamba-state-block-k", type=int, nargs="+", default=[32, 64, 128])
+    group.add_argument("--mamba-state-batch", type=int, default=2)
     group.add_argument("--mamba-state-heads", type=int, default=80)
     group.add_argument("--mamba-state-groups", type=int, default=1)
     group.add_argument("--mamba-state-seq", type=int, default=8192)

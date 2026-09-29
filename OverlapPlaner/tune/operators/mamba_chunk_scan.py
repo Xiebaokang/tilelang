@@ -21,7 +21,7 @@ def add_arguments(parser) -> None:
     group.add_argument("--mamba-scan-block-n", type=int, nargs="+", default=[32, 64])
     group.add_argument("--mamba-scan-block-k", type=int, nargs="+", default=[64, 128, 256])
     group.add_argument("--mamba-scan-block-dstate", type=int, nargs="+", default=[128])
-    group.add_argument("--mamba-scan-batch", type=int, default=4)
+    group.add_argument("--mamba-scan-batch", type=int, default=2)
     group.add_argument("--mamba-scan-heads", type=int, default=80)
     group.add_argument("--mamba-scan-groups", type=int, default=1)
     group.add_argument("--mamba-scan-seq", type=int, default=8192)
@@ -264,26 +264,54 @@ def reference(cb, x, dt, da, c, prev, d):
     batch, seq_len, heads, dim = x.shape
     groups = cb.shape[2]
     chunks, chunk_size = dt.shape[2:]
-    c = c.repeat_interleave(heads // groups, dim=2)
-    cb = cb.repeat_interleave(heads // groups, dim=2)
-    delta = da[..., :, None] - da[..., None, :]
-    decay = torch.exp(delta).permute(0, 2, 1, 3, 4)
-    scores = cb * decay
+    heads_per_group = heads // groups
     mask = torch.tril(
         torch.ones((chunk_size, chunk_size), dtype=torch.bool, device=x.device)
     )
-    scores = scores.masked_fill(~mask, 0)
     x_chunks = x.reshape(batch, chunks, chunk_size, heads, dim)
-    out = torch.einsum(
-        "bchls,bhcs,bcshp->bclhp",
-        scores.to(x.dtype),
-        dt.to(x.dtype),
-        x_chunks,
-    )
-    c_chunks = c.reshape(batch, chunks, chunk_size, heads, c.shape[-1])
-    state_decay = torch.exp(da.permute(0, 2, 3, 1)).unsqueeze(-1)
-    out += torch.einsum("bclhn,bchpn->bclhp", c_chunks, prev.to(c.dtype)) * state_decay
-    out = out.reshape(batch, seq_len, heads, dim)
+    c_chunks = c.reshape(batch, chunks, chunk_size, groups, c.shape[-1])
+    out = torch.empty_like(x)
+    # Materializing decay for every chunk requires O(B*C*H*L^2) memory
+    # (1.25 GiB for the default workload).  Chunks are independent, so keep
+    # only one O(B*H*L^2) slice live while preserving the exact expression.
+    for chunk_index in range(chunks):
+        decay = torch.exp(
+            da[:, :, chunk_index, :, None]
+            - da[:, :, chunk_index, None, :]
+        ).reshape(batch, groups, heads_per_group, chunk_size, chunk_size)
+        scores = (cb[:, chunk_index, :, None] * decay).masked_fill(
+            ~mask, 0
+        ).to(x.dtype)
+        x_chunk = x_chunks[:, chunk_index].reshape(
+            batch, chunk_size, groups, heads_per_group, dim
+        ).permute(0, 2, 3, 1, 4)
+        dt_chunk = dt[:, :, chunk_index].reshape(
+            batch, groups, heads_per_group, chunk_size
+        )
+        chunk_out = torch.einsum(
+            "bgrls,bgrs,bgrsp->bgrlp",
+            scores,
+            dt_chunk.to(x.dtype),
+            x_chunk,
+        )
+        c_chunk = c_chunks[:, chunk_index]
+        prev_chunk = prev[:, chunk_index].reshape(
+            batch, groups, heads_per_group, dim, c.shape[-1]
+        )
+        state = torch.einsum(
+            "blgn,bgrpn->bgrlp", c_chunk, prev_chunk.to(c.dtype)
+        )
+        state *= torch.exp(
+            da[:, :, chunk_index].reshape(
+                batch, groups, heads_per_group, chunk_size
+            )
+        )[..., None]
+        chunk_out += state
+        out[:, chunk_index * chunk_size : (chunk_index + 1) * chunk_size] = (
+            chunk_out.permute(0, 3, 1, 2, 4).reshape(
+                batch, chunk_size, heads, dim
+            )
+        )
     return out + x * d.reshape(1, 1, heads, 1)
 
 
@@ -317,7 +345,9 @@ def build(options: Options, config: TileConfig) -> SearchWorkload:
         config["block_n"],
         config["block_k"],
         config["block_dstate"],
-        threads=threads_from_tile_extent(config["block_m"]),
+        # Four warp groups are sufficient for the 256-row tile.  Eight warp
+        # groups make TileLang choose a non-canonical GMMA_MN partition.
+        threads=threads_from_tile_extent(config["block_m"], maximum=256),
     )
     total_flops = (
         batch * seq_len * chunk_size * heads * dim

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 
 import pytest
 
@@ -11,6 +12,33 @@ from OverlapPlaner.facts import extract_fact_graph
 from OverlapPlaner.structure import SearchBudget
 from OverlapPlaner.tune.operators import get_operator
 from OverlapPlaner.tune.run import SEARCH_OPERATORS
+
+
+def test_triton_comparison_requires_matching_workload_shape(tmp_path) -> None:
+    from OverlapPlaner.tune.operators.triton.common import overlap_result
+
+    operator_dir = tmp_path / "fa3"
+    operator_dir.mkdir()
+    (operator_dir / "top30.json").write_text(json.dumps({
+        "top_results": [
+            {
+                "workload": {"fa3_seq_q": 8192}, "latency_ms": 1.0,
+                "native_latency_ms": 1.1, "speedup_vs_native": 1.1,
+                "tile": {}, "schedule_index": 0, "source_file": "old.cu",
+            },
+            {
+                "workload": {"fa3_seq_q": 4096}, "latency_ms": 0.5,
+                "native_latency_ms": 0.6, "speedup_vs_native": 1.2,
+                "tile": {}, "schedule_index": 1, "source_file": "new.cu",
+            },
+        ]
+    }))
+
+    assert overlap_result("fa3", {"fa3_seq_q": 4096}, tmp_path)[
+        "schedule_index"
+    ] == 1
+    with pytest.raises(StopIteration):
+        overlap_result("fa3", {"fa3_seq_q": 2048}, tmp_path)
 
 
 NAMES = (
@@ -82,14 +110,14 @@ def test_gdn_o_deduplicates_same_group_async_completion() -> None:
 
 def test_default_workloads_are_production_scale() -> None:
     expected = {
-        "fa3": {"fa3_seq_q": 8192, "fa3_seq_kv": 8192},
+        "fa3": {"fa3_seq_q": 4096, "fa3_seq_kv": 4096},
         "mla": {"mla_seq": 8192},
-        "gqa": {"gqa_seq": 8192},
-        "gqa_bwd": {"gqa_bwd_seq": 8192},
-        "mha_bwd": {"mha_bwd_seq": 8192},
+        "gqa": {"gqa_seq": 4096},
+        "gqa_bwd": {"gqa_bwd_seq": 4096},
+        "mha_bwd": {"mha_bwd_seq": 4096},
         "linear_attn_fwd": {"linear_attn_seq": 8192},
-        "mamba_chunk_scan": {"mamba_scan_seq": 8192},
-        "mamba_chunk_state": {"mamba_state_seq": 8192},
+        "mamba_chunk_scan": {"mamba_scan_batch": 2, "mamba_scan_seq": 8192},
+        "mamba_chunk_state": {"mamba_state_batch": 2, "mamba_state_seq": 8192},
         "kda_wy_fast_bwd": {"kda_wy_bwd_seq": 8192},
         "gdn_chunk_o_bwd": {"gdn_o_bwd_seq": 8192},
         "gdn_chunk_delta_bwd": {"gdn_delta_bwd_seq": 8192},
@@ -155,7 +183,7 @@ def test_default_tiles_cover_example_best_known_shapes(name, tile) -> None:
         ("kda_wy_fast_bwd", {"block_dk": 32, "block_dv": 128}, 256),
         ("gdn_chunk_o_bwd", {"block_dk": 32, "block_dv": 32}, 128),
         ("gdn_chunk_delta_bwd", {"block_dv": 128}, 256),
-        ("kda_chunk_bwd_intra", {"block_dk": 128}, 256),
+        ("kda_chunk_bwd_intra", {"block_dk": 128}, 128),
         (
             "mamba_chunk_scan",
             {
@@ -164,7 +192,7 @@ def test_default_tiles_cover_example_best_known_shapes(name, tile) -> None:
                 "block_k": 128,
                 "block_dstate": 128,
             },
-            512,
+            256,
         ),
         (
             "mamba_chunk_state",

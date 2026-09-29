@@ -15,9 +15,11 @@ from OverlapPlaner.arch import (
     is_group_opportunity,
 )
 from OverlapPlaner.arch.hopper import optional_tma_copy_ids
-from OverlapPlaner.contract import layout_reduced_prim_func
+from OverlapPlaner.contract import enumerate_overlap_plans, layout_reduced_prim_func
 from OverlapPlaner.facts import DependencyKind, OpKind, RegionKind, extract_fact_graph
+from OverlapPlaner.structure import SearchBudget
 from OverlapPlaner.tune.operators.fa3 import build as build_fa3
+from OverlapPlaner.tune.operators.convolution import build as build_convolution
 from OverlapPlaner.tune.operators.gemm import build as build_gemm
 
 
@@ -51,7 +53,7 @@ def test_hopper_classifies_copy_and_gemm_without_isa_names() -> None:
     engines = {traits.engine for traits in classified.traits}
     assert "wgmma" not in engines
     assert "tma" not in engines
-    assert "tensorcore" in engines
+    assert "warpgroup_tensorcore" in engines
     assert "copy" in engines
 
     gemm = next(
@@ -59,9 +61,10 @@ def test_hopper_classifies_copy_and_gemm_without_isa_names() -> None:
     )
     gemm_traits = classified.traits_for(gemm.node_id)
     assert gemm_traits.kind == ResourceKind.COMPUTE
-    assert gemm_traits.engine == "tensorcore"
+    assert gemm_traits.engine == "warpgroup_tensorcore"
     assert gemm_traits.occupies_cta_partition is True
-    assert gemm_traits.async_completion is False
+    assert gemm_traits.async_completion is True
+    assert gemm_traits.issue_priority == 5
 
     copies = [
         classified.traits_for(node.node_id)
@@ -85,7 +88,70 @@ def test_explicit_copy_backend_is_not_a_search_alternative() -> None:
     classified = HOPPER.classify(
         extract_fact_graph(layout_reduced_prim_func(kernel))
     )
-    assert optional_tma_copy_ids(classified) == ()
+    assert 0 not in optional_tma_copy_ids(classified)
+    assert 1 in optional_tma_copy_ids(classified)  # unconstrained output store
+
+
+def test_default_tma_copy_is_a_bidirectional_search_alternative() -> None:
+    classified = HOPPER.classify(_gemm_graph())
+    searchable = set(optional_tma_copy_ids(classified))
+    assert any(
+        node.node_id in searchable
+        and classified.traits_for(node.node_id).async_completion
+        for node in classified.graph.nodes
+        if node.kind == OpKind.COPY
+    )
+
+
+def test_hopper_classifies_im2col_as_async_copy() -> None:
+    workload = build_convolution(
+        {
+            "conv_batch": 1,
+            "conv_channels": 64,
+            "conv_height": 16,
+            "conv_width": 16,
+            "conv_filters": 64,
+            "conv_kernel": 3,
+            "conv_stride": 1,
+            "conv_dilation": 1,
+            "conv_padding": 1,
+        },
+        {"block_m": 64, "block_n": 64, "block_k": 32},
+    )
+    classified = HOPPER.classify(
+        extract_fact_graph(layout_reduced_prim_func(workload.prim_func))
+    )
+    im2col = next(
+        node for node in classified.graph.nodes if node.tileop == "im2col"
+    )
+    assert im2col.kind == OpKind.COPY
+    assert classified.traits_for(im2col.node_id).async_completion
+
+
+def test_wide_convolution_retains_native_ordinary_register_allocation() -> None:
+    workload = build_convolution(
+        {
+            "conv_batch": 1,
+            "conv_channels": 64,
+            "conv_height": 16,
+            "conv_width": 16,
+            "conv_filters": 128,
+            "conv_kernel": 3,
+            "conv_stride": 1,
+            "conv_dilation": 1,
+            "conv_padding": 1,
+        },
+        {"block_m": 256, "block_n": 128, "block_k": 32},
+    )
+    plans = enumerate_overlap_plans(
+        workload.prim_func,
+        budget=SearchBudget(max_groups=2, max_structures=32),
+    )
+    assert any(
+        [int(group.warp_count) for group in plan.groups] == [4, 16]
+        and all(group.register_count is None for group in plan.groups)
+        for plan in plans
+    )
 
 
 def test_hopper_classifies_fa3_softmax_as_sfu() -> None:
@@ -97,7 +163,7 @@ def test_hopper_classifies_fa3_softmax_as_sfu() -> None:
         if node.kind == OpKind.GEMM
     ]
     assert len(gemms) == 2
-    assert all(traits.engine == "tensorcore" for traits in gemms)
+    assert all(traits.engine == "warpgroup_tensorcore" for traits in gemms)
     assert not can_split_stages(gemms[0], gemms[1])
 
 
@@ -119,7 +185,7 @@ def test_copy_and_gemm_may_split_stage_and_group() -> None:
     consumer = classified.traits_for(edge.consumer_id)
     assert producer.kind == ResourceKind.MEMORY
     assert producer.async_completion is True
-    assert consumer.engine == "tensorcore"
+    assert consumer.engine == "warpgroup_tensorcore"
     assert can_split_stages(producer, consumer)
     assert allowed_edge_actions(classified, edge) == frozenset(
         {EdgeAction.KEEP, EdgeAction.SPLIT_STAGE, EdgeAction.SPLIT_GROUP}
@@ -155,7 +221,7 @@ def test_engine_crossing_fragment_may_split_group() -> None:
     )
     producer = classified.traits_for(edge.producer_id)
     consumer = classified.traits_for(edge.consumer_id)
-    assert producer.engine == "tensorcore"
+    assert producer.engine == "warpgroup_tensorcore"
     assert consumer.engine == "sfu"
     assert is_group_opportunity(classified, edge)
     assert allowed_edge_actions(classified, edge) == frozenset(

@@ -12,8 +12,8 @@ from .workloads import OperatorSpec, SearchWorkload, threads_from_tile_extent
 def add_arguments(parser):
     group = parser.add_argument_group("Fused MoE gate/up")
     group.add_argument("--fused-moe-block-token", type=int, nargs="+", default=[64, 128])
-    group.add_argument("--fused-moe-block-hidden", type=int, nargs="+", default=[128])
-    group.add_argument("--fused-moe-block-expert", type=int, nargs="+", default=[128])
+    group.add_argument("--fused-moe-block-hidden", type=int, nargs="+", default=[128, 64])
+    group.add_argument("--fused-moe-block-expert", type=int, nargs="+", default=[128, 64])
     group.add_argument("--fused-moe-tokens", type=int, default=8192)
     group.add_argument("--fused-moe-hidden", type=int, default=7168)
     group.add_argument("--fused-moe-expert", type=int, default=2048)

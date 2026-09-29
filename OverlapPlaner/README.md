@@ -98,7 +98,7 @@ stage(producer) ≤ stage(consumer) + iteration_distance
 
 ### Warp、寄存器和 shared memory 的实现检查
 
-`HOPPER.realize` 把结构候选映射到实际资源。单 group 保持原 kernel 的线程宽度；多 group 使用连续 warp 区间。WGMMA 及其 fragment 使用四 warp 集体粒度，MMA-only 分区可用单 warp 粒度；计算 group 还必须保留 `LayoutReducer` 建立的 fragment 线程覆盖。随后估计各 group 的寄存器活跃峰值，并在可用且合法时考虑 `setmaxnreg`。
+`HOPPER.realize` 把结构候选映射到实际资源。单 group 保持原 kernel 的线程宽度；多 group 使用连续 warp 区间。WGMMA 及其 fragment 使用四 warp 集体粒度，MMA-only 分区可用单 warp 粒度；计算 group 还必须保留 `LayoutReducer` 建立的 fragment 线程覆盖。随后估计各 group 的寄存器活跃峰值，并在可用且合法时考虑 `setmaxnreg`。 带 `setmaxnreg` 的候选以每组实际额度、8 寄存器粒度、单线程上限及 `Σ(线程数 × 额度)` 检查可行性，不能用 CTA 平均额度误杀高寄存器 consumer。多组方案同时提供不带 `setmaxnreg` 的编译器普通分配选择，不再设置大于 16 warp 的经验门槛；普通分配的实际寄存器与 spill 由 ptxas 决定并实测验证。
 
 shared memory 规划计算版本化 buffer、跨组 fragment handoff、mbarrier、对齐和可复用区间，再与设备容量比较。warp、寄存器或 shared memory 不满足约束时，候选不进入 GPU 实测。这些是搜索阶段的近似可行性模型：它们能避免明显不可用的编译，但最终资源分配、lowering 和运行正确性仍须由编译器与测试确认。
 
@@ -118,7 +118,7 @@ python -m OverlapPlaner.tune.run --output results_bwd --operators gqa_bwd mha_bw
 python -m OverlapPlaner.tune.run --output results_research --operators gdn_chunk_o_bwd gdn_chunk_delta_bwd kda_chunk_bwd_intra dequant_gemm_fp4 kda_wy_fast_bwd fused_moe --search-mode dynamic
 ```
 
-`--candidate-pool` 控制初始候选池规模，`--evaluation-budget` 控制最多尝试多少次 GPU 评测；`--search-mode exhaustive` 则评测生成的全部候选，不使用动态选择器。结果位于 `<output>/<operator>/<tile>/`，算子排名见 `top30.json`。已有计划可用 `python -m OverlapPlaner.tune.replay <schedule.json>` 重新编译测试。
+动态模式不再使用 `--candidate-pool`：先生成最多 8 个基础/结构种子（不超过初始与总评测预算），再按 batch 持续补充独立全局候选，直到完成 `--initial-samples` 次初始评测。`--evaluation-budget` 控制整次搜索最多评测多少个候选，包含失败。`--search-mode exhaustive --max-candidates 4096` 则评测枚举上限内生成的全部候选，不使用动态选择器；`--max-candidates` 仅用于 exhaustive 模式，默认 4096。旧命令中的 `--candidate-pool` 在动态模式直接删除，在 exhaustive 模式替换为 `--max-candidates`。结果位于 `<output>/<operator>/<tile>/`，算子排名见 `top30.json`。已有计划可用 `python -m OverlapPlaner.tune.replay <schedule.json>` 重新编译测试。
 
 ### 用分桶探索取得第一批实测数据
 
@@ -126,11 +126,19 @@ python -m OverlapPlaner.tune.run --output results_research --operators gdn_chunk
 
 ### 用观测延迟决定下一批测谁
 
-搜索特征描述计划本身，而不是预估单节点 latency，包括 warp 与寄存器需求、shared memory、版本数、同步 slot、跨 stage/group 的边、GEMM/copy 工作分布、order 位置和异步完成方式。达到足够样本后，系统对**已测得的 kernel latency** 的对数训练 bootstrap 回归集合。后续四个候选通常由两个预测性能较好的候选、一个实测优良计划的联合局部变体，以及一个高不确定性或未覆盖候选组成。覆盖是有限配额的软探索，不会再阻止模型利用已经获得的性能反馈。
+搜索特征描述计划本身，而不是预估单节点 latency，包括 warp 与寄存器需求、shared memory、版本数、同步 slot、跨 stage/group 的边、GEMM/copy 工作分布、order 位置和异步完成方式。达到足够样本后，系统对**已测得的 kernel latency** 的对数训练 bootstrap 回归集合。后续 batch=4 时通常包含一个全局独立样本、一个反馈选出的局部变体，以及两个由模型从历史未测候选中选出的方案（利用和探索各一个）。某类生成失败时，空余名额交给历史候选。batch=1 时全局、局部、历史轮换；batch=2 时保留一个全局名额，另一个在局部和历史之间轮换。覆盖是有限配额的软探索，不会再阻止模型利用已经获得的性能反馈。
 
 编译失败、正确性失败和执行超时同样作为观测使用。搜索器根据结构特征附近成功与失败候选的分布估计不可行概率，并在 acquisition score 中惩罚失败密集的区域，避免不断把预算投入相似的无效计划。
 
 模型只影响**评测顺序**。最终性能排名始终由真实 GPU benchmark 给出，预测不能替代正确性或性能结论。它也不会预先决定某个算子必须采用 stage、group 或两者结合。
+
+### 全局按需生成：候选池是缓存，不是边界
+
+`tune/global_search.py` 每次从头采样，完全不依赖父方案：先选普通 copy 的 SIMT/TMA backend，再在配置上限内选择 group 数和连通分量标签、stage 深度与满足依赖约束的节点 stage，以及就绪集合上的随机拓扑序。随后推导 buffer 最小版本、采样额外 shared slot、检查同步，最后从架构层产出的物理 warp/寄存器配置中用 reservoir sampling 选择一个。全局生成不使用初始 stage beam，也不局限于两个优先级 order；它仍遵守当前机会边、stage 拆分条件及架构资源约束。
+
+采样不是均匀分布，也不保证全局最优。遇到不可行的部分赋值立即放弃本次尝试，不进行指数回溯。每次补充默认最多尝试 128 次，并在尝试之间检查 3 秒时间预算（不会中断正在执行的一次资源分析）。有效且未重复的全局候选占用预留的实测名额，避免代理模型把全局探索全部压掉。初始池仍保留原有覆盖种子。
+
+`manifest.json` 保存搜索上限、全局随机种子游标和轮次；`dynamic_candidates.jsonl` 按生成顺序保存全局和局部候选及工作负载/预算上下文；重建时恢复同一上下文的候选，保持编号。`global_generation.jsonl` 记录尝试数、接受数和耗时。接受率低时应先审查生成器与约束，而不是将空采样误报为整个空间已经穷尽。
 
 ### 从实测较好的方案生成联合局部变体
 
@@ -140,14 +148,69 @@ python -m OverlapPlaner.tune.run --output results_research --operators gdn_chunk
 2. 将一个可移动的 group 连通分量移到另一 group 或新 group。
 3. 交换组内相邻且依赖允许的两个操作。
 4. 增减跨组 shared buffer 的额外版本。
-5. 对合格的小型 gmem→smem copy 比较当前后端与 TMA 变体。
+5. 对支持 TMA 的普通 gmem→smem load、smem→gmem store 做单 copy 或相邻 copy 对的 backend 翻转。
 
-copy 变体要求 TileLang 分类器确认 TMA 可用，也不会覆盖用户显式指定的指令偏好。每个移动都重新构造受影响的版本、同步和物理计划，去重后才加入候选池。所有合法移动统一使用反馈模型排序，不再强制轮换移动维度；copy 后端选择也因此与 stage/group/order 联合，而非独立的一次性静态决定。
+每个操作的 `copy_backend` 显式记录 `simt` 或 `tma`，非相关操作为 null。架构层通过 TileLang 的双向 copy 能力分析决定是否可搜索，不覆盖显式指令偏好，也不把 im2col 当作可切换的普通 copy。选定 backend 后再推导同步：TMA load 使用 transaction completion，SIMT 使用线程完成；TMA store 保留本地 commit/wait，完成 shared 源数据读取之后才发出复用释放。即使没有同步边，lowering 也必须执行显式 backend 选择。旧 JSON 缺少字段时保留兼容路径。
+
+Copy mutation 固定 stage/group/order、warp 宽度及寄存器额度/动作，重建必要的版本、同步与 shared packing；不能在固定资源下实现则拒绝，不隐式改变寄存器配置。Order/group/stage mutation 会保留操作的 backend 选择。动态特征包括显式 SIMT/TMA 数量；覆盖桶区分可搜索 copy 的全 SIMT、混合、全 TMA。
+
+候选生成在基础预算内预留四分之一给 backend 种子（预算不足时局部搜索仍能提出 copy 变体），按 group/stage 分层选取结构不同的父候选，构造两端点和混合配置。该比例是采样策略，不是合法性约束；不再额外追加固定数量的 8/1 个端点。所有局部移动统一使用实测反馈模型排序，最终胜负由 GPU 测量决定。
+
 
 ### 编译、校验、计时与停止
 
 每个被选择的候选由独立 worker 编译并运行：先与 operator 参考实现比较数值结果，通过后再测量延迟。独立进程隔离失败的 CUDA context；编译、正确性检查和 benchmark 分阶段监控超时。结果、错误和计划 fingerprint 一同保存，重跑时不会把旧调度的记录误用在同编号的新计划上。
 
-达到评测预算时停止；若连续多批提升不足也可提前停止，未覆盖结构不会强制搜索耗尽预算。`dynamic_state.json` 额外记录每批候选的选择角色、成功与失败数、失败率、batch 最小值和中位数，以及累计最优值。最终输出每个 tile 的成功和失败候选数、最优已测计划，以及相对 native 的性能。
+达到评测预算时停止；至少花费一半评测预算且完成初始采样后，若连续多批提升不足也可提前停止，未覆盖结构不会强制搜索耗尽预算。`dynamic_state.json` 额外记录每批候选的选择角色、成功与失败数、失败率、batch 最小值和中位数，以及累计最优值。最终输出每个 tile 的成功和失败候选数、最优已测计划，以及相对 native 的性能。
 
-**结果的适用范围：**当前系统搜索的是在已有图抽取、机会边、stage/group 上限、beam、候选池和局部移动定义下能够生成并通过校验的调度。动态策略提高有限测量预算的利用率，但不证明全局最优。少数候选仍可能在后续 lowering 或运行时失败；它们会作为失败记录，而不会被当作有效性能结果。
+**结果的适用范围：**当前系统搜索的是在已有图抽取、机会边、stage/group 上限、全局生成器和局部移动定义下能够生成并通过校验的调度。动态策略提高有限测量预算的利用率，但不证明全局最优。少数候选仍可能在后续 lowering 或运行时失败；它们会作为失败记录，而不会被当作有效性能结果。
+
+### 强化学习的后续研究方向
+
+当前方法是 bootstrap 线性代理模型加顺序选点，不是强化学习，也不是显式贝叶斯后验模型。建议先比较固定池、全局随机、全局＋局部＋代理模型在相同实测预算和总时间下的表现，再决定是否引入强化学习。
+
+强化学习可把部分调度和剩余资源作为 state，把合法的 stage/group/order/copy 选择作为 action，用最终正确 kernel 相对基线的 log speedup 作为终局 reward，失败和编译成本另作惩罚。主要风险是完整调度才有实测反馈、单次试验昂贵、跨 kernel 动作空间变化；几十次在线测量不足以事先保证学到有效策略。因此优先研究跨 kernel/shape 的离线训练或预训练，再把策略接入全局候选生成器，并保留独立随机探索。训练、验证与测试按 kernel 家族隔离，报告离线训练成本、在线调优时间和失败率，避免只比较最终最小 latency。
+
+编译优化中已有 [AutoPhase](https://proceedings.mlsys.org/paper_files/paper/2020/hash/5b47430e24a5a1f9fe21f0e8eb814131-Abstract.html) 的强化学习先例；其对象是 HLS pass ordering，不能直接推导出对本系统的收益。当前全局采样结合局部搜索和代价模型的方向，也可参考 [Ansor](https://arxiv.org/abs/2006.06762)。以上是研究路线，尚未实现或实验证明 RL 优于当前搜索。
+
+### 默认 tile 覆盖审查
+
+默认 workload 规模保持不变；下表统计的是经过 `configurations()` 过滤后的实际组合数，而非参数列表的表面大小。线程数仍从 tile 推导，不增加独立 threads 搜索维度。新增候选不代表已证明包含全局最优 tile；每个 tile 的评测预算独立计算，因此扩充后完整实验时间也会增加。
+
+| 算子 | 原组合数 → 当前 | 新增覆盖 |
+|---|---:|---|
+| FA3 / GQA forward | 各 4 → 9 | M=256，以及 N=32 |
+| GQA / MHA backward | 各 1 → 4 | 从仅 128×32 扩为 M∈{64,128}、N∈{32,64} |
+| FP16 GEMM | 30 → 45 | 规则 tile 的 M=256、K=128；限制新增的不兼容组合 |
+| FP8 GEMM | 8 → 18 | N=256、K=256 |
+| FP4 dequant GEMM | 8 → 8 | 暂不加入 K=64：GPU 抽查中搜索方案与 native 的数值不一致，需先定位 lowering/校验问题 |
+| MLA | 3 → 6 | N=32，与 H∈{16,32,64} 组合 |
+| Linear attention forward | 4 → 9 | K/V tile=32 |
+| Mamba chunk state | 6 → 18 | M=32、K=128；默认 dim=64，所以原列表的 M=128 仍被整除条件排除 |
+| Fused MoE | 2 → 8 | hidden/expert tile=64 |
+| GDN chunk O backward | 6 → 6 | 暂不加入 DK=128：native 和搜索方案均出现数值校验失败 |
+| Convolution | 16 → 16 | 保留已有 M/N/K 覆盖 |
+| Mamba chunk scan | 14 → 14 | 已覆盖 example 的主要 M/N/K 候选，保留已有过滤 |
+| GDN delta / KDA intra backward | 各 3 → 3 | 已有 32/64/128，覆盖默认维度 |
+| KDA WY backward | 5 → 5 | 保留现有可用组合过滤，放宽需单独验证 |
+
+新增 GEMM 不是无条件扩大笛卡尔积：native 的 Square warp/layout 路径对某些不规则组合会报错，例如 M=256,N=80/96，以及部分 M=192,K=128。保留旧候选，新增 M=256 只配 N=64/128/256；新增 K=128 只配 M=64/128/256、N=64/128/256。较大的 attention/GEMM tile 在单组预算下可能没有方案，但完整 group/stage 搜索可以实现，因此没有按单组失败进行排除。
+
+GPU 抽查对 10 类保留扩展分别验证了一个新增 tile 的 native 和搜索方案。为适配显存已被其他任务占用的 H100，FA3/GQA 及其 backward 默认 seq=4096，Mamba 默认 batch=2、seq=8192；对应 Triton workload 使用相同 shape。缩小为 seq=256 的 GQA backward 测试曾在 native 参考编译路径触发 ThreadSync 错误，不能据此承诺任意 shape 均可用。FP4 K=64 与 GDN O backward DK=128 的扩展已撤回，错误日志保留待另行排查；这不构成这些 tile 永远不可执行的证明。未逐一实测所有组合，也未完成全规模性能调优。
+
+### Triton 最优配置基线
+
+`tune/operators/triton/` 提供独立于 TileLang/TVM 的 Triton 实现和统一调优入口。必须在 `torch` conda 环境运行：
+
+```bash
+CUDA_VISIBLE_DEVICES=1 /home/xiebaokang/miniconda3/envs/torch/bin/python \
+  OverlapPlaner/tune/operators/triton/main.py \
+  --output OverlapPlaner/tune/operators/triton/results.json
+```
+
+每个算子在独立子进程中搜索 tile、`num_warps`、`num_stages` 和
+`warp_specialize`，避免一个非法 Hopper 编译候选破坏后续 CUDA context。
+主结果只保存每个算子的最快正确配置、延迟和环境；完整候选及错误保存在
+`results.details/`。目前有 13 个数值等价实现，4 个 GDN/KDA 内部 backward
+算子会明确记录为 `unsupported`，不会用不同的数学操作产生不可比较的性能。
+完整覆盖范围和选择算子的命令见 `tune/operators/triton/README.md`。

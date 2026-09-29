@@ -833,6 +833,23 @@ bool IsPipelineManagedCPAsyncCopy(const CopyNode &op, Target target) {
 TVM_FFI_STATIC_INIT_BLOCK() {
   namespace refl = tvm::ffi::reflection;
   refl::GlobalDef().def(
+      "tl.cuda.CanUseTmaCopy",
+      [](tirx::Stmt stmt, tvm::Target target) -> bool {
+        TileOperator tile_op = ParseOperator(stmt);
+        const auto *copy = tile_op.as<CopyNode>();
+        if (copy == nullptr) {
+          return false;
+        }
+        cuda::CopyAnalysisContext ctx;
+        ctx.target = std::move(target);
+        cuda::CopyFacts facts = cuda::AnalyzeCopyFacts(*copy, ctx);
+        return facts.cuda_like_target && !facts.disable_tma &&
+               cuda::SelectTmaInst(facts, /*allow_load=*/true,
+                                   /*allow_store=*/true,
+                                   /*check_last_dim=*/true) !=
+                   cuda::CopyInst::kInvalid;
+      });
+  refl::GlobalDef().def(
       "tl.cuda.ClassifyWarpSpecializedProducerCopy",
       [](tirx::Stmt stmt, tvm::Target target) -> ffi::String {
         TileOperator tile_op = ParseOperator(stmt);

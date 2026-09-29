@@ -13,12 +13,12 @@ from .example_loader import NativeKernelReference
 
 def add_arguments(parser) -> None:
     group = parser.add_argument_group("GQA")
-    group.add_argument("--gqa-block-m", type=int, nargs="+", default=[64, 128])
-    group.add_argument("--gqa-block-n", type=int, nargs="+", default=[64, 128])
+    group.add_argument("--gqa-block-m", type=int, nargs="+", default=[64, 128, 256])
+    group.add_argument("--gqa-block-n", type=int, nargs="+", default=[64, 128, 32])
     group.add_argument("--gqa-batch", type=int, default=1)
     group.add_argument("--gqa-heads", type=int, default=32)
     group.add_argument("--gqa-groups", type=int, default=8)
-    group.add_argument("--gqa-seq", type=int, default=8192)
+    group.add_argument("--gqa-seq", type=int, default=4096)
     group.add_argument("--gqa-dim", type=int, default=128)
     group.add_argument("--gqa-causal", action="store_true")
 

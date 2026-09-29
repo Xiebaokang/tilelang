@@ -1,0 +1,237 @@
+{
+  "status": "ok",
+  "raw": {
+    "operator": "gqa",
+    "triton_latency_ms": 3.5070062255859376,
+    "triton_tflops": 313.5185845278327,
+    "overlapplaner_reference": {
+      "latency_ms": 2.699899196624756,
+      "native_latency_ms": 2.5860257148742676,
+      "speedup_vs_native": 0.9578230617302876,
+      "tile": {
+        "block_m": 128,
+        "block_n": 128
+      },
+      "schedule_index": 1784,
+      "source_file": "/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/gqa/m128_n128/sources/schedule_01784.cu",
+      "result_file": "/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/gqa/top30.json"
+    },
+    "overlapplaner_speedup_vs_triton": 1.2989396900336783,
+    "shape": {
+      "batch": 1,
+      "seq": 8192,
+      "heads": 32,
+      "kv_heads": 4,
+      "dim": 128
+    },
+    "autotuned_variants": [
+      {
+        "name": "autotuned_no_ws",
+        "warp_specialize": false,
+        "descriptor_loads": true,
+        "search_kind": "broad_autotune",
+        "status": "ok",
+        "latency_ms": 3.5070062255859376,
+        "samples_ms": [
+          3.488305969238281,
+          3.523310546875,
+          3.503035888671875,
+          3.5203399658203125,
+          3.5070062255859376
+        ],
+        "triton_config": {
+          "kwargs": {
+            "BLOCK_M": 256,
+            "BLOCK_N": 64
+          },
+          "num_warps": 8,
+          "num_stages": 4,
+          "num_ctas": 1,
+          "maxnreg": null
+        }
+      },
+      {
+        "name": "autotuned_ws",
+        "warp_specialize": true,
+        "descriptor_loads": true,
+        "search_kind": "broad_autotune",
+        "status": "unsupported",
+        "error": "RuntimeError: PassManager::run failed"
+      }
+    ],
+    "variants": [
+      {
+        "name": "controlled_stage_1_no_ws",
+        "warp_specialize": false,
+        "num_stages": 1,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 64,
+          "num_warps": 4,
+          "num_stages": 1
+        },
+        "status": "ok",
+        "latency_ms": 5.20771240234375,
+        "samples_ms": [
+          5.171959228515625,
+          5.175587768554688,
+          5.20771240234375,
+          5.215267333984375,
+          5.224449462890625
+        ]
+      },
+      {
+        "name": "controlled_stage_2_no_ws",
+        "warp_specialize": false,
+        "num_stages": 2,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 64,
+          "num_warps": 4,
+          "num_stages": 2
+        },
+        "status": "ok",
+        "latency_ms": 3.530946960449219,
+        "samples_ms": [
+          3.5265545654296875,
+          3.537922668457031,
+          3.528397216796875,
+          3.530946960449219,
+          3.532398986816406
+        ]
+      },
+      {
+        "name": "controlled_stage_3_no_ws",
+        "warp_specialize": false,
+        "num_stages": 3,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 64,
+          "num_warps": 4,
+          "num_stages": 3
+        },
+        "status": "ok",
+        "latency_ms": 4.033409729003906,
+        "samples_ms": [
+          4.017398376464843,
+          4.029593811035157,
+          4.033409729003906,
+          4.040289001464844,
+          4.045195007324219
+        ]
+      },
+      {
+        "name": "controlled_stage_4_no_ws",
+        "warp_specialize": false,
+        "num_stages": 4,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 64,
+          "num_warps": 4,
+          "num_stages": 4
+        },
+        "status": "ok",
+        "latency_ms": 4.0559234619140625,
+        "samples_ms": [
+          4.055299987792969,
+          4.0559234619140625,
+          4.061714172363281,
+          4.069262084960937,
+          4.04626220703125
+        ]
+      },
+      {
+        "name": "controlled_stage_1_ws",
+        "warp_specialize": true,
+        "num_stages": 1,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 64,
+          "num_warps": 4,
+          "num_stages": 1
+        },
+        "status": "ok",
+        "latency_ms": 5.28777099609375,
+        "samples_ms": [
+          5.27456787109375,
+          5.284364624023437,
+          5.28777099609375,
+          5.289412231445312,
+          5.308132934570312
+        ]
+      },
+      {
+        "name": "controlled_stage_2_ws",
+        "warp_specialize": true,
+        "num_stages": 2,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 64,
+          "num_warps": 4,
+          "num_stages": 2
+        },
+        "status": "unsupported",
+        "error": "RuntimeError: PassManager::run failed"
+      },
+      {
+        "name": "controlled_stage_3_ws",
+        "warp_specialize": true,
+        "num_stages": 3,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 64,
+          "num_warps": 4,
+          "num_stages": 3
+        },
+        "status": "unsupported",
+        "error": "RuntimeError: PassManager::run failed"
+      },
+      {
+        "name": "controlled_stage_4_ws",
+        "warp_specialize": true,
+        "num_stages": 4,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 64,
+          "num_warps": 4,
+          "num_stages": 4
+        },
+        "status": "unsupported",
+        "error": "RuntimeError: PassManager::run failed"
+      }
+    ],
+    "selected_variant": {
+      "name": "autotuned_no_ws",
+      "warp_specialize": false,
+      "descriptor_loads": true,
+      "search_kind": "broad_autotune",
+      "status": "ok",
+      "latency_ms": 3.5070062255859376,
+      "samples_ms": [
+        3.488305969238281,
+        3.523310546875,
+        3.503035888671875,
+        3.5203399658203125,
+        3.5070062255859376
+      ],
+      "triton_config": {
+        "kwargs": {
+          "BLOCK_M": 256,
+          "BLOCK_N": 64
+        },
+        "num_warps": 8,
+        "num_stages": 4,
+        "num_ctas": 1,
+        "maxnreg": null
+      }
+    }
+  }
+}

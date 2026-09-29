@@ -18,7 +18,7 @@ class GroupPlan(Node):
 
 @tvm_ffi.register_object("tl.overlap_plan.OperationPlacement")
 class OperationPlacement(Node):
-    def __init__(self, operation_id, statement, group_id, stage, order):
+    def __init__(self, operation_id, statement, group_id, stage, order, copy_backend=None):
         self.__init_handle_by_constructor__(
             _ffi_api.OperationPlacement,
             int(operation_id),
@@ -26,6 +26,7 @@ class OperationPlacement(Node):
             int(group_id),
             stage,
             int(order),
+            copy_backend,
         )
 
 

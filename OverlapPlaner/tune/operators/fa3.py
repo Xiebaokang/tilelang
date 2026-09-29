@@ -13,14 +13,14 @@ from .example_loader import NativeKernelReference
 
 def add_arguments(parser) -> None:
     group = parser.add_argument_group("FA3")
-    group.add_argument("--fa3-block-m", type=int, nargs="+", default=[64,128])
+    group.add_argument("--fa3-block-m", type=int, nargs="+", default=[64, 128, 256])
     group.add_argument(
-        "--fa3-block-n", type=int, nargs="+", default=[64,128]
+        "--fa3-block-n", type=int, nargs="+", default=[64, 128, 32]
     )
     group.add_argument("--fa3-batch", type=int, default=1)
     group.add_argument("--fa3-heads", type=int, default=16)
-    group.add_argument("--fa3-seq-q", type=int, default=8192)
-    group.add_argument("--fa3-seq-kv", type=int, default=8192)
+    group.add_argument("--fa3-seq-q", type=int, default=4096)
+    group.add_argument("--fa3-seq-kv", type=int, default=4096)
     group.add_argument("--fa3-dim", type=int, default=128)
     group.add_argument("--fa3-causal", action="store_true")
 

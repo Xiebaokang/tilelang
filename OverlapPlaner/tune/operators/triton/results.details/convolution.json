@@ -1,0 +1,246 @@
+{
+  "status": "ok",
+  "raw": {
+    "operator": "convolution",
+    "triton_latency_ms": 0.025585119724273683,
+    "triton_tflops": 289.18185006500056,
+    "overlapplaner_reference": {
+      "latency_ms": 0.037667203694581985,
+      "native_latency_ms": 0.048419199883937836,
+      "speedup_vs_native": 1.285447156537994,
+      "tile": {
+        "block_k": 64,
+        "block_m": 64,
+        "block_n": 128
+      },
+      "schedule_index": 101,
+      "source_file": "/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/convolution/m64_n128_k64/sources/schedule_00101.cu",
+      "result_file": "/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/convolution/top30.json"
+    },
+    "overlapplaner_speedup_vs_triton": 0.6792412819312579,
+    "shape": {
+      "batch": 16,
+      "height": 56,
+      "width": 56,
+      "channels": 64,
+      "filters": 128,
+      "kernel": 3,
+      "padding": 1
+    },
+    "autotuned_variants": [
+      {
+        "name": "autotuned_no_ws",
+        "warp_specialize": false,
+        "descriptor_loads": true,
+        "search_kind": "broad_autotune",
+        "status": "ok",
+        "latency_ms": 0.02576143980026245,
+        "samples_ms": [
+          0.024531679153442384,
+          0.02455712080001831,
+          0.02576143980026245,
+          0.02858344078063965,
+          0.029298319816589355
+        ],
+        "triton_config": {
+          "kwargs": {
+            "BLOCK_M": 128,
+            "BLOCK_N": 128,
+            "BLOCK_K": 64
+          },
+          "num_warps": 8,
+          "num_stages": 3,
+          "num_ctas": 1,
+          "maxnreg": null
+        }
+      },
+      {
+        "name": "autotuned_ws",
+        "warp_specialize": true,
+        "descriptor_loads": true,
+        "search_kind": "broad_autotune",
+        "status": "unsupported",
+        "error": "RuntimeError: PassManager::run failed"
+      }
+    ],
+    "variants": [
+      {
+        "name": "controlled_stage_1_no_ws",
+        "warp_specialize": false,
+        "num_stages": 1,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 128,
+          "BLOCK_K": 64,
+          "num_warps": 4,
+          "num_stages": 1
+        },
+        "status": "ok",
+        "latency_ms": 0.03223439931869507,
+        "samples_ms": [
+          0.031959118843078616,
+          0.03196072101593018,
+          0.03223439931869507,
+          0.033356320858001706,
+          0.0336570405960083
+        ]
+      },
+      {
+        "name": "controlled_stage_2_no_ws",
+        "warp_specialize": false,
+        "num_stages": 2,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 128,
+          "BLOCK_K": 64,
+          "num_warps": 4,
+          "num_stages": 2
+        },
+        "status": "ok",
+        "latency_ms": 0.025585119724273683,
+        "samples_ms": [
+          0.023664560317993164,
+          0.02473184108734131,
+          0.025585119724273683,
+          0.026134800910949708,
+          0.027376480102539062
+        ]
+      },
+      {
+        "name": "controlled_stage_3_no_ws",
+        "warp_specialize": false,
+        "num_stages": 3,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 128,
+          "BLOCK_K": 64,
+          "num_warps": 4,
+          "num_stages": 3
+        },
+        "status": "ok",
+        "latency_ms": 0.027459280490875246,
+        "samples_ms": [
+          0.027135839462280275,
+          0.02713464021682739,
+          0.027459280490875246,
+          0.02814743995666504,
+          0.02816256046295166
+        ]
+      },
+      {
+        "name": "controlled_stage_4_no_ws",
+        "warp_specialize": false,
+        "num_stages": 4,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 128,
+          "BLOCK_K": 64,
+          "num_warps": 4,
+          "num_stages": 4
+        },
+        "status": "ok",
+        "latency_ms": 0.03364975929260254,
+        "samples_ms": [
+          0.03568480014801025,
+          0.0349128794670105,
+          0.03364975929260254,
+          0.03329096078872681,
+          0.032943999767303465
+        ]
+      },
+      {
+        "name": "controlled_stage_1_ws",
+        "warp_specialize": true,
+        "num_stages": 1,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 128,
+          "BLOCK_K": 64,
+          "num_warps": 4,
+          "num_stages": 1
+        },
+        "status": "ok",
+        "latency_ms": 0.03259632110595703,
+        "samples_ms": [
+          0.03241031885147095,
+          0.032381761074066165,
+          0.03259632110595703,
+          0.03297264099121094,
+          0.033141279220581056
+        ]
+      },
+      {
+        "name": "controlled_stage_2_ws",
+        "warp_specialize": true,
+        "num_stages": 2,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 128,
+          "BLOCK_K": 64,
+          "num_warps": 4,
+          "num_stages": 2
+        },
+        "status": "unsupported",
+        "error": "RuntimeError: PassManager::run failed"
+      },
+      {
+        "name": "controlled_stage_3_ws",
+        "warp_specialize": true,
+        "num_stages": 3,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 128,
+          "BLOCK_K": 64,
+          "num_warps": 4,
+          "num_stages": 3
+        },
+        "status": "unsupported",
+        "error": "RuntimeError: PassManager::run failed"
+      },
+      {
+        "name": "controlled_stage_4_ws",
+        "warp_specialize": true,
+        "num_stages": 4,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 128,
+          "BLOCK_K": 64,
+          "num_warps": 4,
+          "num_stages": 4
+        },
+        "status": "unsupported",
+        "error": "RuntimeError: PassManager::run failed"
+      }
+    ],
+    "selected_variant": {
+      "name": "controlled_stage_2_no_ws",
+      "warp_specialize": false,
+      "num_stages": 2,
+      "descriptor_loads": true,
+      "triton_config": {
+        "BLOCK_M": 128,
+        "BLOCK_N": 128,
+        "BLOCK_K": 64,
+        "num_warps": 4,
+        "num_stages": 2
+      },
+      "status": "ok",
+      "latency_ms": 0.025585119724273683,
+      "samples_ms": [
+        0.023664560317993164,
+        0.02473184108734131,
+        0.025585119724273683,
+        0.026134800910949708,
+        0.027376480102539062
+      ]
+    }
+  }
+}

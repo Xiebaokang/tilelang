@@ -1,0 +1,258 @@
+{
+  "status": "ok",
+  "raw": {
+    "operator": "gemm",
+    "triton_latency_ms": 0.43135528564453124,
+    "triton_tflops": 318.6212341565229,
+    "overlapplaner_reference": {
+      "latency_ms": 0.34084320068359375,
+      "native_latency_ms": 0.3551200032234192,
+      "speedup_vs_native": 1.041886716564074,
+      "tile": {
+        "block_k": 64,
+        "block_m": 128,
+        "block_n": 256
+      },
+      "schedule_index": 55,
+      "source_file": "/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/gemm/m128_n256_k64/sources/schedule_00055.cu",
+      "result_file": "/home/xiebaokang/projects/rewrite/tilelang/OverlapPlaner/tune/results/gemm/top30.json"
+    },
+    "overlapplaner_speedup_vs_triton": 1.2655534415221041,
+    "shape": {
+      "m": 4096,
+      "n": 4096,
+      "k": 4096
+    },
+    "variants": [
+      {
+        "name": "controlled_stage_1_no_ws",
+        "warp_specialize": false,
+        "num_stages": 1,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 256,
+          "BLOCK_K": 64,
+          "GROUP_M": 8,
+          "num_warps": 4,
+          "num_stages": 1
+        },
+        "status": "ok",
+        "latency_ms": 2.396842498779297,
+        "samples_ms": [
+          2.397614288330078,
+          2.396842498779297,
+          2.3962338256835936,
+          2.3974412536621093,
+          2.3960092163085935
+        ]
+      },
+      {
+        "name": "controlled_stage_2_no_ws",
+        "warp_specialize": false,
+        "num_stages": 2,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 256,
+          "BLOCK_K": 64,
+          "GROUP_M": 8,
+          "num_warps": 4,
+          "num_stages": 2
+        },
+        "status": "ok",
+        "latency_ms": 2.3340890502929685,
+        "samples_ms": [
+          2.3349049377441404,
+          2.3339913940429686,
+          2.3340890502929685,
+          2.333943328857422,
+          2.3381221008300783
+        ]
+      },
+      {
+        "name": "controlled_stage_3_no_ws",
+        "warp_specialize": false,
+        "num_stages": 3,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 256,
+          "BLOCK_K": 64,
+          "GROUP_M": 8,
+          "num_warps": 4,
+          "num_stages": 3
+        },
+        "status": "ok",
+        "latency_ms": 2.1574781799316405,
+        "samples_ms": [
+          2.1574781799316405,
+          2.1553834533691405,
+          2.157157745361328,
+          2.1618772888183595,
+          2.160693359375
+        ]
+      },
+      {
+        "name": "controlled_stage_4_no_ws",
+        "warp_specialize": false,
+        "num_stages": 4,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 256,
+          "BLOCK_K": 64,
+          "GROUP_M": 8,
+          "num_warps": 4,
+          "num_stages": 4
+        },
+        "status": "ok",
+        "latency_ms": 2.1617582702636717,
+        "samples_ms": [
+          2.161703796386719,
+          2.1594651794433593,
+          2.1617582702636717,
+          2.1629156494140624,
+          2.163832092285156
+        ]
+      },
+      {
+        "name": "controlled_stage_1_ws",
+        "warp_specialize": true,
+        "num_stages": 1,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 256,
+          "BLOCK_K": 64,
+          "GROUP_M": 8,
+          "num_warps": 4,
+          "num_stages": 1
+        },
+        "status": "ok",
+        "latency_ms": 2.4106573486328124,
+        "samples_ms": [
+          2.4162022399902345,
+          2.4091055297851565,
+          2.4109541320800782,
+          2.409146728515625,
+          2.4106573486328124
+        ]
+      },
+      {
+        "name": "controlled_stage_2_ws",
+        "warp_specialize": true,
+        "num_stages": 2,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 256,
+          "BLOCK_K": 64,
+          "GROUP_M": 8,
+          "num_warps": 4,
+          "num_stages": 2
+        },
+        "status": "ok",
+        "latency_ms": 0.43135528564453124,
+        "samples_ms": [
+          0.4438818359375,
+          0.4256740951538086,
+          0.43135528564453124,
+          0.4373048782348633,
+          0.42331424713134763
+        ]
+      },
+      {
+        "name": "controlled_stage_3_ws",
+        "warp_specialize": true,
+        "num_stages": 3,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 256,
+          "BLOCK_K": 64,
+          "GROUP_M": 8,
+          "num_warps": 4,
+          "num_stages": 3
+        },
+        "status": "ok",
+        "latency_ms": 0.43939990997314454,
+        "samples_ms": [
+          0.4480630493164062,
+          0.4348564147949219,
+          0.43939990997314454,
+          0.4444375991821289,
+          0.4391963958740234
+        ]
+      },
+      {
+        "name": "controlled_stage_4_ws",
+        "warp_specialize": true,
+        "num_stages": 4,
+        "descriptor_loads": true,
+        "triton_config": {
+          "BLOCK_M": 128,
+          "BLOCK_N": 256,
+          "BLOCK_K": 64,
+          "GROUP_M": 8,
+          "num_warps": 4,
+          "num_stages": 4
+        },
+        "status": "unsupported",
+        "error": "OutOfResources: out of resource: shared memory, Required: 262760, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+      }
+    ],
+    "autotuned_variants": [
+      {
+        "name": "autotuned_no_ws",
+        "warp_specialize": false,
+        "descriptor_loads": true,
+        "search_kind": "broad_autotune",
+        "status": "ok",
+        "latency_ms": 0.4350193786621094,
+        "samples_ms": [
+          0.4350193786621094,
+          0.4194674301147461,
+          0.4063411331176758,
+          0.4357427978515625,
+          0.43721126556396483
+        ],
+        "triton_config": {
+          "kwargs": {
+            "BLOCK_M": 128,
+            "BLOCK_N": 256,
+            "BLOCK_K": 64,
+            "GROUP_M": 8
+          },
+          "num_warps": 8,
+          "num_stages": 3,
+          "num_ctas": 1,
+          "maxnreg": null
+        }
+      }
+    ],
+    "selected_variant": {
+      "name": "controlled_stage_2_ws",
+      "warp_specialize": true,
+      "num_stages": 2,
+      "descriptor_loads": true,
+      "triton_config": {
+        "BLOCK_M": 128,
+        "BLOCK_N": 256,
+        "BLOCK_K": 64,
+        "GROUP_M": 8,
+        "num_warps": 4,
+        "num_stages": 2
+      },
+      "status": "ok",
+      "latency_ms": 0.43135528564453124,
+      "samples_ms": [
+        0.4438818359375,
+        0.4256740951538086,
+        0.43135528564453124,
+        0.4373048782348633,
+        0.42331424713134763
+      ]
+    }
+  }
+}

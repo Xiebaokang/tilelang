@@ -11,6 +11,38 @@ import pytest
 import tilelang
 import torch
 
+
+def test_mamba_scan_chunked_reference_matches_vectorized_formula() -> None:
+    from OverlapPlaner.tune.operators.mamba_chunk_scan import reference
+
+    batch, chunks, chunk, heads, groups, dim, dstate = 2, 2, 8, 4, 2, 3, 5
+    seq = chunks * chunk
+    torch.manual_seed(0)
+    cb = torch.randn(batch, chunks, groups, chunk, chunk, dtype=torch.float16)
+    x = torch.randn(batch, seq, heads, dim, dtype=torch.float16)
+    dt = torch.randn(batch, heads, chunks, chunk, dtype=torch.float16)
+    da = torch.randn_like(dt)
+    c = torch.randn(batch, seq, groups, dstate, dtype=torch.float16)
+    prev = torch.randn(batch, chunks, heads, dim, dstate, dtype=torch.float16)
+    d = torch.randn(heads, dtype=torch.float16)
+
+    expanded_c = c.repeat_interleave(heads // groups, dim=2)
+    expanded_cb = cb.repeat_interleave(heads // groups, dim=2)
+    decay = torch.exp(da[..., :, None] - da[..., None, :]).permute(0, 2, 1, 3, 4)
+    scores = (expanded_cb * decay).masked_fill(
+        ~torch.ones(chunk, chunk, dtype=torch.bool).tril(), 0
+    )
+    x_chunks = x.reshape(batch, chunks, chunk, heads, dim)
+    expected = torch.einsum(
+        "bchls,bhcs,bcshp->bclhp", scores.to(x.dtype), dt, x_chunks
+    )
+    c_chunks = expanded_c.reshape(batch, chunks, chunk, heads, dstate)
+    expected += torch.einsum("bclhn,bchpn->bclhp", c_chunks, prev) * torch.exp(
+        da.permute(0, 2, 3, 1)
+    ).unsqueeze(-1)
+    expected = expected.reshape_as(x) + x * d.reshape(1, 1, heads, 1)
+    torch.testing.assert_close(reference(cb, x, dt, da, c, prev, d), expected)
+
 from OverlapPlaner.apply import apply_plan_to_ir
 from OverlapPlaner.contract import enumerate_overlap_plans, layout_reduced_module
 from OverlapPlaner.structure import SearchBudget
@@ -130,7 +162,7 @@ def test_mamba_state_does_not_duplicate_tiles_by_native_pipeline_depth() -> None
     configurations = MAMBA_CHUNK_STATE.configurations(options)
 
     assert "mamba_state_num_stages" not in options
-    assert len(configurations) == 6
+    assert len(configurations) == 18
     assert all("num_stages" not in tile for tile in configurations)
 
 

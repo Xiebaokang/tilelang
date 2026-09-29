@@ -1,5 +1,6 @@
 """Tests for L3 PhysicalPlan → OverlapPlan conversion."""
 
+from dataclasses import replace
 from pathlib import Path
 
 import tilelang
@@ -10,6 +11,7 @@ from OverlapPlaner.apply import apply_plan_to_ir
 from OverlapPlaner.arch import HOPPER, ResourceKind
 from OverlapPlaner.arch.hopper import HOPPER_CUDA_TARGET
 from OverlapPlaner.contract import (
+    _backend_can_pack_shared_memory,
     enumerate_overlap_plans,
     layout_reduced_module,
     to_overlap_plan,
@@ -182,6 +184,28 @@ def test_overlap_plan_stamps_statement_and_buffer_identity() -> None:
         else:
             assert buffer_plan.byte_offset is None
     assert int(plan.shared_arena_bytes) == physical.shared_memory.shared_buffer_bytes
+
+
+def test_backend_packs_only_unversioned_single_group_without_sync() -> None:
+    classified, physical = _physical(_gemm_prim(), max_groups=1, max_structures=1)
+    structure = physical.structure
+
+    safe_structure = Structure(
+        stages_by_region=structure.stages_by_region,
+        groups=structure.groups,
+        orders=structure.orders,
+        buffer_versions={buffer_id: 1 for buffer_id in structure.buffer_versions},
+        sync_edges=(),
+    )
+    safe_physical = replace(physical, structure=safe_structure)
+    assert _backend_can_pack_shared_memory(safe_structure)
+    safe_plan = to_overlap_plan(classified, safe_physical)
+    assert all(buffer.byte_offset is None for buffer in safe_plan.buffers)
+    assert safe_plan.shared_arena_bytes is not None
+
+    assert not _backend_can_pack_shared_memory(structure)
+    planned = to_overlap_plan(classified, physical)
+    assert any(buffer.byte_offset is not None for buffer in planned.buffers)
 
 
 def test_async_in_loop_copy_uses_transaction_completion() -> None:

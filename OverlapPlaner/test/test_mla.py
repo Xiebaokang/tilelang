@@ -195,9 +195,10 @@ def test_mla_native_like_producer_partition_survives_resource_filter() -> None:
     )
     assert producer_copy_count(plan_to_dict(plan), classified) == 2
 
-    # Splitting the two producer copies into separate four-warp groups raises
-    # the CTA width to 512.  The compute group's explicit fragments alone
-    # exceed the uniform register ceiling imposed by that launch bound.
+    # Splitting the producer copies raises the CTA width to 512 threads.  It is
+    # still legal because Hopper setmaxnreg redistributes registers per
+    # warpgroup; a uniform register ceiling for the whole CTA would reject it
+    # incorrectly.
     three_groups = {**groups, 6: 2}
     three_orders = build_program_orders(classified, stages, three_groups)
     three_versions = analyze_buffer_versions(
@@ -224,7 +225,15 @@ def test_mla_native_like_producer_partition_survives_resource_filter() -> None:
             classified, stages, three_groups, three_orders, three_versions
         ),
     )
-    assert not list(HOPPER.realize(classified, three_structure))
+    three_group_physical = next(HOPPER.realize(classified, three_structure))
+    allocation = three_group_physical.warp_allocation
+    assert allocation.setmaxnreg_enabled
+    assert allocation.register_counts is not None
+    assert allocation.register_counts[0] >= compute_registers
+    assert sum(
+        group.warp_count * HOPPER.resource().warp_size * registers
+        for group, registers in zip(allocation.groups, allocation.register_counts)
+    ) <= HOPPER.resource().register_file_capacity
 
 
 def test_mla_all_tma_loads_share_one_producer_partition() -> None:
@@ -279,6 +288,8 @@ def test_mla_default_pool_contains_native_stage_group_order_and_warps() -> None:
     )
     for plan in plans:
         if len(plan.groups) != 2:
+            continue
+        if any(group.register_count is None for group in plan.groups):
             continue
         if [(int(group.warp_count), int(group.register_count))
             for group in plan.groups] != [(4, 24), (8, 240)]:

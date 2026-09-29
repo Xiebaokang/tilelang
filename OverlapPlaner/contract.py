@@ -17,6 +17,7 @@ from OverlapPlaner.ir import BufferPlan, GroupPlan, OperationPlacement, OverlapP
 from OverlapPlaner.physical.model import PhysicalPlan
 from OverlapPlaner.structure import (
     SearchBudget,
+    Structure,
     SynchronizationKind,
     SynchronizationScope,
     SyncSkeleton,
@@ -33,6 +34,24 @@ _COMPLETION_THREAD_ARRIVE = 0
 _COMPLETION_ASYNC_TRANSACTION = 1
 _KIND_FORWARD = 0
 _KIND_REUSE = 1
+
+
+def _backend_can_pack_shared_memory(structure: Structure) -> bool:
+    """Return whether lowered-TIR liveness can safely own the whole arena.
+
+    A single group has one sequential execution view, so the backend can pack
+    its final lowered allocations more precisely than the fact-graph model.
+    Synchronization channels and versioned buffers carry overlap semantics that
+    the plan must preserve explicitly and therefore keep planned offsets.
+    """
+
+    return (
+        structure.num_groups == 1
+        and not structure.sync_edges
+        and all(version == 1 for version in structure.buffer_versions.values())
+    )
+
+
 _SCOPE_CODES = {
     SynchronizationScope.ONCE: 0,
     SynchronizationScope.PER_ITERATION: 1,
@@ -218,6 +237,7 @@ def to_overlap_plan(
             OperationPlacement(
                 operation_id=int(node.node_id),
                 statement=node.statement,
+                copy_backend=classified.traits_for(node.node_id).copy_backend,
                 group_id=int(structure.groups[node.node_id]),
                 stage=stage,
                 order=int(
@@ -228,10 +248,15 @@ def to_overlap_plan(
             )
         )
 
-    offset_by_id = {
-        item.buffer_id: item.byte_offset
-        for item in physical.shared_memory.shared_allocations
-    }
+    backend_packs_shared_memory = _backend_can_pack_shared_memory(structure)
+    offset_by_id = (
+        {}
+        if backend_packs_shared_memory
+        else {
+            item.buffer_id: item.byte_offset
+            for item in physical.shared_memory.shared_allocations
+        }
+    )
     handoff_offset_by_channel = {
         item.channel_id: item.byte_offset
         for item in physical.shared_memory.handoff_allocations
@@ -277,8 +302,9 @@ def to_overlap_plan(
         operations=operations,
         buffers=buffers,
         sync_edges=sync_edges,
-        # Mbarriers live in static shared memory after lowering.  The planned
-        # dynamic arena contains only buffers and fragment handoffs.
+        # Mbarriers live in static shared memory after lowering. The byte count
+        # remains a conservative resource/search feature when offsets are
+        # delegated; without an offset map, lowering does not reserve it.
         shared_arena_bytes=int(physical.shared_memory.shared_buffer_bytes),
     )
 

@@ -10,8 +10,8 @@ from .workloads import OperatorSpec, Options, SearchWorkload, TileConfig
 def add_arguments(parser) -> None:
     group = parser.add_argument_group("GEMM FP8")
     group.add_argument("--gemm-fp8-block-m", type=int, nargs="+", default=[64, 128])
-    group.add_argument("--gemm-fp8-block-n", type=int, nargs="+", default=[64, 128])
-    group.add_argument("--gemm-fp8-block-k", type=int, nargs="+", default=[64, 128])
+    group.add_argument("--gemm-fp8-block-n", type=int, nargs="+", default=[64, 128, 256])
+    group.add_argument("--gemm-fp8-block-k", type=int, nargs="+", default=[64, 128, 256])
     group.add_argument("--gemm-fp8-m", type=int, default=4096)
     group.add_argument("--gemm-fp8-n", type=int, default=4096)
     group.add_argument("--gemm-fp8-k", type=int, default=4096)

@@ -16,11 +16,11 @@ from .workloads import OperatorSpec, Options, SearchWorkload, TileConfig
 
 def add_arguments(parser) -> None:
     group = parser.add_argument_group("MHA backward")
-    group.add_argument("--mha-bwd-block-m", type=int, nargs="+", default=[128])
-    group.add_argument("--mha-bwd-block-n", type=int, nargs="+", default=[32])
+    group.add_argument("--mha-bwd-block-m", type=int, nargs="+", default=[128, 64])
+    group.add_argument("--mha-bwd-block-n", type=int, nargs="+", default=[32, 64])
     group.add_argument("--mha-bwd-batch", type=int, default=1)
     group.add_argument("--mha-bwd-heads", type=int, default=32)
-    group.add_argument("--mha-bwd-seq", type=int, default=8192)
+    group.add_argument("--mha-bwd-seq", type=int, default=4096)
     group.add_argument("--mha-bwd-dim", type=int, default=128)
     group.add_argument("--mha-bwd-causal", action="store_true")
 

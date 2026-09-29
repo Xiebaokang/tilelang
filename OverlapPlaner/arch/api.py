@@ -44,12 +44,15 @@ class NodeTraits:
     async_completion: bool = False
     occupies_cta_partition: bool = False
     issue_priority: int = 0
+    copy_backend: str | None = None
 
     def __post_init__(self) -> None:
         if not self.engine or self.engine != self.engine.lower():
             raise ValueError("engine must be a lowercase identifier")
         if not self.engine.isidentifier():
             raise ValueError("engine must be a Python identifier")
+        if self.copy_backend not in (None, "simt", "tma"):
+            raise ValueError("invalid copy backend")
         if self.issue_priority < 0:
             raise ValueError("issue_priority cannot be negative")
 

@@ -85,8 +85,24 @@ private:
   PrimExpr VisitExpr_(const tirx::CallNode *op) final {
     static const Op &copy_op = Op::Get("tl.tileop.copy");
     static const Op &tma_copy_op = Op::Get("tl.tileop.tma_copy");
+    static const Op &im2col_op = Op::Get("tl.tileop.im2col");
+    static const Op &deprecated_im2col_op =
+        Op::Get("tl.tileop.c2d_im2col");
     tirx::Call call =
         Downcast<tirx::Call>(tirx::StmtExprMutator::VisitExpr_(op));
+    if (call->op.same_as(im2col_op) ||
+        call->op.same_as(deprecated_im2col_op)) {
+      ++rewritten_copies_;
+      ffi::Map<ffi::String, ffi::ObjectRef> annotations = call->annotations;
+      annotations.Set("barrier", barrier_ref_);
+      // This channel owns an independent barrier and must provide its own
+      // arrival.  TileLang's native convolution shares a barrier with
+      // a following TMA load and lets that load provide the single arrival;
+      // an isolated OverlapPlan channel has no such following owner.
+      annotations.Set("emit_arrive", IntImm(DataType::Int(32), 1));
+      return tirx::Call(call->dtype, call->op, call->args,
+                        std::move(annotations), call->span);
+    }
     if (!call->op.same_as(copy_op)) {
       return call;
     }
@@ -110,18 +126,44 @@ private:
   int64_t rewritten_copies_{0};
 };
 
+class CopyBackendRewriter : public tirx::StmtExprMutator {
+public:
+  static tirx::Stmt Rewrite(tirx::Stmt statement, ffi::String backend) {
+    return CopyBackendRewriter(std::move(backend))(std::move(statement));
+  }
+
+private:
+  explicit CopyBackendRewriter(ffi::String backend)
+      : backend_(std::move(backend)) {}
+
+  ffi::String backend_;
+
+  PrimExpr VisitExpr_(const tirx::CallNode *op) final {
+    static const Op &copy_op = Op::Get("tl.tileop.copy");
+    tirx::Call call =
+        Downcast<tirx::Call>(tirx::StmtExprMutator::VisitExpr_(op));
+    if (!call->op.same_as(copy_op)) {
+      return call;
+    }
+    ffi::Map<ffi::String, ffi::ObjectRef> annotations = call->annotations;
+    // The explicit backend owns the instruction choice. Synchronization
+    // channels are derived from it, not used to guess it during lowering.
+    annotations.Set("prefer_instruction",
+                    StringImm(backend_ == "simt" ? "sync" : "tma"));
+    return tirx::Call(call->dtype, call->op, call->args,
+                      std::move(annotations), call->span);
+  }
+};
+
 class ProgramSynchronizationLowerer : public tirx::StmtMutator {
 public:
   static tirx::PrimFunc Lower(tirx::PrimFunc func,
                               const LoweringView &plan,
                               const OverlapIR &program_ir) {
-    if (plan.sync_producers.empty()) {
-      return func;
-    }
     ProgramSynchronizationLowerer lowerer(plan, program_ir);
     tirx::PrimFuncNode *node = func.CopyOnWrite();
     node->body = lowerer(node->body);
-    ICHECK(lowerer.barrier_allocated_)
+    ICHECK(plan.sync_producers.empty() || lowerer.barrier_allocated_)
         << "program synchronization barrier was not allocated";
     return func;
   }
@@ -331,8 +373,14 @@ private:
     }
     tirx::Stmt body = VisitStmt(op->body);
     std::optional<size_t> transaction_channel;
+    bool force_synchronous_copy = false;
     for (size_t channel = 0; channel < plan_.sync_producers.size();
          ++channel) {
+      if (plan_.sync_producers[channel] == operation_id->value &&
+          IsGroup(channel, /*producer=*/true) &&
+          CompletionMode(channel) == ProducerCompletionMode::kThreadArrive) {
+        force_synchronous_copy = true;
+      }
       if (plan_.sync_producers[channel] == operation_id->value &&
           IsGroup(channel, /*producer=*/true) &&
           CompletionMode(channel) ==
@@ -342,6 +390,18 @@ private:
             << "one operation cannot own multiple transaction barriers";
         transaction_channel = channel;
       }
+    }
+    const auto &backend = plan_.operation_copy_backends[operation_id->value];
+    if (backend.has_value()) {
+      ICHECK(!transaction_channel.has_value() || backend.value() == "tma")
+          << "SIMT copy cannot own a TMA transaction channel";
+      // Ordinary TMA stores retain TileLang's local commit/wait sequence.
+      // Thus every following release/overwrite happens after the store reads
+      // shared memory; no load-style transaction barrier is used for stores.
+      body = CopyBackendRewriter::Rewrite(std::move(body), backend.value());
+    } else if (force_synchronous_copy) {
+      // Compatibility for plans written before copy_backend was explicit.
+      body = CopyBackendRewriter::Rewrite(std::move(body), "simt");
     }
     if (transaction_channel.has_value()) {
       size_t channel = transaction_channel.value();
@@ -389,7 +449,7 @@ private:
     tirx::For loop =
         Downcast<tirx::For>(tirx::StmtMutator::VisitStmt_(op));
     auto region_annotation = loop->annotations.Get(kRegionIdAnnotation);
-    if (!region_annotation.has_value()) {
+    if (!region_annotation.has_value() || plan_.sync_producers.empty()) {
       return loop;
     }
     const auto *region_id = region_annotation.value().as<IntImmNode>();
@@ -414,7 +474,7 @@ private:
   }
 
   tirx::Stmt VisitStmt_(const tirx::SBlockNode *op) final {
-    if (barrier_allocated_) {
+    if (barrier_allocated_ || plan_.sync_producers.empty()) {
       return tirx::StmtMutator::VisitStmt_(op);
     }
     if (op->name_hint == "root") {
@@ -432,6 +492,8 @@ private:
     }
     barrier_init.Set(barrier_->data, arrive_counts_);
     node->annotations.Set("barrier_init", barrier_init);
+    node->annotations.Set(kPipelinePlannedBarrierBuffers,
+                          ffi::Array<tirx::Var>{barrier_->data});
     return block;
   }
 

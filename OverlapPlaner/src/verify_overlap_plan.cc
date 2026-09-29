@@ -613,6 +613,11 @@ private:
     for (const tirx::Buffer &buffer : op->alloc_buffers) {
       allocated_buffers_.push_back(buffer);
     }
+    if (auto planned = op->annotations.Get(kPipelinePlannedBarrierBuffers)) {
+      for (const tirx::Var &var : Downcast<ffi::Array<tirx::Var>>(planned.value())) {
+        planned_barrier_vars_.insert(var);
+      }
+    }
     if (op->annotations.count("barrier_init")) {
       auto barrier_init = Downcast<ffi::Map<tirx::Var, ffi::Array<PrimExpr>>>(
           op->annotations.Get("barrier_init").value());
@@ -643,10 +648,22 @@ private:
   void VisitExpr_(const tirx::CallNode *op) final {
     tirx::Call call = ffi::GetRef<tirx::Call>(op);
     static const Op &tma_copy_op = Op::Get("tl.tileop.tma_copy");
+    static const Op &im2col_op = Op::Get("tl.tileop.im2col");
+    static const Op &deprecated_im2col_op =
+        Op::Get("tl.tileop.c2d_im2col");
     if (call->op.same_as(tirx::builtin::ptx_arrive_barrier())) {
       RecordSyncEvent(SyncEventRole::kThreadArrive, &channel_arrives_);
     } else if (call->op.same_as(mbarrier_wait_parity())) {
       RecordSyncEvent(SyncEventRole::kWait, &channel_waits_);
+    } else if (call->op.same_as(im2col_op) ||
+               call->op.same_as(deprecated_im2col_op)) {
+      if (auto emit = call->annotations.Get("emit_arrive")) {
+        const auto *imm = emit.value().as<IntImmNode>();
+        if (imm != nullptr && imm->value != 0) {
+          RecordSyncEvent(SyncEventRole::kAsyncArrive,
+                          &channel_async_arrives_);
+        }
+      }
     } else if (call->op.same_as(tma_copy_op)) {
       if (auto emit = call->annotations.Get("emit_arrive")) {
         const auto *imm = emit.value().as<IntImmNode>();

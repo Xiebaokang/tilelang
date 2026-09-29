@@ -26,6 +26,7 @@ class Candidate:
     producer_copies: int = 0
     order_bucket: int = 0
     physical_bucket: tuple[tuple[int, int], ...] = ()
+    async_copy_bucket: int = 0
     seed_priority: float = 0.0
 
 
@@ -188,7 +189,9 @@ def classified_plan_features(payload: dict[str, Any], classified) -> tuple[float
             normalized = position / max(1, len(node_ids) - 1)
             traits = classified.traits_for(node_id)
             async_position += normalized * int(traits.async_completion)
-            tensorcore_position += normalized * int(traits.engine == "tensorcore")
+            tensorcore_position += normalized * int(
+                traits.engine in {"warp_tensorcore", "warpgroup_tensorcore"}
+            )
 
     return (
         float(cross_group),
@@ -276,9 +279,11 @@ def physical_plan_features(payload: dict[str, Any]) -> tuple[float, ...]:
     signature = _physical_group_signature(payload)
     first_warps, first_role = signature[0]
     last_warps, last_role = signature[-1]
+    choices = [op.get("copy_backend") for op in payload["operations"]]
     return tuple(
         float(value)
-        for value in (first_warps, first_role, last_warps, last_role)
+        for value in (first_warps, first_role, last_warps, last_role,
+                      choices.count("simt"), choices.count("tma"))
     )
 
 
@@ -298,11 +303,44 @@ def _native_role_seed_priority(
     for node in classified.graph.nodes:
         role = roles[placements[node.node_id]]
         traits = classified.traits_for(node.node_id)
-        if traits.async_completion and node.kind.value == "copy":
-            priority += 2.0 if role == 0 else -2.0
+        if node.kind.value == "copy":
+            read_scopes = {
+                classified.graph.buffer_for_id(buffer_id).scope
+                for buffer_id in node.reads
+            }
+            write_scopes = {
+                classified.graph.buffer_for_id(buffer_id).scope
+                for buffer_id in node.writes
+            }
+            is_input_load = any(
+                scope in ("", "global") for scope in read_scopes
+            ) and any(scope.startswith("shared") for scope in write_scopes)
+            is_output_store = any(
+                scope.startswith("shared") for scope in read_scopes
+            ) and any(scope in ("", "global") for scope in write_scopes)
+            if is_input_load and traits.async_completion:
+                priority += 2.0 if role == 0 else -2.0
+            elif is_output_store:
+                priority += 2.0 if role == 1 else -2.0
         if node.gemm is not None:
             priority += 1.0 if role == 1 else -1.0
     return priority
+
+
+def _copy_backend_bucket(payload, classified):
+    """SIMT endpoint / mixed / TMA endpoint of switchable copies only."""
+    from OverlapPlaner.tune.copy_search import selected_optional_tma_copies
+    from OverlapPlaner.arch.hopper import optional_tma_copy_ids
+
+    if classified is None:
+        choices = [op.get("copy_backend") for op in payload["operations"]
+                   if op.get("copy_backend") is not None]
+        count = choices.count("tma")
+        total = len(choices)
+    else:
+        total = len(optional_tma_copy_ids(classified))
+        count = len(selected_optional_tma_copies(classified, payload))
+    return 0 if count == 0 else 2 if count == total else 1
 
 
 def load_candidates(
@@ -380,6 +418,7 @@ def load_candidates(
                 ),
                 order_bucket=order_bucket(features),
                 physical_bucket=physical_bucket,
+                async_copy_bucket=_copy_backend_bucket(payload, classified),
                 seed_priority=_native_role_seed_priority(payload, classified),
             )
         )
@@ -410,9 +449,7 @@ class DynamicSearchPolicy:
     def initial(self, measured: set[int], limit: int) -> list[int]:
         """Round-robin over group, stage, producer, and order buckets."""
 
-        buckets: dict[
-            tuple[int, int, int, int, tuple[tuple[int, int], ...]], list[int]
-        ] = {}
+        buckets: dict[tuple, list[int]] = {}
         for candidate in self.candidates:
             if candidate.index not in measured:
                 buckets.setdefault(self._coverage_bucket(candidate), []).append(
@@ -438,12 +475,13 @@ class DynamicSearchPolicy:
     @staticmethod
     def _coverage_bucket(
         candidate: Candidate,
-    ) -> tuple[int, int, int, int, tuple[tuple[int, int], ...]]:
+    ) -> tuple:
         return (
             *candidate.bucket,
             min(candidate.producer_copies, 2),
             candidate.order_bucket,
             candidate.physical_bucket,
+            candidate.async_copy_bucket,
         )
 
     def has_uncovered_bucket(

@@ -18,8 +18,8 @@ from .workloads import (
 
 def add_arguments(parser) -> None:
     group = parser.add_argument_group("linear attention forward")
-    group.add_argument("--linear-attn-block-k", type=int, nargs="+", default=[64, 128])
-    group.add_argument("--linear-attn-block-v", type=int, nargs="+", default=[64, 128])
+    group.add_argument("--linear-attn-block-k", type=int, nargs="+", default=[64, 128, 32])
+    group.add_argument("--linear-attn-block-v", type=int, nargs="+", default=[64, 128, 32])
     group.add_argument("--linear-attn-batch", type=int, default=1)
     group.add_argument("--linear-attn-seq", type=int, default=8192)
     group.add_argument("--linear-attn-heads", type=int, default=16)

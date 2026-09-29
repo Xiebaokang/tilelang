@@ -79,6 +79,9 @@ def realize_order_swap(
 ) -> dict[str, Any] | None:
     """Recompute all order-dependent state, retaining the parent's warp widths."""
 
+    from OverlapPlaner.tune.copy_search import classified_for_plan
+
+    classified = classified_for_plan(classified, payload)
     graph = classified.graph
     groups, stages, orders = _placement_maps(classified, payload)
     if swap not in set(adjacent_order_swaps(classified, payload)):

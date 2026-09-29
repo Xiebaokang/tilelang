@@ -73,13 +73,19 @@ OperationPlacement::OperationPlacement(int64_t operation_id,
                                        ffi::Optional<tirx::Stmt> statement,
                                        int64_t group_id,
                                        ffi::Optional<Integer> stage,
-                                       int64_t order) {
+                                       int64_t order,
+                                       ffi::Optional<ffi::String> copy_backend) {
   auto node = ffi::make_object<OperationPlacementNode>();
   node->operation_id = operation_id;
   node->statement = std::move(statement);
   node->group_id = group_id;
   node->stage = std::move(stage);
   node->order = order;
+  if (copy_backend.has_value()) {
+    ICHECK(copy_backend.value() == "simt" || copy_backend.value() == "tma")
+        << "copy_backend must be simt or tma";
+  }
+  node->copy_backend = std::move(copy_backend);
   data_ = std::move(node);
 }
 
@@ -90,7 +96,8 @@ void OperationPlacementNode::RegisterReflection() {
       .def_ro("statement", &OperationPlacementNode::statement)
       .def_ro("group_id", &OperationPlacementNode::group_id)
       .def_ro("stage", &OperationPlacementNode::stage)
-      .def_ro("order", &OperationPlacementNode::order);
+      .def_ro("order", &OperationPlacementNode::order)
+      .def_ro("copy_backend", &OperationPlacementNode::copy_backend);
 }
 
 BufferPlan::BufferPlan(int64_t buffer_id, ffi::Optional<tirx::Buffer> buffer,
@@ -265,6 +272,7 @@ LoweringView MakeLoweringView(const OverlapPlan &plan,
   view.operation_regions.resize(plan->operations.size());
   view.operation_stages.resize(plan->operations.size());
   view.operation_local_orders.resize(plan->operations.size());
+  view.operation_copy_backends.resize(plan->operations.size());
   view.region_num_stages.assign(program_ir.regions.size(), 0);
 
   std::map<std::pair<int64_t, int64_t>, std::vector<int64_t>> local_orders;
@@ -278,6 +286,7 @@ LoweringView MakeLoweringView(const OverlapPlan &plan,
     CheckIndex(region_id, program_ir.regions.size(), "operation region");
     used_groups[placement->group_id] = true;
     view.operation_groups[operation_id] = placement->group_id;
+    view.operation_copy_backends[operation_id] = placement->copy_backend;
     view.operation_regions[operation_id] = region_id;
     int64_t stage = -1;
     if (placement->stage.defined()) {
@@ -548,9 +557,11 @@ TVM_FFI_STATIC_INIT_BLOCK() {
            })
       .def("tl.overlap_plan.OperationPlacement",
            [](int64_t operation_id, ffi::Optional<tirx::Stmt> statement,
-              int64_t group_id, ffi::Optional<Integer> stage, int64_t order) {
+              int64_t group_id, ffi::Optional<Integer> stage, int64_t order,
+              ffi::Optional<ffi::String> copy_backend) {
              return OperationPlacement(operation_id, std::move(statement),
-                                       group_id, std::move(stage), order);
+                                       group_id, std::move(stage), order,
+                                       std::move(copy_backend));
            })
       .def("tl.overlap_plan.BufferPlan",
            [](int64_t buffer_id, ffi::Optional<tirx::Buffer> buffer,

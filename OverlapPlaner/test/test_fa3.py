@@ -99,7 +99,7 @@ def test_fa3_serial_shared_output_store_split_reaches_cuda_source() -> None:
         plan
         for plan in enumerate_overlap_plans(
             workload.prim_func,
-            budget=SearchBudget(max_groups=2, max_stages=1, max_structures=32),
+            budget=SearchBudget(max_groups=2, max_stages=1, max_structures=64),
         )
         if int(plan.operations[20].group_id)
         != int(plan.operations[21].group_id)

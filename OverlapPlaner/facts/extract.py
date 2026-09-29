@@ -35,6 +35,12 @@ _COPY_OPS = frozenset(
         "tl.tileop.copy",
         "tl.tileop.async_copy",
         "tl.tileop.tma_copy",
+        # Hopper lowers im2col through tma_load_im2col.  Keeping it in the
+        # copy class is required so architecture classification and the
+        # synchronization contract see the same asynchronous producer as the
+        # CUDA lowering path.
+        "tl.tileop.im2col",
+        "tl.tileop.c2d_im2col",
     }
 )
 _GEMM_POLICY = {

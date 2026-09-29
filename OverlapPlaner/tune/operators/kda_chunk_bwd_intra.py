@@ -26,17 +26,27 @@ def build(options, config):
     )
     b, s, h = options["kda_intra_batch"], options["kda_intra_seq"], options["kda_intra_heads"]
     dk, chunk = options["kda_intra_dk"], options["kda_intra_chunk"]
-    native = factory(
-        b, s, h, dk, "float16", "float16", "float32", "float32", "float32", chunk,
-        config["block_dk"], block_BC=16,
-        threads=threads_from_tile_extent(config["block_dk"]), num_stages=0,
-    )
+    def make_native():
+        return factory(
+            b, s, h, dk, "float16", "float16", "float32", "float32",
+            "float32", chunk, config["block_dk"], block_BC=16,
+            # This kernel's thread-owned reduction layout is defined for four
+            # warps.  Spreading block_DK=128 over eight warps makes the reduce
+            # source index depend on a thread-owned segment and cannot lower.
+            threads=threads_from_tile_extent(config["block_dk"], maximum=128),
+            num_stages=0,
+        )
+
+    native = make_native()
     passes = {tilelang.PassConfigKey.TL_ENABLE_FAST_MATH: True}
     outputs = (10, 11, 12, 13)
     return SearchWorkload(
         prim_func=mark_for_overlap(native), out_idx=outputs,
         total_flops=8.0 * b * h * s * chunk * dk,
-        reference_program=NativeKernelReference(native, outputs, passes), pass_configs=passes,
+        reference_program=NativeKernelReference(
+            native, outputs, passes, prim_func_factory=make_native
+        ),
+        pass_configs=passes,
     )
 
 

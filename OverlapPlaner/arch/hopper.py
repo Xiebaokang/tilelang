@@ -143,6 +143,31 @@ def _copy_kind(graph: FactGraph, node: FactNode) -> str | None:
 
     if node.statement is None:
         return None
+    # Im2Col is not a CopyNode, so it cannot be passed to the CopyNode FFI
+    # classifier.  Its Hopper lowering is unconditionally tma_load_im2col.
+    if node.tileop in {
+        "im2col",
+        "c2d_im2col",
+        "tl.tileop.im2col",
+        "tl.tileop.c2d_im2col",
+    }:
+        return "tma"
+    call = getattr(node.statement, "value", None)
+    annotations = getattr(call, "annotations", {})
+    preference = str(annotations.get("prefer_instruction", ""))
+    if preference == "tma":
+        return "tma"
+    if preference == "sync":
+        return "simt"
+    # Producer classification intentionally excludes stores. Preserve the
+    # native store default using the bidirectional capability query.
+    is_store = any(_is_shared(graph.buffer_for_id(i).scope) for i in node.reads) and any(
+        _is_global(graph.buffer_for_id(i).scope) for i in node.writes
+    )
+    if is_store and bool(get_global_func("tl.cuda.CanUseTmaCopy")(
+        node.statement, HOPPER_CUDA_TARGET
+    )):
+        return "tma"
     classify = get_global_func("tl.cuda.ClassifyWarpSpecializedProducerCopy")
     kind = str(classify(node.statement, HOPPER_CUDA_TARGET))
     if kind in {"unknown", "unsupported"}:
@@ -160,61 +185,35 @@ def _copy_kind(graph: FactGraph, node: FactNode) -> str | None:
 
 @lru_cache(maxsize=32)
 def optional_tma_copy_ids(classified: ClassifiedGraph) -> tuple[int, ...]:
-    """Small ordinary gmem-to-smem copies where TMA is legal but not default.
+    """Unconstrained ordinary loads AND stores with a legal TMA alternative.
 
-    Explicit copy preferences remain the user's choice.  The scheduling
-    search may compare both backends only when the shared result has a
-    consumer, so the selected backend can be carried by a completion edge.
+    Explicit instruction choices are fixed. Im2col is a different operator
+    with only a TMA implementation, not a switchable ordinary copy.
     """
 
     graph = classified.graph
-    classify = get_global_func("tl.cuda.ClassifyWarpSpecializedProducerCopy")
+    can_tma = get_global_func("tl.cuda.CanUseTmaCopy")
     eligible = []
     for node in graph.nodes:
         if node.kind != OpKind.COPY or node.statement is None:
+            continue
+        if node.tileop not in {"copy", "tl.tileop.copy"}:
             continue
         call = getattr(node.statement, "value", None)
         if call is None:
             continue
         annotations = getattr(call, "annotations", {})
-        if any(
-            key in annotations
-            for key in (
-                "prefer_instruction",
-                "is_tma_copy",
-                "is_async_copy",
-                "force_cp_async",
-                "cluster_mask",
-            )
-        ):
+        if any(key in annotations for key in (
+            "prefer_instruction", "is_tma_copy", "is_async_copy",
+            "force_cp_async", "cluster_mask",
+        )):
             continue
-        if not any(
-            _is_global(graph.buffer_for_id(buffer_id).scope)
-            for buffer_id in node.reads
-        ) or not any(
-            _is_shared(graph.buffer_for_id(buffer_id).scope)
-            for buffer_id in node.writes
-        ):
-            continue
-        payload = _copy_payload_bytes(graph, node)
-        if payload is None or payload >= _MIN_TMA_PAYLOAD_BYTES:
-            continue
-        if classified.traits_for(node.node_id).async_completion:
-            continue
-        if str(classify(node.statement, HOPPER_CUDA_TARGET)) != "tma":
-            continue
-        shared_outputs = {
-            buffer_id
-            for buffer_id in node.writes
-            if _is_shared(graph.buffer_for_id(buffer_id).scope)
-        }
-        if not any(
-            edge.producer_id == node.node_id
-            and edge.buffer_id in shared_outputs
-            for edge in graph.edges
-        ):
-            continue
-        eligible.append(node.node_id)
+        reads = {graph.buffer_for_id(i).scope for i in node.reads}
+        writes = {graph.buffer_for_id(i).scope for i in node.writes}
+        load = any(_is_global(x) for x in reads) and any(_is_shared(x) for x in writes)
+        store = any(_is_shared(x) for x in reads) and any(_is_global(x) for x in writes)
+        if (load or store) and bool(can_tma(node.statement, HOPPER_CUDA_TARGET)):
+            eligible.append(node.node_id)
     return tuple(eligible)
 
 
@@ -230,8 +229,9 @@ def _classify_copy(
         return NodeTraits(
             ResourceKind.MEMORY,
             "copy",
-            async_completion=True,
+            async_completion=any(_is_shared(scope) for scope in write_scopes),
             issue_priority=6,
+            copy_backend="tma",
         )
     if kind == "cp_async":
         return NodeTraits(
@@ -246,7 +246,8 @@ def _classify_copy(
         # Scheduling priority is independent of the lowering instruction.
         # Even a small SIMT load can unlock later compute; retaining the
         # global-to-shared priority also matches Overlaper's topological order.
-        return NodeTraits(ResourceKind.MEMORY, "copy", issue_priority=6)
+        return NodeTraits(ResourceKind.MEMORY, "copy", issue_priority=6,
+                          copy_backend="simt")
     if any(_is_global(scope) for scope in scopes) and any(
         _is_fragment(scope) for scope in scopes
     ):
@@ -340,6 +341,29 @@ def _uses_warpgroup_tensorcore(gemm, kernel_warps: int | None) -> bool:
         return False
     granule = HOPPER_RESOURCE.partition_warp_multiple
     return kernel_warps is not None and kernel_warps % granule == 0
+
+
+def _gemm_traits(graph: FactGraph, node: FactNode) -> NodeTraits:
+    """Classify ``T.gemm`` by the instruction TileLang will select.
+
+    TileLang's Hopper selector chooses WGMMA only when M, dtype, scope, K and
+    the original CTA width satisfy ``AllowWgmma``; every other supported GEMM
+    falls back to warp-local ``mma.sync``.  These instructions have different
+    scheduling behavior: WGMMA is an asynchronous warpgroup issue worth
+    prioritizing, while mma.sync completes synchronously in one warp.
+    """
+
+    assert node.gemm is not None
+    warpgroup = node.tileop in {"wgmma_gemm", "tl.tileop.wgmma_gemm"} or (
+        _uses_warpgroup_tensorcore(node.gemm, _kernel_warps(graph))
+    )
+    return NodeTraits(
+        ResourceKind.COMPUTE,
+        "warpgroup_tensorcore" if warpgroup else "warp_tensorcore",
+        async_completion=warpgroup,
+        occupies_cta_partition=True,
+        issue_priority=5 if warpgroup else 0,
+    )
 
 
 def _gemm_axis_cover(gemm, granule: int, warpgroup: bool) -> int:
@@ -602,13 +626,7 @@ class HopperArch(Architecture):
         if node.kind == OpKind.COPY:
             return _classify_copy(graph, node, reads, writes)
         if node.kind == OpKind.GEMM:
-            return NodeTraits(
-                ResourceKind.COMPUTE,
-                "tensorcore",
-                async_completion=node.tileop == "wgmma_gemm",
-                occupies_cta_partition=True,
-                issue_priority=5,
-            )
+            return _gemm_traits(graph, node)
         if node.kind == OpKind.ELEMENTWISE and any(
             op in _SFU_OPS for op in node.scalar_ops
         ):

@@ -6,6 +6,7 @@ from collections.abc import Callable, Iterator, Mapping
 from itertools import combinations, permutations
 
 from OverlapPlaner.arch.api import ClassifiedGraph
+from OverlapPlaner.arch.api import is_group_opportunity
 from OverlapPlaner.structure.group import enumerate_group_assignments
 from OverlapPlaner.structure.model import (
     SearchBudget,
@@ -28,16 +29,68 @@ def _group_maps(
 ) -> dict[int, Callable[[], Iterator[dict[int, int]]]]:
     # A newly exposed group opportunity can multiply the number of partitions.
     # Generate each group-count bucket only as the structure budget consumes it.
+    def preferred_producer_partition() -> dict[int, int] | None:
+        """Return the common Hopper producer/consumer split when it is legal.
+
+        The unrestricted partition generator remains authoritative.  This
+        seed only moves the native-style split to the front of a bounded
+        stream, so adding legal three-group partitions cannot evict it from
+        the default candidate pool.
+        """
+
+        graph = classified.graph
+        producer_ids = {
+            node.node_id
+            for node in graph.nodes
+            if classified.traits_for(node.node_id).async_completion
+            and graph.region_for_id(node.region_id).kind.value == "pipeline"
+            and any(
+                graph.buffer_for_id(buffer_id).scope.startswith("shared")
+                for buffer_id in node.writes
+            )
+        }
+        if not producer_ids or len(producer_ids) == len(graph.nodes):
+            return None
+        groups = {
+            node.node_id: int(node.node_id not in producer_ids)
+            for node in graph.nodes
+        }
+        if any(
+            groups[edge.producer_id] != groups[edge.consumer_id]
+            and not is_group_opportunity(classified, edge)
+            for edge in graph.edges
+        ):
+            return None
+        if not any(
+            groups[edge.producer_id] != groups[edge.consumer_id]
+            for edge in graph.edges
+        ):
+            return None
+        return groups
+
     def labeled(num_groups: int) -> Iterator[dict[int, int]]:
+        emitted: set[tuple[tuple[int, int], ...]] = set()
+
+        def emit_labels(canonical: dict[int, int]):
+            for labels in permutations(range(num_groups)):
+                result = {
+                    node_id: labels[group_id]
+                    for node_id, group_id in canonical.items()
+                }
+                key = tuple(sorted(result.items()))
+                if key not in emitted:
+                    emitted.add(key)
+                    yield result
+
+        if num_groups == 2:
+            preferred = preferred_producer_partition()
+            if preferred is not None:
+                yield from emit_labels(preferred)
         for canonical in enumerate_group_assignments(classified, num_groups):
             # Group IDs determine physical warp intervals in the current plan
             # contract. A canonical partition alone cannot represent, e.g.,
             # the producer-first warp layout used by native Hopper kernels.
-            for labels in permutations(range(num_groups)):
-                yield {
-                    node_id: labels[group_id]
-                    for node_id, group_id in canonical.items()
-                }
+            yield from emit_labels(canonical)
 
     return {
         num_groups: lambda count=num_groups: labeled(count)

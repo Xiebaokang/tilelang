@@ -4,7 +4,7 @@ from dataclasses import replace
 
 import tilelang.language as T
 
-from OverlapPlaner.arch import FAKE, HOPPER
+from OverlapPlaner.arch import FAKE, HOPPER, can_split_stages
 from OverlapPlaner.arch.hopper import _uses_warpgroup_tensorcore, _warp_requirements
 from OverlapPlaner.facts import OpKind, extract_fact_graph
 from OverlapPlaner.physical import analyze_shared_memory, estimate_group_registers_per_thread
@@ -109,13 +109,18 @@ def test_hopper_multi_group_uses_partition_granule_and_registers() -> None:
     multi = [item for item in plans if item.structure.num_groups >= 2]
     assert multi
     gemm = next(node for node in classified.graph.nodes if node.kind == OpKind.GEMM)
+    assert any(item.warp_allocation.setmaxnreg_enabled for item in multi)
+    assert any(not item.warp_allocation.setmaxnreg_enabled for item in multi)
     for item in multi:
         allocation = item.warp_allocation
         assert all(group.warp_count % 4 == 0 for group in allocation.groups)
         assert allocation.groups[0].first_warp == 0
         for previous, current in zip(allocation.groups, allocation.groups[1:]):
             assert current.first_warp == previous.warp_stop
-        assert allocation.setmaxnreg_enabled
+        if allocation.setmaxnreg_enabled:
+            assert sum(g.warp_count * 32 * quota for g, quota in zip(
+                allocation.groups, allocation.register_counts
+            )) <= HOPPER.resource().register_file_capacity
         compute_group = item.structure.groups[gemm.node_id]
         assert allocation.groups[compute_group].warp_count == 8
         assert item.shared_memory.fits
@@ -343,7 +348,10 @@ def test_hopper_mma_small_m_uses_sixteen_row_tiles() -> None:
     gemm = next(node for node in graph.nodes if node.kind == OpKind.GEMM)
     assert gemm.gemm is not None
     assert gemm.gemm.m == 32
-    assert classified.traits_for(gemm.node_id).engine == "tensorcore"
+    traits = classified.traits_for(gemm.node_id)
+    assert traits.engine == "warp_tensorcore"
+    assert traits.async_completion is False
+    assert traits.issue_priority == 0
     assert requirement.minimum == 4
     assert requirement.maximum == 4
 
@@ -496,6 +504,20 @@ def test_hopper_mixed_wgmma_and_mma_remains_feasible() -> None:
     assert wide.gemm is not None and small.gemm is not None
     assert _uses_warpgroup_tensorcore(wide.gemm, 4)
     assert not _uses_warpgroup_tensorcore(small.gemm, 4)
+    classified = HOPPER.classify(graph)
+    wide_traits = classified.traits_for(wide.node_id)
+    small_traits = classified.traits_for(small.node_id)
+    assert wide_traits.engine == "warpgroup_tensorcore"
+    assert wide_traits.async_completion
+    assert wide_traits.issue_priority == 5
+    assert small_traits.engine == "warp_tensorcore"
+    assert not small_traits.async_completion
+    assert small_traits.issue_priority == 0
+    assert wide_traits.engine != small_traits.engine
+    assert can_split_stages(wide_traits, small_traits)
+    groups = {node.node_id: 0 for node in graph.nodes}
+    orders = build_program_orders(classified, {}, groups)
+    assert orders[0][0][wide.node_id] < orders[0][0][small.node_id]
     _, requirement = _one_group_requirement(graph)
     assert requirement.minimum == 4
     assert requirement.maximum == 4
