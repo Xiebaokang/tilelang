@@ -308,6 +308,12 @@ def test_mla_default_pool_contains_native_stage_group_order_and_warps() -> None:
             for left, right in ((5, 6), (15, 16), (16, 17), (17, 18), (18, 19))
         ):
             continue
+        # Keep looking past the new single-slot variant: this regression
+        # checks that the previous native-like double-buffered arrangement is
+        # still present in the default pool as well.
+        if any(int(plan.buffers[buffer_id].version_count) != 2
+               for buffer_id in (8, 10)):
+            continue
         assert int(plan.buffers[8].version_count) == 2
         assert int(plan.buffers[10].version_count) == 2
         assert sum(int(edge.slot_count) for edge in plan.sync_edges) == 10

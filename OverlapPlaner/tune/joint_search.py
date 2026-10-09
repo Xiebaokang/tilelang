@@ -16,6 +16,7 @@ from OverlapPlaner.structure.order import enumerate_program_orders
 from OverlapPlaner.structure.stage import (
     _correctness_constraint,
     _performance_constraint,
+    region_stage_limit,
 )
 from OverlapPlaner.structure.sync import build_synchronizations
 from OverlapPlaner.structure.version import (
@@ -44,17 +45,20 @@ def adjacent_joint_moves(
     *,
     max_stages: int = 3,
     max_groups: int = 3,
+    extra_shared_versions: int = 1,
 ) -> Iterator[JointMove]:
     """Offer legal stage, group, order, copy, and shared-version changes."""
 
     graph = classified.graph
     groups, stages, orders = _placement_maps(classified, payload)
     for region_id, assignment in stages.items():
-        if graph.region_for_id(region_id).kind != RegionKind.PIPELINE:
+        region = graph.region_for_id(region_id)
+        if region.kind != RegionKind.PIPELINE:
             continue
+        stage_limit = region_stage_limit(region, max_stages)
         for node_id, current in assignment.items():
             for destination in (current - 1, current + 1):
-                if 0 <= destination < max_stages:
+                if 0 <= destination < stage_limit:
                     for variant in (0, 1):
                         yield "stage", region_id, node_id, destination, variant
 
@@ -91,10 +95,12 @@ def adjacent_joint_moves(
     for buffer_id in cross_group_version_buffers(graph, groups):
         if not graph.buffer_for_id(buffer_id).scope.startswith("shared"):
             continue
-        if counts[buffer_id] == minimum[buffer_id]:
-            yield "version", buffer_id, minimum[buffer_id] + 1, 0, 0
-        elif counts[buffer_id] == minimum[buffer_id] + 1:
-            yield "version", buffer_id, minimum[buffer_id], 0, 0
+        current = counts[buffer_id]
+        upper = max(minimum[buffer_id], 2) + extra_shared_versions
+        if current > minimum[buffer_id]:
+            yield "version", buffer_id, current - 1, 0, 0
+        if current < upper:
+            yield "version", buffer_id, current + 1, 0, 0
 
 
 def realize_joint_move(
@@ -133,6 +139,10 @@ def realize_joint_move(
         if abs(value - previous) != 1 or value < 0:
             return None
         stages[first][second] = value
+        if max(stages[first].values()) >= region_stage_limit(
+            graph.region_for_id(first), max(stages[first].values()) + 1
+        ):
+            return None
         if set(stages[first].values()) != set(range(max(stages[first].values()) + 1)):
             return None
         for edge in graph.edges:

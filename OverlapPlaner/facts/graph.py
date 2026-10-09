@@ -53,7 +53,7 @@ def is_group_visible_scope(scope: str) -> bool:
 
 @dataclass(frozen=True, slots=True)
 class GemmFact:
-    """Static GEMM parameters taken from ``tl.tileop.gemm`` arguments."""
+    """Static GEMM parameters, including optional mixed-A K partitions."""
 
     m: int | None
     n: int | None
@@ -68,6 +68,12 @@ class GemmFact:
     a_scope: str
     b_scope: str
     c_scope: str
+    # Ordinary GEMMs retain the defaults; mixed GEMMs use A as the shared
+    # prefix and RA as the register suffix, with k = k_shared + k_register.
+    ra_dtype: str = ""
+    ra_scope: str = ""
+    k_shared: int | None = None
+    k_register: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -198,6 +204,7 @@ class RegionFact:
     region_id: int
     kind: RegionKind
     static_extent: int | None = None
+    max_extent: int | None = None
     loop: tirx.For | None = field(
         default=None, compare=False, hash=False, repr=False
     )
@@ -207,6 +214,14 @@ class RegionFact:
             raise ValueError("region_id must be non-negative")
         if self.static_extent is not None and self.static_extent < 1:
             raise ValueError("static_extent must be positive or None")
+        if self.max_extent is not None and self.max_extent < 1:
+            raise ValueError("max_extent must be positive or None")
+        if (
+            self.static_extent is not None
+            and self.max_extent is not None
+            and self.static_extent != self.max_extent
+        ):
+            raise ValueError("a static extent must equal max_extent")
         if self.kind == RegionKind.SERIAL and self.loop is not None:
             raise ValueError("serial regions cannot carry a pipeline loop")
         if self.kind == RegionKind.PIPELINE and self.loop is None:

@@ -166,6 +166,49 @@ def test_wide_stage_beam_retains_mamba_three_stage_regression() -> None:
     ]
 
 
+def test_dynamic_stage_depth_does_not_exceed_maximum_trip_count() -> None:
+    from OverlapPlaner.contract import layout_reduced_prim_func
+
+    graph = extract_fact_graph(
+        layout_reduced_prim_func(
+            build_mamba_scan(
+                {
+                    "mamba_scan_batch": 2,
+                    "mamba_scan_heads": 80,
+                    "mamba_scan_groups": 1,
+                    "mamba_scan_seq": 8192,
+                    "mamba_scan_chunk": 256,
+                    "mamba_scan_dim": 64,
+                    "mamba_scan_dstate": 128,
+                },
+                {
+                    "block_m": 128,
+                    "block_n": 64,
+                    "block_k": 128,
+                    "block_dstate": 128,
+                },
+            ).prim_func
+        )
+    )
+    pipeline = next(
+        region for region in graph.regions if region.kind == RegionKind.PIPELINE
+    )
+    assert pipeline.static_extent is None
+    assert pipeline.max_extent == 2
+    stages = list(
+        enumerate_program_stages(
+            HOPPER.classify(graph),
+            SearchBudget(max_stages=3, stage_beam=256),
+        )
+    )
+    assert stages
+    assert all(
+        max(assignment.values(), default=0) <= 1
+        for program in stages
+        for assignment in program.values()
+    )
+
+
 def test_mamba_serial_shared_handoffs_can_split_groups() -> None:
     classified = HOPPER.classify(_mamba_scan_graph())
     graph = classified.graph

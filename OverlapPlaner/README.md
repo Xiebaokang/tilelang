@@ -71,7 +71,9 @@ stage(producer) ≤ stage(consumer) + iteration_distance
 
 即 `iteration_distance + stage(consumer) - stage(producer)` 非负，保证生产者不会在流水线时间上落到所依赖的消费者之后。串行区域不枚举 pipeline stage。
 
-当前还有用于限制搜索空间的拆分条件：initializer 的相关边不拆 stage；涉及内存操作的边可以拆；两端都是计算节点时，只有不同 engine 才作为拆 stage 机会。这些条件反映当前实现支持的有价值切分，不能当作所有合法调度的数学定理。节点较少的区域逐项枚举；较大区域使用受 `stage_beam` 限制的中间状态。动态循环没有统一的“两级 stage”限制，短循环候选最终仍须接受编译和运行验证。
+当前还有用于限制搜索空间的拆分条件：initializer 的相关边不拆 stage；涉及内存操作的边可以拆；两端都是计算节点时，只有不同 engine 才作为拆 stage 机会。这些条件反映当前实现支持的有价值切分，不能当作所有合法调度的数学定理。节点较少的区域逐项枚举；较大区域使用受 `stage_beam` 限制的中间状态。
+
+事实提取跟踪变量绑定、外层循环和线程索引范围，推导 pipeline 循环的最大次数 `max_extent`。基础枚举、独立 producer 种子、全局采样和局部 stage 变异都把深度限制为 `min(max_stages, max_extent)`；无法证明可靠的正数上界时保留原搜索上限。次数范围为 1..2 的循环仍允许两阶段，因为短迭代的 prologue/epilogue 可以有条件执行，但不会生成任何迭代都无法填满的三阶段候选。该约束用于规避当前 lowering 的短循环版本访问问题，候选最终仍须接受编译和运行验证。
 
 ### Group：独立执行的 warp 分区
 
@@ -87,7 +89,7 @@ stage(producer) ≤ stage(consumer) + iteration_distance
 
 ### Buffer 版本、ring slot 与同步
 
-固定 stage/group/order 后，`structure/version.py` 根据读写冲突和访问范围计算每个 buffer 安全复用的最少版本。跨组流水线中的 shared buffer 至少双缓冲；系统也可以尝试在最小值上增加 ring slot，使 producer 在有利的计划中跑得更远。fragment 的同组流水线复用由多个私有 register tile 实现；fragment 跨组时，私有 fragment 与 shared handoff ring 分别处理。
+固定 stage/group/order 后，`structure/version.py` 根据读写冲突和访问范围计算每个 buffer 安全复用的最少版本。普通跨组流水线中的 shared buffer 可以使用单份 buffer，由前向同步和复用反压防止提前读取或覆盖；stage 距离较大时仍需更多版本。搜索保留最小版本候选，并继续尝试双缓冲和额外 ring slot，使 producer 在有利的计划中跑得更远。`extra_shared_versions=0` 只枚举最小值，默认值 1 同时探索双缓冲和三缓冲（受候选预算限制）。fragment 的同组流水线复用由多个私有 register tile 实现；fragment 跨组时，私有 fragment 与 shared handoff ring 分别处理。
 
 `structure/sync.py` 派生两类同步：
 
@@ -101,6 +103,8 @@ stage(producer) ≤ stage(consumer) + iteration_distance
 `HOPPER.realize` 把结构候选映射到实际资源。单 group 保持原 kernel 的线程宽度；多 group 使用连续 warp 区间。WGMMA 及其 fragment 使用四 warp 集体粒度，MMA-only 分区可用单 warp 粒度；计算 group 还必须保留 `LayoutReducer` 建立的 fragment 线程覆盖。随后估计各 group 的寄存器活跃峰值，并在可用且合法时考虑 `setmaxnreg`。 带 `setmaxnreg` 的候选以每组实际额度、8 寄存器粒度、单线程上限及 `Σ(线程数 × 额度)` 检查可行性，不能用 CTA 平均额度误杀高寄存器 consumer。多组方案同时提供不带 `setmaxnreg` 的编译器普通分配选择，不再设置大于 16 warp 的经验门槛；普通分配的实际寄存器与 spill 由 ptxas 决定并实测验证。
 
 shared memory 规划计算版本化 buffer、跨组 fragment handoff、mbarrier、对齐和可复用区间，再与设备容量比较。warp、寄存器或 shared memory 不满足约束时，候选不进入 GPU 实测。这些是搜索阶段的近似可行性模型：它们能避免明显不可用的编译，但最终资源分配、lowering 和运行正确性仍须由编译器与测试确认。
+
+对于生命周期区间不重叠的 pipeline 和 epilogue shared buffer，规划器结合组内顺序与完成同步构造 happens-before 关系。只有旧 buffer 的每个访问都被证明先于新 buffer 的每个访问，才允许涉及 pipeline writer 的空间复用；例如已退休的 K/V tile 与后续 O_shared 可以共用地址。证明不完整时仍保持分开分配。同一个 buffer 的版本数不因这项复用而减少。
 
 枚举器在 group 数和 stage 深度之间交错产出候选，避免有限预算被单一结构桶耗尽。`SearchBudget.max_structures` 限制最终实现出的计划数量；它、stage beam 和其他预算都不是硬件常量。`exhaustive` 模式评测的是**当前已生成的候选池**，不意味着无限制地穷举全部合法调度。TileLang native 单独编译与测量，不能将其底层调度逐项出现在 OverlapPlan 候选池中视为已有保证。
 

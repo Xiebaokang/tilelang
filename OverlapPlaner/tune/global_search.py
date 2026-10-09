@@ -21,6 +21,7 @@ from OverlapPlaner.structure.stage import (
     _correctness_constraint,
     _performance_constraint,
     effective_stage_distance,
+    region_stage_limit,
 )
 from OverlapPlaner.structure.sync import build_synchronizations
 from OverlapPlaner.structure.version import analyze_buffer_versions, cross_group_version_buffers
@@ -60,7 +61,13 @@ def sample_structure(
         edges = region_edges(graph, nodes)
         pipeline = region.kind == RegionKind.PIPELINE
         if pipeline:
-            depth = rng.randint(1, min(budget.max_stages, max(1, len(nodes))))
+            depth = rng.randint(
+                1,
+                min(
+                    region_stage_limit(region, budget.max_stages),
+                    max(1, len(nodes)),
+                ),
+            )
             assignment = {}
             for node in graph.topological_order():
                 if node not in nodes:
@@ -106,7 +113,12 @@ def sample_structure(
     versions = analyze_buffer_versions(graph, stages, groups, orders)
     for bid in cross_group_version_buffers(graph, groups):
         if graph.buffer_for_id(bid).scope.startswith("shared"):
-            versions[bid] += rng.randint(0, budget.extra_shared_versions)
+            choices = [versions[bid]]
+            choices.extend(
+                max(versions[bid], 2) + extra
+                for extra in range(budget.extra_shared_versions + 1)
+            )
+            versions[bid] = rng.choice(tuple(dict.fromkeys(choices)))
     sync = build_synchronizations(classified, stages, groups, orders, versions)
     return Structure(stages, groups, orders, versions, sync)
 

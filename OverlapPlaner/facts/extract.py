@@ -25,6 +25,7 @@ from .graph import (
 _GEMM_OPS = frozenset(
     {
         "tl.tileop.gemm",
+        "tl.tileop.gemm_mix",
         "tl.tileop.wgmma_gemm",
         "tl.tileop.tcgen05_gemm",
         "tl.tileop.gemm_sp",
@@ -290,7 +291,8 @@ def _gemm_policy(value) -> str:
 
 def _parse_gemm(call: tirx.Call) -> GemmFact | None:
     args = list(call.args)
-    if len(args) < 9:
+    is_mix = _op_name(call) == "tl.tileop.gemm_mix"
+    if len(args) < (22 if is_mix else 9):
         return None
     return GemmFact(
         m=_static_int(args[5]),
@@ -306,6 +308,10 @@ def _parse_gemm(call: tirx.Call) -> GemmFact | None:
         a_scope=_region_buffer_scope(args[0]),
         b_scope=_region_buffer_scope(args[1]),
         c_scope=_region_buffer_scope(args[2]),
+        ra_dtype=_region_buffer_dtype(args[19]) if is_mix else "",
+        ra_scope=_region_buffer_scope(args[19]) if is_mix else "",
+        k_shared=_static_int(args[20]) if is_mix else None,
+        k_register=_static_int(args[21]) if is_mix else None,
     )
 
 
@@ -373,6 +379,28 @@ class _OperationCollector:
     def __init__(self) -> None:
         self.operations: list[_RawOperation] = []
         self.name_counts: dict[str, int] = {}
+        self.bindings: dict[tirx.Var, tirx.PrimExpr] = {}
+        self.loop_ranges: dict[tirx.Var, ir.Range] = {}
+        self.pipeline_extent_bounds: dict[tirx.For, tuple[int, int] | None] = {}
+
+    def _extent_bounds(self, extent) -> tuple[int, int] | None:
+        analyzer = arith.Analyzer()
+        for var, loop_range in self.loop_ranges.items():
+            analyzer.bind(
+                var,
+                ir.Range.from_min_extent(
+                    substitute(loop_range.min, self.bindings),
+                    substitute(loop_range.extent, self.bindings),
+                ),
+            )
+        resolved = substitute(extent, self.bindings)
+        bounds = analyzer.const_int_bound(resolved)
+        minimum = int(bounds.min_value)
+        maximum = int(bounds.max_value)
+        # ConstIntBound represents unknown limits using dtype infinities.
+        if minimum < 1 or maximum >= (1 << 62):
+            return None
+        return minimum, maximum
 
     @staticmethod
     def _operation_name(
@@ -429,8 +457,15 @@ class _OperationCollector:
         pipeline_loop: tirx.For | None = None,
     ) -> None:
         if isinstance(statement, tirx.SeqStmt):
+            saved_bindings = dict(self.bindings)
             for child in statement.seq:
                 self.visit(child, pipeline_loop)
+            self.bindings = saved_bindings
+            return
+        if isinstance(statement, tirx.Bind):
+            self.bindings[statement.var] = substitute(
+                statement.value, self.bindings
+            )
             return
         if isinstance(statement, tirx.For):
             if statement.kind == tirx.ForKind.PARALLEL:
@@ -453,7 +488,18 @@ class _OperationCollector:
                 if pipeline_loop is not None:
                     raise ValueError("nested pipeline loops are not supported")
                 next_pipeline = statement
+                self.pipeline_extent_bounds[statement] = self._extent_bounds(
+                    statement.extent
+                )
+            saved_range = self.loop_ranges.get(statement.loop_var)
+            self.loop_ranges[statement.loop_var] = ir.Range.from_min_extent(
+                statement.min, statement.extent
+            )
             self.visit(statement.body, next_pipeline)
+            if saved_range is None:
+                del self.loop_ranges[statement.loop_var]
+            else:
+                self.loop_ranges[statement.loop_var] = saved_range
             return
         if isinstance(statement, tirx.SBlockRealize):
             self.visit(statement.block.body, pipeline_loop)
@@ -462,6 +508,21 @@ class _OperationCollector:
             self.visit(statement.body, pipeline_loop)
             return
         if isinstance(statement, tirx.AttrStmt):
+            if (
+                statement.attr_key == "thread_extent"
+                and isinstance(statement.node, tirx.IterVar)
+            ):
+                var = statement.node.var
+                saved_range = self.loop_ranges.get(var)
+                self.loop_ranges[var] = ir.Range.from_min_extent(
+                    0, statement.value
+                )
+                self.visit(statement.body, pipeline_loop)
+                if saved_range is None:
+                    del self.loop_ranges[var]
+                else:
+                    self.loop_ranges[var] = saved_range
+                return
             self.visit(statement.body, pipeline_loop)
             return
         if isinstance(statement, tirx.IfThenElse):
@@ -801,6 +862,17 @@ def extract_fact_graph(prim: tirx.PrimFunc | ir.IRModule) -> FactGraph:
     for operation in operations:
         if operation.pipeline_loop is not previous_loop:
             loop = operation.pipeline_loop
+            extent_bounds = (
+                None
+                if loop is None
+                else collector.pipeline_extent_bounds.get(loop)
+            )
+            static_extent = (
+                extent_bounds[0]
+                if extent_bounds is not None
+                and extent_bounds[0] == extent_bounds[1]
+                else None
+            )
             regions.append(
                 RegionFact(
                     region_id=len(regions),
@@ -809,7 +881,10 @@ def extract_fact_graph(prim: tirx.PrimFunc | ir.IRModule) -> FactGraph:
                         if loop is not None
                         else RegionKind.SERIAL
                     ),
-                    static_extent=None if loop is None else _static_int(loop.extent),
+                    static_extent=static_extent,
+                    max_extent=(
+                        None if extent_bounds is None else extent_bounds[1]
+                    ),
                     loop=loop,
                 )
             )

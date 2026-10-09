@@ -10,6 +10,18 @@ from OverlapPlaner.facts import FactEdge, FactGraph, RegionKind
 from OverlapPlaner.structure.model import SearchBudget, region_edges
 
 
+def region_stage_limit(region, requested: int) -> int:
+    """Cap stage depth by a proven maximum dynamic trip count, when known."""
+
+    if requested < 1:
+        raise ValueError("requested stage depth must be positive")
+    return (
+        requested
+        if region.max_extent is None
+        else min(requested, region.max_extent)
+    )
+
+
 def effective_stage_distance(edge: FactEdge, stages: Mapping[int, int]) -> int:
     """Return the pipeline-time distance from producer to consumer."""
 
@@ -194,14 +206,18 @@ def enumerate_program_stages(
 
     per_region: list[list[dict[int, int]]] = []
     for region_id in pipeline_ids:
-        # TileLang predicates the prologue and epilogue when a loop executes
-        # fewer iterations than its stage depth. A minimum-trip-count cutoff
-        # would incorrectly remove Mamba's valid three-stage schedules.
+        region = graph.region_for_id(region_id)
+        # Predicated prologue/epilogue permits a stage depth larger than the
+        # minimum dynamic trip count.  A depth larger than the maximum trip
+        # count can never be populated, however, and has produced invalid
+        # versioned accesses in downstream lowering.  Keep valid Mamba 1..2
+        # trip two-stage plans while excluding its unsafe three-stage plans.
+        region_max_stages = region_stage_limit(region, budget.max_stages)
         node_count = len(graph.nodes_for_region(region_id))
         if node_count <= 8:
             assignments = list(
                 enumerate_stage_assignments(
-                    classified, region_id, budget.max_stages
+                    classified, region_id, region_max_stages
                 )
             )
         else:
@@ -210,7 +226,7 @@ def enumerate_program_stages(
                     classified,
                     region_id,
                     beam_width=budget.stage_beam,
-                    num_stages=budget.max_stages,
+                    num_stages=region_max_stages,
                 )
             )
         if not assignments:

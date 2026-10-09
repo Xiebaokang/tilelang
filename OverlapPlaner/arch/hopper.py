@@ -354,7 +354,9 @@ def _gemm_traits(graph: FactGraph, node: FactNode) -> NodeTraits:
     """
 
     assert node.gemm is not None
-    warpgroup = node.tileop in {"wgmma_gemm", "tl.tileop.wgmma_gemm"} or (
+    warpgroup = node.tileop in {
+        "wgmma_gemm", "tl.tileop.wgmma_gemm", "gemm_mix", "tl.tileop.gemm_mix"
+    } or (
         _uses_warpgroup_tensorcore(node.gemm, _kernel_warps(graph))
     )
     return NodeTraits(

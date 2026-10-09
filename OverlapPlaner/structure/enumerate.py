@@ -177,7 +177,11 @@ def _version_variants(
     minimum: dict[int, int],
     budget: SearchBudget,
 ) -> Iterator[dict[int, int]]:
-    """Try extra ring slots for cross-group shared buffers after the minimum."""
+    """Try extra ring slots for cross-group shared buffers after the minimum.
+
+    The minimum may be one: cross-group forward and reuse synchronization can
+    make a single slot correct, while extra slots let the producer run ahead.
+    """
 
     yield minimum
     if budget.extra_shared_versions == 0:
@@ -189,15 +193,24 @@ def _version_variants(
         if graph.buffer_for_id(buffer_id).scope.startswith("shared")
     )
     emitted = 0
+    # Preserve the former double/triple-buffer search while adding the
+    # correctness-minimum single-slot candidate.  The performance baseline is
+    # two slots; ``extra_shared_versions`` controls run-ahead beyond it.
     # Single-buffer changes isolate their effect; larger subsets can allow
     # several independent producers to run farther ahead at once.
-    for extra in range(1, budget.extra_shared_versions + 1):
+    for extra in range(0, budget.extra_shared_versions + 1):
         for subset_size in range(1, len(eligible) + 1):
             for subset in combinations(eligible, subset_size):
-                yield {
+                variant = {
                     **minimum,
-                    **{buffer_id: minimum[buffer_id] + extra for buffer_id in subset},
+                    **{
+                        buffer_id: max(minimum[buffer_id], 2) + extra
+                        for buffer_id in subset
+                    },
                 }
+                if variant == minimum:
+                    continue
+                yield variant
                 emitted += 1
                 if emitted >= budget.max_version_variants:
                     return

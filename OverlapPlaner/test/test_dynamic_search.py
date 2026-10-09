@@ -425,9 +425,13 @@ def test_mamba_joint_pool_covers_target_structure_and_extra_version(tmp_path):
     )
     version_move = next(
         move for move in adjacent_joint_moves(classified, matched)
-        if move[:3] == ("version", 10, 3)
+        if move[:3] == ("version", 10, 2)
     )
+    assert matched["buffers"][10]["version_count"] == 1
     completed = realize_joint_move(classified, matched, version_move)
     assert completed is not None
-    assert completed["buffers"][10]["version_count"] == 3
+    assert completed["buffers"][10]["version_count"] == 2
+    runahead = realize_joint_move(classified, completed, ("version", 10, 3, 0, 0))
+    assert runahead is not None
+    assert runahead["buffers"][10]["version_count"] == 3
     assert [item["warp_count"] for item in completed["groups"]] == [4, 4]

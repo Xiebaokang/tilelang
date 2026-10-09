@@ -150,5 +150,6 @@ def test_pipelined_without_num_stages_is_a_pipeline_region() -> None:
         region for region in graph.regions if region.kind == RegionKind.PIPELINE
     )
     assert pipeline.static_extent == 8
+    assert pipeline.max_extent == 8
     assert pipeline.loop is not None
     assert "num_stages" not in pipeline.loop.annotations

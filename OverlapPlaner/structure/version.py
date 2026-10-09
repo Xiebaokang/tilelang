@@ -123,8 +123,11 @@ def analyze_buffer_versions(
 ) -> dict[int, int]:
     """Return the minimum correctness and cross-group overlap versions.
 
-    Eligible cross-group pipeline buffers have a lower bound of two versions.
-    Optional slots above the minimum are enumerated by the structure search.
+    Cross-group pipeline buffers may use one version when the forward and
+    buffer-reuse synchronizations serialize access to that slot. Optional
+    slots above the correctness minimum are enumerated by the structure search
+    so measurement can decide whether producer run-ahead is worth the extra
+    storage.
 
     ``local.fragment`` participates in the pipeline reuse minimum. A same-group
     stage cut can require two or more register tiles. Lowering realizes that as
@@ -182,8 +185,6 @@ def analyze_buffer_versions(
             versions[edge.buffer_id] = max(
                 versions[edge.buffer_id], stage_delay + 1
             )
-    for buffer_id in cross_group_version_buffers(graph, groups):
-        versions[buffer_id] = max(versions[buffer_id], 2)
     return versions
 
 

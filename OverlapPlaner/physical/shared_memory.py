@@ -48,17 +48,24 @@ def _ws_group_conflict(
 
     if left == _WS_GROUP_NONE or right == _WS_GROUP_NONE:
         return False
+    # A pipeline writer may still retire before a later serial epilogue.  The
+    # per-iteration forward/reuse synchronizations plus group-local program
+    # order prove this when every access to the old buffer happens before
+    # every access to the new one.  This is the common K/V -> O reuse in
+    # attention and matches MergeSharedMemoryAllocations/native lowering.
+    if left_accesses and right_accesses and all(
+        (left_node, right_node) in happens_before
+        for left_node in left_accesses
+        for right_node in right_accesses
+    ):
+        return False
     if left_pipeline_writer or right_pipeline_writer:
         return True
     if left == right and left & (left - 1) == 0:
         return False
     if not left_accesses or not right_accesses:
         return True
-    return not all(
-        (left_node, right_node) in happens_before
-        for left_node in left_accesses
-        for right_node in right_accesses
-    )
+    return True
 
 
 def fragment_handoff_buffer_name(source_name: str, channel_id: int) -> str:

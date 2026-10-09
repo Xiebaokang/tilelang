@@ -2,6 +2,8 @@
 
 from dataclasses import replace
 
+import pytest
+
 import tilelang.language as T
 
 from OverlapPlaner.arch import FAKE, HOPPER, can_split_stages
@@ -102,6 +104,24 @@ def test_hopper_one_group_keeps_kernel_threads() -> None:
         assert item.warp_allocation.total_warps == graph.kernel_threads // 32
         assert not item.warp_allocation.setmaxnreg_enabled
         assert item.shared_memory.fits
+
+
+@pytest.mark.parametrize("ordered", [True, False])
+def test_pipeline_shared_retires_before_epilogue_only_with_complete_proof(ordered):
+    from OverlapPlaner.physical.shared_memory import _Interval, _pack
+
+    intervals = (
+        _Interval(0, "KV_shared", 0, 2, 65536, 16, 3, True, (0, 1)),
+        _Interval(1, "O_shared", 2, 4, 32768, 16, 2, False, (2, 3)),
+    )
+    proof = {(0, 2), (0, 3), (1, 2), (1, 3)}
+    if not ordered:
+        # One outstanding KV access is enough to forbid aliasing.
+        proof.remove((1, 3))
+    arena_bytes, allocations = _pack(intervals, frozenset(proof))
+    offsets = {allocation.name: allocation.byte_offset for allocation in allocations}
+    assert (offsets["KV_shared"] == offsets["O_shared"]) == ordered
+    assert arena_bytes == (65536 if ordered else 98304)
 
 
 def test_hopper_multi_group_uses_partition_granule_and_registers() -> None:
@@ -588,7 +608,7 @@ def test_fa3_shared_offsets_are_tma_aligned() -> None:
             assert placed.byte_offset % 1024 == 0
 
 
-def test_fa3_ws_does_not_alias_pipeline_and_epilogue_shared() -> None:
+def test_fa3_ws_keeps_live_pipeline_and_epilogue_shared_distinct() -> None:
     _, plans = _plans(
         HOPPER, _fa3_graph(64, 128), max_groups=2, max_structures=128
     )
@@ -620,8 +640,6 @@ def test_fa3_cross_group_prefix_q_aliases_epilogue_o() -> None:
         placed.name: placed.byte_offset for placed in smem.shared_allocations
     }
     assert offsets["Q_shared"] == offsets["O_shared"]
-    # In-loop async writers remain conservative until an iteration-aware
-    # completion proof is available.
     assert offsets["K_shared"] != offsets["O_shared"]
     assert offsets["V_shared"] != offsets["O_shared"]
 
