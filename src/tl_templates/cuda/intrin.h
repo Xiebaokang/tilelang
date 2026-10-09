@@ -102,6 +102,20 @@ TL_DEVICE void warpgroup_fence_operand(uint32_t *regs, int count) {
   }
 }
 
+// Keep persistent register inputs live across mixed-GEMM loop iterations.
+// With CUDA 12.8, an empty operand fence or a self-move can leave RS-only
+// inputs assigned to registers subsequently reused by softmax/PV. A zero-delta
+// butterfly reads the same lane and preserves every bit while providing a real
+// non-WGMMA use. Only gemm_mix calls this helper; ordinary fences are unchanged.
+template <typename Element>
+TL_DEVICE void warpgroup_fence_register_input(Element *input, int count) {
+  auto regs = reinterpret_cast<uint32_t *>(input);
+#pragma unroll
+  for (int i = 0; i < count; ++i) {
+    asm volatile("shfl.sync.bfly.b32 %0, %0, 0, 31, -1;" : "+r"(regs[i]) : : "memory");
+  }
+}
+
 TL_DEVICE void warpgroup_fence_operand(float *regs, int count) {
 #pragma unroll
   for (int i = 0; i < count; ++i) {

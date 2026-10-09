@@ -44,6 +44,7 @@ from OverlapPlaner.structure.order import build_program_orders
 from OverlapPlaner.structure.stage import (
     enumerate_program_stages,
     enumerate_stage_assignments,
+    region_stage_limit,
 )
 from OverlapPlaner.structure.sync import build_synchronizations
 from OverlapPlaner.structure.version import analyze_buffer_versions
@@ -105,29 +106,29 @@ from OverlapPlaner.tune.search import (
 
 SEARCH_OPERATORS: list[OperatorSpec] = [
     FA3,
-    MLA,
-    DEQUANT_GEMM_FP4,
-    GDN_CHUNK_O_BWD,
-    GDN_CHUNK_DELTA_BWD,
-    KDA_WY_FAST_BWD,
-    KDA_CHUNK_BWD_INTRA,
-    FUSED_MOE,
-    GQA_BWD,
-    MHA_BWD,
-    LINEAR_ATTN_FWD,
-    MAMBA_CHUNK_SCAN,
-    MAMBA_CHUNK_STATE,
-    GEMM,
-    GQA,
-    CONVOLUTION,
-    GEMM_FP8,
+    # MLA,
+    # DEQUANT_GEMM_FP4,
+    # GDN_CHUNK_O_BWD,
+    # GDN_CHUNK_DELTA_BWD,
+    # KDA_WY_FAST_BWD,
+    # KDA_CHUNK_BWD_INTRA,
+    # FUSED_MOE,
+    # GQA_BWD,
+    # MHA_BWD,
+    # LINEAR_ATTN_FWD,
+    # MAMBA_CHUNK_SCAN,
+    # MAMBA_CHUNK_STATE,
+    # GEMM,
+    # GQA,
+    # CONVOLUTION,
+    # GEMM_FP8,
 ]
 
 # Bump whenever generated-code semantics or correctness validation changes.
 # Results are measurements of a plan *and* its implementation, so a plan-only
 # fingerprint must not reuse rows produced by an older lowering.
 _EVALUATION_CACHE_VERSION = (
-    "overlap-plan-lowering-v8-copy-backends-reference-and-thread-mapping"
+    "overlap-plan-lowering-v10-dynamic-trip-bound"
 )
 
 
@@ -185,7 +186,7 @@ def generate_plans(
     search_context = plan_fingerprint({
         "workload": _workload_fingerprint(operator, tile, options),
         "budget": asdict(budget), "joint_seed_budget": joint_seed_budget,
-        "generator_version": 1,
+        "generator_version": 3,
     })
     previous_manifest = _read_json(plan_dir / "manifest.json") or {}
     resume_global = replay_order_mutations and previous_manifest.get("search_context") == search_context
@@ -395,7 +396,9 @@ def _independent_producer_seeds(classified, budget: SearchBudget, limit: int):
         ):
             region_id = pipeline_regions[0].region_id
             for assignment in enumerate_stage_assignments(
-                classified, region_id, budget.max_stages
+                classified,
+                region_id,
+                region_stage_limit(pipeline_regions[0], budget.max_stages),
             ):
                 yield {region_id: assignment}
         else:
@@ -1155,6 +1158,7 @@ def _expand_joint_candidates(
         for move in adjacent_joint_moves(
             classified, payload, max_stages=search_budget.max_stages,
             max_groups=search_budget.max_groups,
+            extra_shared_versions=search_budget.extra_shared_versions,
         ):
             dimension = move[0]
             if per_dimension[dimension] >= max(remaining * 12, 24):

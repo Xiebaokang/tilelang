@@ -64,6 +64,7 @@ from .copy_op import (  # noqa: F401
 from tilelang.tileop.base import GemmWarpPolicy  # noqa: F401
 from .gemm_op import (  # noqa: F401
     gemm,
+    gemm_mix,
 )
 from .experimental.gemm_sp_op import (  # noqa: F401
     gemm_sp,
@@ -228,6 +229,7 @@ _LOCAL_EXPORTS = (
     "fill",
     "finalize_reducer",
     "gemm",
+    "gemm_mix",
     "gemm_sp",
     "get_block_binding",
     "get_block_bindings",

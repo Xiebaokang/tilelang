@@ -11,7 +11,7 @@ from tilelang.layout import (
 from tilelang.cuda.intrinsics.macro.wgmma_macro_generator import (
     TensorCoreIntrinEmitter,
 )
-from tilelang.utils.language import is_shared, is_fragment
+from tilelang.utils.language import is_shared, is_fragment, is_full_region
 from tilelang import tvm as tvm
 from tvm.target import Target
 from tvm.ir import Range
@@ -68,6 +68,16 @@ class GemmWGMMA(GemmBase):
         b_is_k_major = self.trans_B
         a_continuity = self.K if a_is_k_major else mma_emitter.wgmma_inst_m
         b_continuity = self.K if b_is_k_major else mma_emitter.wgmma_inst_n
+        if self.gemm_node.raRegion is not None:
+            ra = self.gemm_node.raRegion.buffer
+            # The compact register fragment covers only Kr, not the full K.
+            mma_emitter.chunk = int(self.gemm_node.kr)
+            return {
+                self.A: self.infer_shared_layout(int(self.gemm_node.ks))(self.A),
+                ra: mma_emitter.make_mma_load_layout(ra, matrix="A"),
+                self.B: self.infer_shared_layout(b_continuity)(self.B),
+                self.C: mma_emitter.make_mma_store_layout(self.C),
+            }
         if self.is_gemm_ss():
             return {
                 # WGMMA does not support padding
@@ -131,6 +141,9 @@ class GemmWGMMA(GemmBase):
         clear_accum = self.clear_accum
         wg_wait = self.wg_wait
 
+        if self.gemm_node.raRegion is not None:
+            return self.lower_mix(layout_map, target, thread_bounds, thread_index)
+
         if self.is_gemm_ss():
             # For WGMMA, we need to handle buffer region offsets
             # If there are offsets, we create a BufferLoad inside the prim_func
@@ -164,6 +177,68 @@ class GemmWGMMA(GemmBase):
             # Must inline let statements to simplify the analysis
             return _Simplify(_gemm_rsr, inline_let=True)
         raise ValueError(f"Unsupported gemm combination for wgmma, A: {self.A.scope()}, B: {self.B.scope()}")
+
+    def lower_mix(self, layout_map, target, thread_bounds, thread_index):
+        ks, kr = int(self.gemm_node.ks), int(self.gemm_node.kr)
+        m_warp, n_warp = self.policy.compute_warp_partition(self.M, self.N, thread_bounds.extent, target, GEMM_INST_WGMMA)
+        args = dict(
+            a_dtype=self.a_dtype,
+            b_dtype=self.b_dtype,
+            accum_dtype=self.accum_dtype,
+            a_transposed=False,
+            b_transposed=self.trans_B,
+            block_row_warps=m_warp,
+            block_col_warps=n_warp,
+            warp_row_tiles=int(self.M // m_warp),
+            warp_col_tiles=int(self.N // n_warp),
+            thread_var=thread_index - thread_bounds.min,
+        )
+        rs = TensorCoreIntrinEmitter(chunk=kr, **args)
+        ss = TensorCoreIntrinEmitter(chunk=ks, **args)
+        atom_k = rs.micro_size_k
+        assert ks % atom_k == kr % atom_k == 0, f"SA/RA K extents must be multiples of {atom_k}"
+        rs._assign_b_shared_layout(layout_map[self.B])
+        ss._assign_b_shared_layout(layout_map[self.B])
+        ss._assign_a_shared_layout(layout_map[self.A])
+        ra_region = self.gemm_node.raRegion
+        assert is_full_region(ra_region) and is_full_region(self.CRegion), "RA/C must be full fragments"
+        a_params = ss.compute_wgmma_a_desc_params(self.ARegion)
+        b_params = rs.compute_wgmma_b_desc_params(self.BRegion)
+        SA_region, B_region = self.ARegion, self.BRegion
+        RA_buf, C_buf = ra_region.buffer, self.C
+        clear_accum = self.clear_accum
+        total_k = ks + kr
+        nm, nn = rs.wgmma_num_inst_m, rs.wgmma_num_inst_n
+        nr, ns = kr // atom_k, ks // atom_k
+
+        @T.prim_func
+        def _gemm_mix():
+            desc_a = T.alloc_wgmma_desc()
+            desc_b = T.alloc_wgmma_desc()
+            ss.init_wgmma_a_desc(desc_a, SA_region, a_params)
+            rs.init_wgmma_b_desc(desc_b, B_region, b_params)
+            # Preserve RA across later softmax/PV work and the next loop iteration.
+            T.evaluate(
+                T.call_extern("handle", "tl::warpgroup_fence_register_input", T.address_of(RA_buf[0, 0]), rs.wgmma_a_regs)
+            )
+            rs.wgmma_fence_c(C_buf)
+            rs.wgmma_arrive()
+            # Every RS atom precedes every SS atom, including multi-M/N tiles.
+            for j in T.unroll(nn):
+                for i in T.unroll(nm):
+                    for ki in T.unroll(nr):
+                        rs.wgmma_rs_atom(
+                            RA_buf, desc_b, C_buf, i, j, ki, b_params, clear_accum, b_ki=ns + ki, b_chunk=total_k
+                        )
+            for j in T.unroll(nn):
+                for i in T.unroll(nm):
+                    for ki in T.unroll(ns):
+                        ss.wgmma_ss_atom(desc_a, desc_b, C_buf, i, j, ki, a_params, b_params, False, b_chunk=total_k)
+            rs.wgmma_commit()
+            rs.wgmma_wait(0)
+            rs.wgmma_fence_c(C_buf)
+
+        return _Simplify(_gemm_mix, inline_let=True)
 
     def is_gemm_ss(self) -> bool:
         return is_shared(self.A) and is_shared(self.B)

@@ -128,14 +128,28 @@ Gemm::Gemm(Array<PrimExpr> args, Map<String, ObjectRef> annotations) {
   }
   node->cCoords_ = Array<PrimExpr>(
       {args[17].as<PrimExpr>().value(), args[18].as<PrimExpr>().value()});
-  if (args.size() > 19) {
+  if (!annotations.count("is_mix") && args.size() > 19) {
     node->sfaRegion_ = NormalizeToBufferRegion(args[19]);
   }
-  if (args.size() > 20) {
+  if (!annotations.count("is_mix") && args.size() > 20) {
     node->sfbRegion_ = NormalizeToBufferRegion(args[20]);
   }
-  if (args.size() > 21) {
+  if (!annotations.count("is_mix") && args.size() > 21) {
     node->sfKStart_ = args[21].as<PrimExpr>().value();
+  }
+  if (annotations.count("is_mix")) {
+    ICHECK_EQ(args.size(), 22);
+    auto ra_access = NormalizeToAccessRegion(args[19], kAccessRead);
+    node->raRegion_ = ra_access.region;
+    node->ks_ = args[20].as<IntImm>().value()->value;
+    node->kr_ = args[21].as<IntImm>().value()->value;
+    ICHECK_GT(node->ks_, 0);
+    ICHECK_GT(node->kr_, 0);
+    ICHECK_EQ(node->ks_ + node->kr_, node->k_);
+    ICHECK(IsSharedBuffer(node->a_) && IsFragmentBuffer(node->raRegion_->buffer) &&
+           IsSharedBuffer(node->b_) && IsFragmentBuffer(node->c_));
+    ICHECK(!node->transA_) << "RS WGMMA requires K-major A";
+    node->SetAccessRegions({a_access, ra_access, b_access, c_access});
   }
   node->annotations_ = annotations;
   data_ = std::move(node);
@@ -144,6 +158,7 @@ Gemm::Gemm(Array<PrimExpr> args, Map<String, ObjectRef> annotations) {
 AccessRegions GemmNode::GetAccessRegions() const {
   AccessRegions result;
   result.reads.push_back(aRegion_);
+  if (raRegion_.defined()) result.reads.push_back(raRegion_);
   result.reads.push_back(bRegion_);
   if (!is_one(clearAccum_)) {
     result.reads.push_back(cRegion_);
@@ -262,6 +277,18 @@ TIR_REGISTER_TL_TILE_OP(Gemm, gemm)
     .set_num_inputs(-1)
     .set_attr<TCallEffectKind>("TCallEffectKind",
                                Integer(CallEffectKind::kOpaque));
+
+TVM_REGISTER_OP("tl.tileop.gemm_mix")
+    .set_attr<TScriptPrinterName>("TScriptPrinterName", "gemm_mix")
+    .set_attr<OpBuilderFunc>("TLOpBuilder",
+        [](Array<PrimExpr> args, Map<String, ObjectRef> annotations) {
+          Map<String, ObjectRef> ann = annotations;
+          ann.Set("is_wgmma", IntImm(DataType::Int(32), 1));
+          ann.Set("is_mix", IntImm(DataType::Int(32), 1));
+          return Gemm(args, ann);
+        })
+    .set_num_inputs(-1)
+    .set_attr<TCallEffectKind>("TCallEffectKind", Integer(CallEffectKind::kOpaque));
 
 TVM_REGISTER_OP("tl.tileop.wgmma_gemm")
     .set_attr<TScriptPrinterName>("TScriptPrinterName", "wgmma_gemm")

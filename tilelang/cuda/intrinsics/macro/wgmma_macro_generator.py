@@ -405,9 +405,10 @@ class TensorCoreIntrinEmitter(MMAIntrinEmitter):
     @property
     def wgmma_accum_regs(self) -> int:
         """Number of 32-bit registers occupied by the accumulator fragment."""
-        m_dim = self.block_row_warps * self.warp_row_tiles
         accum_bits = DataType(self.accum_dtype).bits
-        return ((m_dim // 64) * self.warp_cols * self.local_size_out * accum_bits + 31) // 32
+        # Count registers owned by one thread/warpgroup, not all M warpgroups
+        # in the CTA; fencing beyond the fragment is an out-of-bounds access.
+        return (self.wgmma_num_inst_m * self.warp_cols * self.local_size_out * accum_bits + 31) // 32
 
     # -- Descriptor parameter computation (pure Python, no TIR) --
 
@@ -576,6 +577,8 @@ class TensorCoreIntrinEmitter(MMAIntrinEmitter):
         ki: int,
         b_params: WGMMADescriptorParams,
         clear_accum: PrimExpr = False,
+        b_ki=None,
+        b_chunk=None,
     ):
         """Emit a single WGMMA RS instruction for atom ``(inst_m_idx, inst_n_idx, ki)``.
 
@@ -612,6 +615,8 @@ class TensorCoreIntrinEmitter(MMAIntrinEmitter):
         micro_size_k = self.micro_size_k
         n_dim = self.block_col_warps * self.warp_col_tiles
         k_dim = self.chunk
+        b_k_dim = self.chunk if b_chunk is None else b_chunk
+        bk = ki if b_ki is None else b_ki
         wgmma_inst_n = self.wgmma_inst_n
         num_inst_n = self.wgmma_num_inst_n
         a_dtype_abbrv = self.a_dtype_abbrv
@@ -636,12 +641,12 @@ class TensorCoreIntrinEmitter(MMAIntrinEmitter):
             scale_out = T.Select(ki != 0, 1, T.Select(clear_accum, 0, 1))
 
             B_offset = (
-                (ki // bk_atom_size) * n_dim * b_swizzle_atom_elems
+                (bk // bk_atom_size) * n_dim * b_swizzle_atom_elems
                 + warp_j * wgmma_inst_n * b_swizzle_atom_elems
-                + (ki % bk_atom_size) * micro_size_k
+                + (bk % bk_atom_size) * micro_size_k
                 if b_params.is_k_major
                 else (
-                    ki * b_swizzle_atom_elems * micro_size_k + warp_j * wgmma_inst_n * (k_dim if n_dim // b_swizzle_atom_elems > 1 else 1)
+                    bk * b_swizzle_atom_elems * micro_size_k + warp_j * wgmma_inst_n * (b_k_dim if n_dim // b_swizzle_atom_elems > 1 else 1)
                 )
             )
 
@@ -676,6 +681,8 @@ class TensorCoreIntrinEmitter(MMAIntrinEmitter):
         a_params: WGMMADescriptorParams,
         b_params: WGMMADescriptorParams,
         clear_accum: PrimExpr = False,
+        b_ki=None,
+        b_chunk=None,
     ):
         """Emit a single WGMMA SS instruction for atom ``(inst_m_idx, inst_n_idx, ki)``.
 
@@ -708,6 +715,8 @@ class TensorCoreIntrinEmitter(MMAIntrinEmitter):
         m_dim = self.block_row_warps * self.warp_row_tiles
         n_dim = self.block_col_warps * self.warp_col_tiles
         k_dim = self.chunk
+        b_k_dim = self.chunk if b_chunk is None else b_chunk
+        bk = ki if b_ki is None else b_ki
         wgmma_inst_n = self.wgmma_inst_n
         num_inst_m = self.wgmma_num_inst_m
         num_inst_n = self.wgmma_num_inst_n
@@ -744,12 +753,12 @@ class TensorCoreIntrinEmitter(MMAIntrinEmitter):
                 else warp_i * 64 * k_dim + ki * a_swizzle_atom_elems * micro_size_k
             )
             B_offset = (
-                (ki // bk_atom_size) * n_dim * b_swizzle_atom_elems
-                + (ki % bk_atom_size) * micro_size_k
+                (bk // bk_atom_size) * n_dim * b_swizzle_atom_elems
+                + (bk % bk_atom_size) * micro_size_k
                 + warp_j * wgmma_inst_n * b_swizzle_atom_elems
                 if b_is_k_major
                 else (
-                    ki * b_swizzle_atom_elems * micro_size_k + warp_j * wgmma_inst_n * (k_dim if n_dim // b_swizzle_atom_elems > 1 else 1)
+                    bk * b_swizzle_atom_elems * micro_size_k + warp_j * wgmma_inst_n * (b_k_dim if n_dim // b_swizzle_atom_elems > 1 else 1)
                 )
             )
 

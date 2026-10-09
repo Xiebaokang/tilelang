@@ -32,6 +32,7 @@ def _gemm_impl(
     wg_wait: int = 0,
     mbar: BarrierType | None = None,
     annotations: dict | None = None,
+    RA: BufferLikeType | None = None,
 ) -> tirx.PrimExpr:
     """Shared GEMM implementation.
 
@@ -85,6 +86,24 @@ def _gemm_impl(
     M, N = C_shape
     M_A = A_shape[-1] if transpose_A else A_shape[-2]
     K = A_shape[-2] if transpose_A else A_shape[-1]
+    Ks = K
+    RA_region = None
+    if RA is not None:
+        from tilelang.utils.language import is_shared, is_fragment
+
+        RA_region = to_buffer_region(legalize_arguments(RA))
+        RA_shape = retrieve_shape(RA_region)
+        assert len(A_shape) == len(RA_shape) == len(B_shape) == 2, "gemm_mix requires 2D operands"
+        assert not transpose_A, "RS WGMMA requires transpose_A=False"
+        assert is_shared(A_region) and is_fragment(RA_region) and is_shared(B_region) and is_fragment(C_region), (
+            "gemm_mix requires shared SA/B and fragment RA/C"
+        )
+        assert A_region.buffer.dtype == RA_region.buffer.dtype, "SA/RA dtypes must match"
+        assert prim_expr_equal(RA_shape[0], M), "RA M dimension must match C"
+        Kr = RA_shape[1]
+        assert isinstance(Ks, tirx.IntImm) and isinstance(Kr, tirx.IntImm), "gemm_mix K extents must be static"
+        assert int(Ks) > 0 and int(Kr) > 0, "gemm_mix requires nonempty SA and RA"
+        K = tirx.const(int(Ks) + int(Kr), "int32")
     N_B = B_shape[-2] if transpose_B else B_shape[-1]
     K_B = B_shape[-1] if transpose_B else B_shape[-2]
     assert prim_expr_equal(M_A, M), f"T.gemm M shape check failed: M_A = {M_A}, M_C = {M}"
@@ -120,7 +139,7 @@ def _gemm_impl(
     # The C++ side checks if arg 16 is a BufferLoadNode before using it,
     # so a non-BufferLoad value will be correctly ignored.
     mbar_arg = mbar if mbar is not None else tirx.const(0, dtype="int32")
-    return tirx.call_intrin(
+    call = tirx.call_intrin(
         "handle",
         tirx.op.Op.get(op_key),
         A_arg,
@@ -143,6 +162,36 @@ def _gemm_impl(
         C_coords[0],
         C_coords[1],
         annotations=annotations,
+    )
+
+    if RA_region is not None:
+        ra_arg = buffer_region_to_tile_region(RA_region, "r", list(retrieve_shape(RA_region)))
+        call = tirx.Call(call.dtype, call.op, list(call.args) + [ra_arg, Ks, Kr], annotations=call.annotations)
+    return call
+
+
+def gemm_mix(
+    SA: BufferLikeType,
+    RA: BufferLikeType,
+    B: BufferLikeType,
+    C: BufferLikeType,
+    transpose_A: bool = False,
+    transpose_B: bool = False,
+    policy: GemmWarpPolicy = GemmWarpPolicy.Square,
+    clear_accum: bool = False,
+    k_pack: int = 1,
+    mbar: BarrierType | None = None,
+) -> tirx.PrimExpr:
+    """Hopper mixed GEMM: logical A=[SA, RA] along K; issue all RS before SS.
+
+    Shapes determine both K extents. Shares one accumulator and one commit/wait.
+    RA/C must be full fragments; SA/B may be regions. Only Hopper WGMMA is
+    supported, with transpose_A=False and each K extent aligned to an MMA atom.
+    """
+    assert k_pack == 1, "Hopper gemm_mix requires k_pack=1"
+    assert mbar is None, "Hopper gemm_mix does not use a TCGEN05 mbarrier"
+    return _gemm_impl(
+        "tl.tileop.gemm_mix", SA, B, C, transpose_A, transpose_B, policy, clear_accum, k_pack, 0, mbar, RA=RA
     )
 
 

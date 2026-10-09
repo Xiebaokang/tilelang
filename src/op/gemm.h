@@ -105,6 +105,8 @@ public:
   tirx::Buffer a_, b_, c_;
   // BufferRegion for A, B and C
   BufferRegion aRegion_, bRegion_, cRegion_;
+  BufferRegion raRegion_; // Optional compact register suffix for gemm_mix.
+  int ks_ = 0, kr_ = 0;
   bool transA_, transB_;
   int m_, n_, k_;
   int strideA_, strideB_;
@@ -132,6 +134,9 @@ public:
         .def_ro("a", &GemmNode::a_)
         .def_ro("b", &GemmNode::b_)
         .def_ro("c", &GemmNode::c_)
+        .def_ro("raRegion", &GemmNode::raRegion_)
+        .def_ro("ks", &GemmNode::ks_)
+        .def_ro("kr", &GemmNode::kr_)
         .def_ro("aRegion", &GemmNode::aRegion_)
         .def_ro("bRegion", &GemmNode::bRegion_)
         .def_ro("cRegion", &GemmNode::cRegion_)

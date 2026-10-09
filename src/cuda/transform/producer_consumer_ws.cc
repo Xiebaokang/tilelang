@@ -485,6 +485,15 @@ private:
           VisitExpr(range->min);
           VisitExpr(range->extent);
         }
+        if (gemm->raRegion_.defined()) {
+          if (IsBranchPrivateBuffer(gemm->raRegion_->buffer)) {
+            summary_.read_buffers.insert(gemm->raRegion_->buffer);
+          }
+          for (const auto &range : gemm->raRegion_->region) {
+            VisitExpr(range->min);
+            VisitExpr(range->extent);
+          }
+        }
         if (IsBranchPrivateBuffer(gemm->bRegion_->buffer)) {
           summary_.read_buffers.insert(gemm->bRegion_->buffer);
         }

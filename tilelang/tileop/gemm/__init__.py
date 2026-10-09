@@ -155,7 +155,10 @@ class Gemm(Node, Scriptable):
         Returns:
             The selected backend-specific GEMM instruction key.
         """
-        return str(_ffi_api.GemmGetGemmInstructionKey(self, int(thread_nums), target))
+        inst = str(_ffi_api.GemmGetGemmInstructionKey(self, int(thread_nums), target))
+        if self.raRegion is not None and inst != "cuda.wgmma":
+            raise ValueError("gemm_mix requires Hopper WGMMA; no fallback is supported")
+        return inst
 
     def _get_implementation_class(self, gemm_inst: str, target: Target):
         """Get the appropriate implementation class for the given GEMM instruction key.
